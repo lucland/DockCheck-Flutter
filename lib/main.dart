@@ -171,6 +171,7 @@ class _QRViewExampleState extends State<QRViewExample> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
+        result != null ? print(result!.code.toString()) : print("null");
       });
     });
   }
