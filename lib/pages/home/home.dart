@@ -22,6 +22,13 @@ class _HomeState extends State<Home> {
     Text('Cadastrar'),
   ];
 
+  static const List<String> _pageTitles = [
+    'Home',
+    'Formulário',
+    'Scan',
+    'Cadastrar',
+  ];
+
   static const List<BottomNavigationBarItem> _bottomNavBarItems = [
     BottomNavigationBarItem(
         icon: Icon(Icons.home_rounded),
@@ -61,11 +68,16 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 16.0, 0, 12.0),
-              child: svgLogo,
+              child: SvgPicture.asset(
+                'assets/imgs/googlemarine_logo.svg',
+                semanticsLabel: 'CriptoQRLogo',
+                height: 24.0,
+                width: 24.0,
+              ),
             ),
             Container(
               height: 24.0,
@@ -75,9 +87,9 @@ class _HomeState extends State<Home> {
             ),
             Container(
               padding: const EdgeInsets.all(8.0),
-              child: const Text(
-                'CriptoQR',
-                style: TextStyle(
+              child: Text(
+                _pageTitles[_selectedIndex],
+                style: const TextStyle(
                   color: CQColors.iron100,
                   fontSize: 24.0,
                   fontWeight: FontWeight.w400,
