@@ -43,6 +43,10 @@ dependencies:
   firebase_remote_config: ^4.2.5
   cupertino_icons: ^1.0.2
   qr_code_scanner: ^1.0.1
+  qr_flutter: ^4.1.0
+  syncfusion_flutter_barcodes: ^22.2.12
+  encrypt: ^5.0.1
+  image_gallery_saver: '^2.0.3'
 
 dev_dependencies:
   flutter_test:

@@ -14,6 +14,18 @@ class CQTheme {
     tabBarTheme: defaultTabBarTheme,
     bottomAppBarTheme: defaultBottomAppBarTheme,
     scaffoldBackgroundColor: CQColors.background,
+    colorScheme: const ColorScheme(
+        brightness: Brightness.light,
+        primary: CQColors.iron100,
+        onPrimary: CQColors.iron100,
+        secondary: CQColors.slate100,
+        onSecondary: CQColors.slate100,
+        error: CQColors.danger100,
+        onError: CQColors.danger100,
+        background: CQColors.background,
+        onBackground: CQColors.background,
+        surface: CQColors.white,
+        onSurface: CQColors.white),
   );
 
   static const String defaultFontName = 'ProximaNova';

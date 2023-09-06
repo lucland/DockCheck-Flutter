@@ -1,172 +1,178 @@
-import 'package:cripto_qr_googlemarine/pages/scan/scan.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/rendering.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
+import '../../models/user.dart';
 
-  @override
-  State<Home> createState() => _HomeState();
-}
+class HomeWidget extends StatelessWidget {
+  final User user;
+  final String encrypted;
 
-class _HomeState extends State<Home> {
-  int _selectedIndex = 0;
-  final PageController _pageController = PageController();
+  HomeWidget({Key? key, required this.user, required this.encrypted})
+      : super(key: key);
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Home'),
-    Text('Formulário'),
-    QRViewExample(),
-    Text('Cadastrar'),
-  ];
-
-  static const List<String> _pageTitles = [
-    'Home',
-    'Formulário',
-    'Scan',
-    'Cadastrar',
-  ];
-
-  static const List<BottomNavigationBarItem> _bottomNavBarItems = [
-    BottomNavigationBarItem(
-        icon: Icon(Icons.home_rounded),
-        label: 'Home',
-        backgroundColor: CQColors.background),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.list_alt_rounded),
-        label: 'Formulário',
-        backgroundColor: CQColors.background),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.qr_code_scanner_rounded),
-        label: 'Scan',
-        backgroundColor: CQColors.background),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.person_add_rounded),
-        label: 'Cadastrar',
-        backgroundColor: CQColors.background),
-  ];
-
-  void _onItemTapped(int index) {
-    _pageController.jumpToPage(index);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  final Widget svgLogo = SvgPicture.asset(
-    'assets/imgs/googlemarine_logo.svg',
-    semanticsLabel: 'CriptoQR',
-  );
+  final GlobalKey globalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 16.0, 0, 12.0),
-              child: SvgPicture.asset(
-                'assets/imgs/googlemarine_logo.svg',
-                semanticsLabel: 'CriptoQRLogo',
-                height: 24.0,
-                width: 24.0,
-              ),
-            ),
-            Container(
-              height: 24.0,
-              width: 1.0,
-              color: CQColors.iron100,
-              margin: const EdgeInsets.only(left: 12.0, right: 2.0),
-            ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                _pageTitles[_selectedIndex],
-                style: const TextStyle(
-                  color: CQColors.iron100,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Poppins',
+      body: SingleChildScrollView(
+        child: Container(
+          color: CQColors.background,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              RepaintBoundary(
+                key: globalKey,
+                child: Card(
+                  color: Colors.white,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16.0, 16, 0, 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(user.name,
+                                style: CQTheme.h1.copyWith(
+                                  fontSize: 10,
+                                )),
+                            Text(
+                              user.role,
+                              style: CQTheme.h2.copyWith(
+                                fontSize: 10,
+                              ),
+                            ),
+                            Text(
+                              "${user.company}",
+                              style: CQTheme.h3.copyWith(
+                                fontSize: 10,
+                              ),
+                            ),
+                            Text(
+                              user.number.toString(),
+                              style: CQTheme.h1.copyWith(
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              "${user.checkInValidation}",
+                              style: CQTheme.subhead1.copyWith(
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
+                        child: QrImageView(
+                          data: encrypted,
+                          version: QrVersions.auto,
+                          size: 300.0,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        backgroundColor: CQColors.background,
-        shadowColor: CQColors.slate110.withOpacity(0.18),
-        elevation: 1.0,
-        scrolledUnderElevation: 4.0,
-        surfaceTintColor: Colors.transparent,
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(
-                Icons.menu_rounded,
-                color: CQColors.iron100,
+              //show generated png image from convertWidgetToImage function
+              ElevatedButton(
+                onPressed: () {
+                  convertWidgetToImage();
+                },
+                child: Text(
+                  'Convert Widget to Image',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.search_rounded,
-              color: CQColors.iron100,
-            ),
-            onPressed: () {
-              // Handle search button press
-            },
+              ListTile(
+                title: const Text('Email'),
+                subtitle: Text(user.email),
+              ),
+              ListTile(
+                title: const Text('Identidade'),
+                subtitle: Text(user.identity),
+              ),
+              ListTile(
+                title: const Text('Embarcação'),
+                subtitle: Text(user.vessel),
+              ),
+              ListTile(
+                title: const Text('ASO'),
+                subtitle: Text(user.aso.toString()),
+              ),
+              ListTile(
+                title: const Text('NR10'),
+                subtitle: Text(user.nr10.toString()),
+              ),
+              ListTile(
+                title: const Text('Email'),
+                subtitle: Text(user.email),
+              ),
+            ],
           ),
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView.builder(
-          itemCount: _bottomNavBarItems.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              leading: _bottomNavBarItems[index].icon,
-              title: Text(_bottomNavBarItems[index].label!),
-              onTap: () {
-                _onItemTapped(index);
-                Navigator.of(context).pop();
-              },
-              selectedColor: CQColors.iron100,
-              style: ListTileStyle.drawer,
-              iconColor: CQColors.iron100,
-            );
-          },
         ),
-      ),
-      body: PageView(
-        controller: _pageController,
-        children: _widgetOptions,
-        onPageChanged: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: _bottomNavBarItems,
-        currentIndex: _selectedIndex,
-        selectedItemColor: CQColors.iron100,
-        unselectedItemColor: CQColors.iron100.withOpacity(0.6),
-        elevation: 4.0,
-        selectedLabelStyle: CQTheme.selectedLabelTextStyle,
-        unselectedLabelStyle: CQTheme.unselectLabelTextStyle,
-        onTap: _onItemTapped,
-        showUnselectedLabels: true,
       ),
     );
+  }
+
+  Future<void> convertWidgetToImage() async {
+    try {
+      RenderRepaintBoundary boundary =
+          globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+      // Get the device's pixel ratio
+      final double devicePixelRatio =
+          MediaQuery.of(globalKey.currentContext!).devicePixelRatio;
+
+      // Convert mm to inches (1 inch = 25.4 mm)
+      final double heightInInches = 63 / 25.4;
+      final double widthInInches = 85 / 25.4;
+
+      // Calculate the target dimensions in pixels
+      final double targetHeightInPixels = heightInInches *
+          devicePixelRatio *
+          96; // 96 is the DPI for flutter in most cases
+      final double targetWidthInPixels = widthInInches * devicePixelRatio * 96;
+
+      ui.Image image = await boundary.toImage(
+          pixelRatio: targetWidthInPixels / boundary.size.width);
+      ByteData? byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      //present image in dialog
+      showDialog(
+        context: globalKey.currentContext!,
+        builder: (context) => AlertDialog(
+          content: Image.memory(pngBytes),
+        ),
+      );
+
+      if (pngBytes != null) {
+        final result =
+            await ImageGallerySaver.saveImage(pngBytes.buffer.asUint8List());
+        print(result);
+      }
+
+      // Now pngBytes contains the PNG image data with dimensions close to 63mm x 85mm.
+      // You can write it to a file or do something else with it.
+
+      //save to gallery
+    } catch (e) {
+      print(e);
+    }
   }
 }
