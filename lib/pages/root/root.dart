@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 import '../../models/user.dart';
+import '../form/form.dart';
 
 class Root extends StatefulWidget {
   const Root({super.key});
@@ -73,13 +74,13 @@ class _RootState extends State<Root> {
     final iv = encrypt.IV.fromUtf8("1234567890123456");
     final encrypter = encrypt.Encrypter(encrypt.AES(key));
     final encrypted = encrypter.encrypt(mockUser.toDatabaseString(), iv: iv);
-    final decrypted = encrypter.decrypt(encrypted, iv: iv);
+    //final decrypted = encrypter.decrypt(encrypted, iv: iv);
 
     print(encrypted.base64);
 
     _widgetOptions = [
       HomeWidget(user: mockUser, encrypted: encrypted.base64),
-      const Text('Formulário'),
+      const Formulario(),
       const QRViewExample(),
       const Text('Cadastrar'),
     ];
