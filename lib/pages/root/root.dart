@@ -1,3 +1,4 @@
+import 'package:cripto_qr_googlemarine/pages/cadastrar/cadastrar.dart';
 import 'package:cripto_qr_googlemarine/pages/home/home.dart';
 import 'package:cripto_qr_googlemarine/pages/scan/scan.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
@@ -82,7 +83,11 @@ class _RootState extends State<Root> {
       HomeWidget(user: mockUser, encrypted: encrypted.base64),
       const Formulario(),
       const QRViewExample(),
-      const Text('Cadastrar'),
+      Cadastrar(
+        onCadastrar: () {
+          _pageController.jumpToPage(0);
+        },
+      ),
     ];
   }
 
@@ -142,15 +147,18 @@ class _RootState extends State<Root> {
               color: CQColors.iron100,
               margin: const EdgeInsets.only(left: 12.0, right: 2.0),
             ),
-            Container(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                _pageTitles[_selectedIndex],
-                style: const TextStyle(
-                  color: CQColors.iron100,
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Poppins',
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  _pageTitles[_selectedIndex],
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: CQColors.iron100,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Poppins',
+                  ),
                 ),
               ),
             ),
@@ -158,7 +166,7 @@ class _RootState extends State<Root> {
         ),
         backgroundColor: CQColors.background,
         shadowColor: CQColors.slate110.withOpacity(0.18),
-        elevation: 1.0,
+        elevation: 0.0,
         scrolledUnderElevation: 4.0,
         surfaceTintColor: Colors.transparent,
         leading: Builder(

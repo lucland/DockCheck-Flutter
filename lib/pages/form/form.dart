@@ -1,3 +1,4 @@
+import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,7 +14,10 @@ class Formulario extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UserCubit(UserRepository()),
-      child: const UserListView(),
+      child: Container(
+        color: CQColors.white,
+        child: const UserListView(),
+      ),
     );
   }
 }

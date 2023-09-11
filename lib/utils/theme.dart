@@ -17,15 +17,15 @@ class CQTheme {
     colorScheme: const ColorScheme(
         brightness: Brightness.light,
         primary: CQColors.iron100,
-        onPrimary: CQColors.iron100,
+        onPrimary: CQColors.white,
         secondary: CQColors.slate100,
-        onSecondary: CQColors.slate100,
+        onSecondary: CQColors.white,
         error: CQColors.danger100,
         onError: CQColors.danger100,
         background: CQColors.background,
         onBackground: CQColors.background,
         surface: CQColors.white,
-        onSurface: CQColors.white),
+        onSurface: CQColors.slate100),
   );
 
   static const String defaultFontName = 'ProximaNova';
@@ -46,14 +46,16 @@ class CQTheme {
   );
 
   static const TextStyle h1 = TextStyle(
+    color: CQColors.iron100,
     fontSize: 24,
     fontWeight: FontWeight.w700,
     fontFamily: 'Poppins',
   );
 
   static const TextStyle h2 = TextStyle(
+    color: CQColors.iron100,
     fontSize: 20.0,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w500,
     fontFamily: 'Poppins',
   );
 
