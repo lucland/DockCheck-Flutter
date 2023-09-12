@@ -3,7 +3,7 @@ import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
 
 class UserRepository {
   final CollectionReference _usersCollection =
-      FirebaseFirestore.instance.collection('users');
+      FirebaseFirestore.instance.collection('USER');
 
   Future<void> addUser(Map<String, dynamic> userMap) async {
     try {
@@ -30,7 +30,7 @@ class UserRepository {
   Future<List<Map<String, dynamic>>> searchUsers(String query) async {
     try {
       QuerySnapshot querySnapshot = await _usersCollection
-          .where('name', isGreaterThanOrEqualTo: query)
+          .where('nome', isGreaterThanOrEqualTo: query)
           .get();
       return querySnapshot.docs
           .map((doc) => doc.data() as Map<String, dynamic>)

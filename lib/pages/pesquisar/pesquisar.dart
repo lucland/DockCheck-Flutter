@@ -7,8 +7,8 @@ import '../../blocs/user/user_state.dart';
 import '../../models/user.dart';
 import '../../repositories/user_repository.dart';
 
-class Formulario extends StatelessWidget {
-  const Formulario({super.key});
+class Pesquisar extends StatelessWidget {
+  const Pesquisar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class UserListView extends StatelessWidget {
             itemBuilder: (context, index) {
               User user = state.users[index];
               return ListTile(
-                title: Text(user.name),
+                title: Text(user.nome),
                 subtitle: Text(user.email),
               );
             },

@@ -12,13 +12,14 @@ class UserCubit extends Cubit<UserState> {
   fetchUsers() async {
     try {
       emit(UserLoading());
-      var users = await userRepository.fetchUsers();
-      print("Users fetched: $users");
+      var users = await userRepository.searchUsers("Lucas");
+      print("Users fetched: ${users[0]}");
       List<User> usersMapped =
           users.map((userMap) => User.fromMap(userMap)).toList();
-      print(usersMapped[0].name);
+      print(usersMapped[0].nome);
       emit(UserLoaded(usersMapped));
     } catch (e) {
+      print(e.toString());
       emit(UserError("Failed to fetch users."));
     }
   }

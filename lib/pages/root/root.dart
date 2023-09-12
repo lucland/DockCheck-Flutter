@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cripto_qr_googlemarine/pages/cadastrar/cadastrar.dart';
 import 'package:cripto_qr_googlemarine/pages/home/home.dart';
 import 'package:cripto_qr_googlemarine/pages/scan/scan.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 import '../../models/user.dart';
-import '../form/form.dart';
+import '../pesquisar/pesquisar.dart';
 
 class Root extends StatefulWidget {
   const Root({super.key});
@@ -25,48 +26,39 @@ class _RootState extends State<Root> {
   DateTime mockDate = DateTime.parse('2023-09-01 00:00:00-0300');
 
   User mockUser = User(
-    aso: DateTime.parse('2023-09-01 00:00:00-0300'),
-    checkIn: DateTime.parse('2023-09-01 00:00:00-0300')
-        .add(const Duration(hours: 8)),
-    checkInValidation: "01/09/2023 até 00/00/0000",
-    checkOut: DateTime.parse('2023-09-01 00:00:00-0300')
-        .add(const Duration(hours: 17)),
-    checkOutValidation: "00/00/0000",
-    company: "Googlemarine",
+    ASO: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
+    numero: 0,
+    empresa: "Googlemarine",
     email: "lucas.vsc@gmail.com",
-    identity: "255521528",
+    identidade: 255521528,
     isAdmin: true,
     isBlocked: false,
-    isVisitor: false,
-    log: ["Dia 1"],
-    name: "Lucas Valente",
-    nr10: DateTime.parse('2023-09-01 00:00:00-0300'),
-    nr33: DateTime.parse('2023-09-01 00:00:00-0300'),
-    nr34: DateTime.parse('2023-09-01 00:00:00-0300'),
-    nr35: DateTime.parse('2023-09-01 00:00:00-0300'),
-    number: 1000,
-    project: "Qr Cripto",
-    reason: "-",
-    role: "Engenheiro de Sotware",
-    user: "LUCAS",
+    isVisitante: false,
+    eventos: ["OsUJsIU5JFWySiLShbkk"],
+    nome: "Lucas Valente",
+    NR10: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
+    NR33: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
+    NR34: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
+    NR35: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
+    funcao: "Engenheiro de Sotware",
     vessel: "Teste Ship",
-    isOnboarded: true,
-    isConves: true,
-    isPraca: false,
-    isCasario: false,
-    initialDate: DateTime.parse('2023-09-01'),
-    finalDate: DateTime.parse('2023-09-01'),
+    dataInicial: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
+    dataLimite: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
+    createdAt: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
+    updatedAt: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
   );
 
   late List<Widget> _widgetOptions;
 
   static const List<String> _pageTitles = [
     'Home',
-    'Formulário',
+    'Pesquisar',
     'Scan',
     'Cadastrar',
   ];
 
+  //fetch users from UserRepository
+  //set mockUser to first users
   @override
   void initState() {
     super.initState();
@@ -77,11 +69,13 @@ class _RootState extends State<Root> {
     final encrypted = encrypter.encrypt(mockUser.toDatabaseString(), iv: iv);
     //final decrypted = encrypter.decrypt(encrypted, iv: iv);
 
+    //fetch first user from firebase and set mockUser
+
     print(encrypted.base64);
 
     _widgetOptions = [
       HomeWidget(user: mockUser, encrypted: encrypted.base64),
-      const Formulario(),
+      const Pesquisar(),
       const QRViewExample(),
       Cadastrar(
         onCadastrar: () {
@@ -98,7 +92,7 @@ class _RootState extends State<Root> {
         backgroundColor: CQColors.background),
     BottomNavigationBarItem(
         icon: Icon(Icons.list_alt_rounded),
-        label: 'Formulário',
+        label: 'Pesquisar',
         backgroundColor: CQColors.background),
     BottomNavigationBarItem(
         icon: Icon(Icons.qr_code_scanner_rounded),

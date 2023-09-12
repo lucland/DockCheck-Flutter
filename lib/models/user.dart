@@ -1,135 +1,101 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class User {
-  final DateTime aso;
-  final DateTime checkIn;
-  final String checkInValidation;
-  final DateTime checkOut;
-  final String checkOutValidation;
-  final String company;
-  final String email;
-  final String identity;
-  final bool isAdmin;
-  final bool isBlocked;
-  final bool isVisitor;
-  final List<String> log;
-  final String name;
-  final DateTime nr10;
-  final DateTime nr33;
-  final DateTime nr34;
-  final DateTime nr35;
-  final int number;
-  final String project;
-  final String reason;
-  final String role;
-  final String user;
-  final String vessel;
-  final bool isOnboarded;
-  final bool isConves;
-  final bool isPraca;
-  final bool isCasario;
-  final DateTime initialDate;
-  final DateTime finalDate;
+  int numero;
+  int identidade;
+  String nome;
+  String funcao;
+  String email;
+  String empresa;
+  Timestamp ASO;
+  Timestamp NR34;
+  Timestamp NR10;
+  Timestamp NR33;
+  Timestamp NR35;
+  String vessel;
+  Timestamp dataInicial;
+  Timestamp dataLimite;
+  bool isVisitante;
+  bool isAdmin;
+  List<String> eventos;
+  Timestamp createdAt;
+  Timestamp updatedAt;
+  bool isBlocked;
 
   User({
-    required this.aso,
-    required this.checkIn,
-    required this.checkInValidation,
-    required this.checkOut,
-    required this.checkOutValidation,
-    required this.company,
+    required this.numero,
+    required this.identidade,
+    required this.nome,
+    required this.funcao,
     required this.email,
-    required this.identity,
-    required this.isAdmin,
-    required this.isBlocked,
-    required this.isVisitor,
-    required this.log,
-    required this.name,
-    required this.nr10,
-    required this.nr33,
-    required this.nr34,
-    required this.nr35,
-    required this.number,
-    required this.project,
-    required this.reason,
-    required this.role,
-    required this.user,
+    required this.empresa,
+    required this.ASO,
+    required this.NR34,
+    required this.NR10,
+    required this.NR33,
+    required this.NR35,
     required this.vessel,
-    required this.isOnboarded,
-    required this.isConves,
-    required this.isPraca,
-    required this.isCasario,
-    required this.initialDate,
-    required this.finalDate,
+    required this.dataInicial,
+    required this.dataLimite,
+    required this.isVisitante,
+    required this.isAdmin,
+    required this.eventos,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.isBlocked,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      'aso': aso,
-      'checkIn': checkIn,
-      'checkInValidation': checkInValidation,
-      'checkOut': checkOut,
-      'checkOutValidation': checkOutValidation,
-      'company': company,
+      'numero': numero,
+      'identidade': identidade,
+      'nome': nome,
+      'funcao': funcao,
       'email': email,
-      'identity': identity,
-      'isAdmin': isAdmin,
-      'isBlocked': isBlocked,
-      'isVisitor': isVisitor,
-      'log': log,
-      'name': name,
-      'nr10': nr10,
-      'nr33': nr33,
-      'nr34': nr34,
-      'nr35': nr35,
-      'number': number,
-      'project': project,
-      'reason': reason,
-      'role': role,
-      'user': user,
+      'empresa': empresa,
+      'ASO': ASO,
+      'NR34': NR34,
+      'NR10': NR10,
+      'NR33': NR33,
+      'NR35': NR35,
       'vessel': vessel,
-      'isOnboarded': isOnboarded,
-      'isConves': isConves,
-      'isPraca': isPraca,
-      'isCasario': isCasario,
-      'initialDate': initialDate,
-      'finalDate': finalDate,
+      'dataInicial': dataInicial,
+      'dataLimite': dataLimite,
+      'isVisitante': isVisitante,
+      'isAdmin': isAdmin,
+      'eventos': eventos,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+      'isBlocked': isBlocked,
     };
   }
 
   static User fromMap(Map<String, dynamic> map) {
     return User(
-      aso: map['aso'].toDate(),
-      checkIn: map['checkIn'].toDate(),
-      checkInValidation: map['checkInValidation'],
-      checkOut: map['checkOut'].toDate(),
-      checkOutValidation: map['checkOutValidation'],
-      company: map['company'],
+      numero: map['numero'],
+      identidade: map['identidade'],
+      nome: map['nome'],
+      funcao: map['funcao'],
       email: map['email'],
-      identity: map['identity'],
-      isAdmin: map['isAdmin'],
-      isBlocked: map['isBlocked'],
-      isVisitor: map['isVisitor'],
-      log: List<String>.from(map['log']),
-      name: map['name'],
-      nr10: map['nr10'].toDate(),
-      nr33: map['nr33'].toDate(),
-      nr34: map['nr34'].toDate(),
-      nr35: map['nr35'].toDate(),
-      number: map['number'],
-      project: map['project'],
-      reason: map['reason'],
-      role: map['role'],
-      user: map['user'],
+      empresa: map['empresa'],
+      ASO: map['ASO'],
+      NR34: map['NR34'],
+      NR10: map['NR10'],
+      NR33: map['NR33'],
+      NR35: map['NR35'],
       vessel: map['vessel'],
-      isOnboarded: map['isOnboarded'],
-      isConves: map['isConves'],
-      isPraca: map['isPraca'],
-      isCasario: map['isCasario'],
-      initialDate: map['initialDate'].toDate(),
-      finalDate: map['finalDate'].toDate(),
+      dataInicial: map['dataInicial'],
+      dataLimite: map['dataLimite'],
+      isVisitante: map['isVisitante'],
+      isAdmin: map['isAdmin'],
+      eventos: List<String>.from(map['eventos']),
+      createdAt: map['createdAt'],
+      updatedAt: map['updatedAt'],
+      isBlocked: map['isBlocked'],
     );
   }
 
   String toDatabaseString() {
-    return "$number\r\n$name\r\n$company\r\n$role\r\n$identity\r\n$email\r\n$vessel\r\n$aso\r\n$nr34\r\n$nr10\r\n$nr33\r\n$nr35\r\n$initialDate\r\n$finalDate";
+    return "$numero\r\n$nome\r\n$empresa\r\n$funcao\r\n$identidade\r\n$email\r\n$vessel\r\n$ASO\r\n$NR34\r\n$NR10\r\n$NR33\r\n$NR35\r\n$dataInicial\r\n$dataLimite";
   }
 }

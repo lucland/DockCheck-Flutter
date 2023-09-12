@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:esc_pos_printer/esc_pos_printer.dart';
@@ -52,30 +53,30 @@ class HomeWidget extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(user.name,
+                              Text('TESTE',
                                   style: CQTheme.h1.copyWith(
                                     fontSize: 10,
                                   )),
                               Text(
-                                user.role,
+                                user.funcao,
                                 style: CQTheme.h2.copyWith(
                                   fontSize: 10,
                                 ),
                               ),
                               Text(
-                                user.company,
+                                user.empresa,
                                 style: CQTheme.h3.copyWith(
                                   fontSize: 10,
                                 ),
                               ),
                               Text(
-                                user.number.toString(),
+                                user.numero.toString(),
                                 style: CQTheme.h1.copyWith(
                                   fontSize: 16,
                                 ),
                               ),
                               Text(
-                                user.checkInValidation,
+                                user.identidade.toString(),
                                 style: CQTheme.subhead1.copyWith(
                                   fontSize: 10,
                                 ),
@@ -114,13 +115,14 @@ class HomeWidget extends StatelessWidget {
                 version: QrVersions.auto,
                 size: 600.0,
               ),
+              Text(Timestamp.now().toString()),
               ListTile(
                 title: const Text('Email'),
                 subtitle: Text(user.email),
               ),
               ListTile(
                 title: const Text('Identidade'),
-                subtitle: Text(user.identity),
+                subtitle: Text(Formatter.identidade(user.identidade)),
               ),
               ListTile(
                 title: const Text('Embarcação'),
@@ -128,11 +130,11 @@ class HomeWidget extends StatelessWidget {
               ),
               ListTile(
                 title: const Text('ASO'),
-                subtitle: Text(user.aso.toString()),
+                subtitle: Text(Formatter.fromTimestamp(user.ASO)),
               ),
               ListTile(
                 title: const Text('NR10'),
-                subtitle: Text(user.nr10.toString()),
+                subtitle: Text(Formatter.fromTimestamp(user.NR10)),
               ),
               ListTile(
                 title: const Text('Email'),
@@ -186,8 +188,7 @@ class HomeWidget extends StatelessWidget {
           await ImageGallerySaver.saveImage(pngBytes.buffer.asUint8List());
       print(result);
 
-      CollectionReference users =
-          FirebaseFirestore.instance.collection('users');
+      CollectionReference users = FirebaseFirestore.instance.collection('USER');
       return users
           .add(user.toMap())
           .then((value) => print("User Added"))

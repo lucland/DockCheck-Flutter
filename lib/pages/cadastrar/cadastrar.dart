@@ -25,22 +25,7 @@ class Cadastrar extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('N° 1', style: CQTheme.h1),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Flexible(
-                          child: Text(
-                            DateTime.now().toString(),
-                            style: CQTheme.body,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
+                    const Text('N° 1', style: CQTheme.h1),
                     const Divider(),
                     TextInputWidget(
                       title: CriptoQRUIConstants.nome,
@@ -109,13 +94,13 @@ class Cadastrar extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: DropdownButton<String>(
-                            value: 'SKANDI 1',
+                            value: 'SKANDI AMAZONAS',
                             isExpanded: true,
                             icon: const Icon(
-                              Icons.arrow_downward_rounded,
+                              Icons.keyboard_arrow_down_rounded,
                               color: CQColors.iron100,
                             ),
-                            iconSize: 24,
+                            iconSize: 32,
                             alignment: Alignment.centerRight,
                             elevation: 2,
                             style: CQTheme.h2.copyWith(
@@ -123,9 +108,10 @@ class Cadastrar extends StatelessWidget {
                             ),
                             selectedItemBuilder: (BuildContext context) {
                               return <String>[
-                                'SKANDI 1',
-                                'SKANDI 2',
-                                'SKANDI 3'
+                                'SKANDI AMAZONAS',
+                                'SKANDI IGUAÇU',
+                                'SKANDI FLUMINENSE',
+                                'SKANDI URCA'
                               ].map<Widget>((String value) {
                                 return Container(
                                   alignment: Alignment.center,
@@ -146,8 +132,12 @@ class Cadastrar extends StatelessWidget {
                               height: 0,
                               color: CQColors.iron100,
                             ),
-                            items: <String>['SKANDI 1', 'SKANDI 2', 'SKANDI 3']
-                                .map<DropdownMenuItem<String>>((String value) {
+                            items: <String>[
+                              'SKANDI AMAZONAS',
+                              'SKANDI IGUAÇU',
+                              'SKANDI FLUMINENSE',
+                              'SKANDI URCA'
+                            ].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(
@@ -179,7 +169,7 @@ class Cadastrar extends StatelessWidget {
                               buildSwitcherItem(
                                   'Convés', value, switcherNotifier),
                               buildSwitcherItem(
-                                  'Praça', value, switcherNotifier),
+                                  'Praça de Máquinas', value, switcherNotifier),
                               buildSwitcherItem(
                                   'Casario', value, switcherNotifier),
                             ],
@@ -221,6 +211,66 @@ class Cadastrar extends StatelessWidget {
                           flex: 1,
                           child: CalendarPickerWidget(
                             title: 'NR-35',
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                    Row(
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: InkWell(
+                            onTap: () {
+                              print('visitante tapped');
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(8.0, 8.0, 0, 8.0),
+                              child: Row(
+                                children: [
+                                  const Expanded(
+                                    child: Text(
+                                      'Visitante',
+                                      style: CQTheme.h2,
+                                    ),
+                                  ),
+                                  Checkbox(
+                                    value: true,
+                                    onChanged: (value) {},
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 30.0,
+                          width: 1.0,
+                          color: CQColors.iron30,
+                          margin: const EdgeInsets.only(left: 12.0, right: 2.0),
+                        ),
+                        Flexible(
+                          flex: 1,
+                          child: InkWell(
+                            onTap: () {},
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  const Expanded(
+                                    child: Text(
+                                      'Admin',
+                                      style: CQTheme.h2,
+                                    ),
+                                  ),
+                                  Checkbox(
+                                    value: false,
+                                    onChanged: (value) {},
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ],
