@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
   int numero;
-  int identidade;
+  String identidade;
   String nome;
   String funcao;
   String email;
@@ -21,6 +21,7 @@ class User {
   Timestamp createdAt;
   Timestamp updatedAt;
   bool isBlocked;
+  String area;
 
   User({
     required this.numero,
@@ -43,7 +44,56 @@ class User {
     required this.createdAt,
     required this.updatedAt,
     required this.isBlocked,
+    required this.area,
   });
+
+  User copyWith({
+    int? numero,
+    String? identidade,
+    String? nome,
+    String? funcao,
+    String? email,
+    String? empresa,
+    Timestamp? ASO,
+    Timestamp? NR34,
+    Timestamp? NR10,
+    Timestamp? NR33,
+    Timestamp? NR35,
+    String? vessel,
+    Timestamp? dataInicial,
+    Timestamp? dataLimite,
+    bool? isVisitante,
+    bool? isAdmin,
+    List<String>? eventos,
+    Timestamp? createdAt,
+    Timestamp? updatedAt,
+    bool? isBlocked,
+    String? area,
+  }) {
+    return User(
+      numero: numero ?? this.numero,
+      identidade: identidade ?? this.identidade,
+      nome: nome ?? this.nome,
+      funcao: funcao ?? this.funcao,
+      email: email ?? this.email,
+      empresa: empresa ?? this.empresa,
+      ASO: ASO ?? this.ASO,
+      NR34: NR34 ?? this.NR34,
+      NR10: NR10 ?? this.NR10,
+      NR33: NR33 ?? this.NR33,
+      NR35: NR35 ?? this.NR35,
+      vessel: vessel ?? this.vessel,
+      dataInicial: dataInicial ?? this.dataInicial,
+      dataLimite: dataLimite ?? this.dataLimite,
+      isVisitante: isVisitante ?? this.isVisitante,
+      isAdmin: isAdmin ?? this.isAdmin,
+      eventos: eventos ?? this.eventos,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isBlocked: isBlocked ?? this.isBlocked,
+      area: area ?? this.area,
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
@@ -67,6 +117,7 @@ class User {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'isBlocked': isBlocked,
+      'area': area,
     };
   }
 
@@ -92,6 +143,7 @@ class User {
       createdAt: map['createdAt'],
       updatedAt: map['updatedAt'],
       isBlocked: map['isBlocked'],
+      area: map['area'],
     );
   }
 

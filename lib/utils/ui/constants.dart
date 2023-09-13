@@ -15,3 +15,15 @@ class _ScheduleConstants {
   final EdgeInsets iconPadding = const EdgeInsets.only(left: 16);
   final EdgeInsets titlePadding = const EdgeInsets.symmetric(horizontal: 16);
 }
+
+class AreasEnum {
+  static const String conves = 'Convés';
+  static const String pracaDeMaquinas = 'Praça de Máquinas';
+  static const String casario = 'Casario';
+
+  static const List<String> areas = [conves, pracaDeMaquinas, casario];
+
+  static String getArea(int index) {
+    return areas[index];
+  }
+}

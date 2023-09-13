@@ -9,15 +9,17 @@ class TextInputWidget extends StatelessWidget {
   final TextInputType keyboardType;
   final bool isRequired;
   final bool isID;
+  final void Function(String)? onChanged;
 
-  const TextInputWidget(
-      {Key? key,
-      this.title = '',
-      required this.controller,
-      this.keyboardType = TextInputType.text,
-      this.isRequired = false,
-      this.isID = false})
-      : super(key: key);
+  const TextInputWidget({
+    Key? key,
+    this.title = '',
+    required this.controller,
+    this.keyboardType = TextInputType.text,
+    this.isRequired = false,
+    this.isID = false,
+    this.onChanged,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +70,7 @@ class TextInputWidget extends StatelessWidget {
               cursorColor: CQColors.slate100,
               keyboardType: keyboardType,
               controller: controller,
+              onChanged: onChanged,
               inputFormatters: isID
                   ? [
                       IDInputFormatter(),

@@ -11,7 +11,7 @@ class Formatter {
         .join("/");
   }
 
-  static String identidade(int identidade) {
+  static String identidade(String identidade) {
     String identidadeString = identidade.toString();
     return "${identidadeString.substring(0, 2)}.${identidadeString.substring(2, 5)}.${identidadeString.substring(5, 8)}-${identidadeString.substring(8, 9)}";
   }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
 import 'package:flutter/material.dart';
@@ -5,13 +6,19 @@ import 'package:flutter/material.dart';
 class CalendarPickerWidget extends StatelessWidget {
   final String title;
   final bool isRequired;
+  final TextEditingController controller;
+  final void Function(Timestamp) onChanged;
+
   const CalendarPickerWidget(
-      {Key? key, required this.title, this.isRequired = false})
+      {Key? key,
+      required this.title,
+      this.isRequired = false,
+      required this.controller,
+      required this.onChanged})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController controller = TextEditingController();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -71,6 +78,8 @@ class CalendarPickerWidget extends StatelessWidget {
                   String formattedDate =
                       "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
                   controller.text = formattedDate;
+                  Timestamp timestamp = Timestamp.fromDate(selectedDate);
+                  onChanged(timestamp);
                 }
               },
             ),

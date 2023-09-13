@@ -7,9 +7,7 @@ import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
-import '../../models/user.dart';
 import '../pesquisar/pesquisar.dart';
 
 class Root extends StatefulWidget {
@@ -23,31 +21,6 @@ class _RootState extends State<Root> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
 
-  DateTime mockDate = DateTime.parse('2023-09-01 00:00:00-0300');
-
-  User mockUser = User(
-    ASO: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-    numero: 0,
-    empresa: "Googlemarine",
-    email: "lucas.vsc@gmail.com",
-    identidade: 255521528,
-    isAdmin: true,
-    isBlocked: false,
-    isVisitante: false,
-    eventos: ["OsUJsIU5JFWySiLShbkk"],
-    nome: "Lucas Valente",
-    NR10: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-    NR33: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-    NR34: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-    NR35: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-    funcao: "Engenheiro de Sotware",
-    vessel: "Teste Ship",
-    dataInicial: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-    dataLimite: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-    createdAt: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-    updatedAt: Timestamp.fromDate(DateTime.parse('2023-09-01 00:00:00-0300')),
-  );
-
   late List<Widget> _widgetOptions;
 
   static const List<String> _pageTitles = [
@@ -57,24 +30,12 @@ class _RootState extends State<Root> {
     'Cadastrar',
   ];
 
-  //fetch users from UserRepository
-  //set mockUser to first users
   @override
   void initState() {
     super.initState();
 
-    final key = encrypt.Key.fromUtf8("1234567890123456");
-    final iv = encrypt.IV.fromUtf8("1234567890123456");
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
-    final encrypted = encrypter.encrypt(mockUser.toDatabaseString(), iv: iv);
-    //final decrypted = encrypter.decrypt(encrypted, iv: iv);
-
-    //fetch first user from firebase and set mockUser
-
-    print(encrypted.base64);
-
     _widgetOptions = [
-      HomeWidget(user: mockUser, encrypted: encrypted.base64),
+      const Home(),
       const Pesquisar(),
       const QRViewExample(),
       Cadastrar(
