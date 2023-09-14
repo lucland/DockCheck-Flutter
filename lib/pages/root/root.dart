@@ -52,7 +52,7 @@ class _RootState extends State<Root> {
         label: 'Home',
         backgroundColor: CQColors.background),
     BottomNavigationBarItem(
-        icon: Icon(Icons.list_alt_rounded),
+        icon: Icon(Icons.search_rounded),
         label: 'Pesquisar',
         backgroundColor: CQColors.background),
     BottomNavigationBarItem(
@@ -90,7 +90,7 @@ class _RootState extends State<Root> {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 16.0, 0, 12.0),
               child: SvgPicture.asset(
-                'assets/imgs/googlemarine_logo.svg',
+                'assets/imgs/dof_logo.svg',
                 semanticsLabel: 'CriptoQRLogo',
                 height: 24.0,
                 width: 24.0,
@@ -124,48 +124,6 @@ class _RootState extends State<Root> {
         elevation: 0.0,
         scrolledUnderElevation: 4.0,
         surfaceTintColor: Colors.transparent,
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(
-                Icons.menu_rounded,
-                color: CQColors.iron100,
-              ),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.search_rounded,
-              color: CQColors.iron100,
-            ),
-            onPressed: () {
-              // Handle search button press
-            },
-          ),
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView.builder(
-          itemCount: _bottomNavBarItems.length,
-          itemBuilder: (context, index) {
-            return ListTile(
-              leading: _bottomNavBarItems[index].icon,
-              title: Text(_bottomNavBarItems[index].label!),
-              onTap: () {
-                _onItemTapped(index);
-                Navigator.of(context).pop();
-              },
-              selectedColor: CQColors.iron100,
-              style: ListTileStyle.drawer,
-              iconColor: CQColors.iron100,
-            );
-          },
-        ),
       ),
       body: PageView(
         controller: _pageController,

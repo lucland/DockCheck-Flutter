@@ -1,13 +1,11 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cripto_qr_googlemarine/blocs/home/home_cubit.dart';
 import 'package:cripto_qr_googlemarine/blocs/home/home_state.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
-import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -17,9 +15,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../models/user.dart';
 
-import 'package:esc_pos_utils/esc_pos_utils.dart';
-
 import '../../repositories/user_repository.dart';
+import '../../widgets/semi_circle_painter.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -30,7 +27,7 @@ class Home extends StatelessWidget {
       create: (context) => HomeCubit(UserRepository()),
       child: Container(
         color: CQColors.white,
-        child: HomeView(),
+        child: const HomeView(),
       ),
     );
   }
@@ -109,162 +106,498 @@ class HomeView extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else {
           User user = state.user!;
-          return SingleChildScrollView(
-            child: Container(
-              color: CQColors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+          return Container(
+            color: CQColors.background,
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    "Bem vindo(a) a bordo!",
+                    style: CQTheme.h3.copyWith(
+                      color: Colors.black,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                    ),
+                    child: Stack(
                       children: [
-                        Text(
-                          "Bem vindo(a) a bordo no ${user.vessel},",
-                          style: CQTheme.h3,
+                        Column(
+                          children: [
+                            TicketHeader(user: user),
+                            TicketBody(
+                              user: user,
+                              data: user.toDatabaseString(),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          user.nome,
-                          style: CQTheme.h1,
+                        Positioned(
+                          top: 48,
+                          left: -10,
+                          child: CustomPaint(
+                            size: const Size(20, 10),
+                            painter: CirclePainter(
+                              color: CQColors.background,
+                              direction: Direction.left,
+                            ),
+                          ),
                         ),
-                        Text(
-                          "Empresa: ${user.empresa} | N°${user.numero}",
-                          style: CQTheme.h3,
+                        Positioned(
+                          top: 48,
+                          right: -10,
+                          child: CustomPaint(
+                            size: const Size(20, 10),
+                            painter: CirclePainter(
+                              color: CQColors.background,
+                              direction: Direction.right,
+                            ),
+                          ),
                         ),
-                        Text(
-                          "Cadastrado dia ${user.createdAt.toDate().day}/${user.createdAt.toDate().month}/${user.createdAt.toDate().year}",
-                          style: CQTheme.h3,
+                        Positioned(
+                          bottom: 48,
+                          left: -10,
+                          child: CustomPaint(
+                            size: const Size(20, 10),
+                            painter: CirclePainter(
+                              color: CQColors.background,
+                              direction: Direction.right,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 48,
+                          right: -10,
+                          child: CustomPaint(
+                            size: const Size(20, 10),
+                            painter: CirclePainter(
+                              color: CQColors.background,
+                              direction: Direction.left,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Divider(),
-                  ),
-                  RepaintBoundary(
-                    key: globalKey,
-                    child: Card(
-                      color: Colors.white,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(16.0, 16, 0, 16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(user.nome,
-                                      style: CQTheme.h1.copyWith(
-                                        fontSize: 10,
-                                      )),
-                                  Text(
-                                    user.funcao,
-                                    style: CQTheme.h2.copyWith(
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                  Text(
-                                    user.empresa,
-                                    style: CQTheme.h3.copyWith(
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                  Text(
-                                    user.numero.toString(),
+                ),
+                /*  RepaintBoundary(
+                  key: globalKey,
+                  child: Card(
+                    color: Colors.white,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(16.0, 16, 0, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(user.nome,
                                     style: CQTheme.h1.copyWith(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  Text(
-                                    user.identidade,
-                                    style: CQTheme.subhead1.copyWith(
                                       fontSize: 10,
-                                    ),
+                                    )),
+                                Text(
+                                  user.funcao,
+                                  style: CQTheme.h2.copyWith(
+                                    fontSize: 10,
                                   ),
-                                ],
-                              ),
+                                ),
+                                Text(
+                                  user.empresa,
+                                  style: CQTheme.h3.copyWith(
+                                    fontSize: 10,
+                                  ),
+                                ),
+                                Text(
+                                  user.numero.toString(),
+                                  style: CQTheme.h1.copyWith(
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  user.identidade,
+                                  style: CQTheme.subhead1.copyWith(
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Flexible(
-                            flex: 2,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
-                              child: QrImageView(
-                                data: state.user!.toDatabaseString(),
-                                version: QrVersions.auto,
-                                size: 300.0,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  //show generated png image from convertWidgetToImage function
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        convertWidgetToImage();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'Imprimir QR Code',
-                          style: CQTheme.h2.copyWith(
-                              color: CQColors.white,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'ProximaNova'),
                         ),
-                      ),
+                        Flexible(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
+                            child: QrImageView(
+                              data: state.user!.toDatabaseString(),
+                              version: QrVersions.auto,
+                              size: 300.0,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  /*QrImageView(
-                    data: state.user!.toDatabaseString(),
-                    version: QrVersions.auto,
-                    size: 600.0,
-                  ),*/
-                  ListTile(
-                    title: const Text('Email'),
-                    subtitle: Text(user.email),
-                  ),
-                  ListTile(
-                    title: const Text('Identidade'),
-                    subtitle: Text(user.identidade),
-                  ),
-                  ListTile(
-                    title: const Text('Embarcação'),
-                    subtitle: Text(user.vessel),
-                  ),
-                  ListTile(
-                    title: const Text('ASO'),
-                    subtitle: Text(Formatter.fromTimestamp(user.ASO)),
-                  ),
-                  ListTile(
-                    title: const Text('NR10'),
-                    subtitle: Text(Formatter.fromTimestamp(user.NR10)),
-                  ),
-                  ListTile(
-                    title: const Text('Email'),
-                    subtitle: Text(user.email),
-                  ),
-                ],
-              ),
+                ),*/
+                const Spacer(),
+                PrintButton(
+                  onPressed: convertWidgetToImage,
+                ),
+              ],
             ),
           );
         }
       },
+    );
+  }
+}
+
+class PrintButton extends StatelessWidget {
+  const PrintButton({
+    super.key,
+    required this.onPressed,
+  });
+
+  final void Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: InkWell(
+        onTap: onPressed,
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            border: Border.all(color: CQColors.iron100),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          padding: const EdgeInsets.all(8.0),
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(
+                Icons.upload_file,
+                color: CQColors.iron100,
+                size: 24,
+              ),
+              Text('Imprimir QR Code',
+                  overflow: TextOverflow.ellipsis, style: CQTheme.h3),
+              SizedBox(
+                width: 24,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class TicketBody extends StatelessWidget {
+  const TicketBody({
+    super.key,
+    required this.user,
+    required this.data,
+  });
+
+  final User user;
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(10.0),
+          bottomRight: Radius.circular(10.0),
+        ),
+        color: CQColors.white,
+      ),
+      width: double.infinity,
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TitleValueWidget(title: 'Embarcação', value: user.vessel),
+                const SizedBox(height: 16),
+                TitleValueWidget(title: 'Função', value: user.funcao),
+                const SizedBox(height: 16),
+                TitleValueWidget(title: 'Empresa', value: user.empresa),
+              ],
+            ),
+          ),
+          const Divider(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: EstadiaWidget(user: user),
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: QrCodeWidget(
+                  data: data,
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+          TicketFooter(user: user),
+        ],
+      ),
+    );
+  }
+}
+
+class TicketHeader extends StatelessWidget {
+  const TicketHeader({
+    super.key,
+    required this.user,
+  });
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10.0),
+          topRight: Radius.circular(10.0),
+        ),
+        color: CQColors.iron100,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 16, 16, 16),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              user.nome,
+              style: CQTheme.h3.copyWith(
+                color: Colors.white,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TicketFooter extends StatelessWidget {
+  const TicketFooter({
+    super.key,
+    required this.user,
+  });
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(10.0),
+          bottomRight: Radius.circular(10.0),
+        ),
+        color: CQColors.white,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.info_outline, color: CQColors.slate100, size: 14),
+            const SizedBox(width: 8),
+            Text(
+              'Atualizado em: ${Formatter.formatDateTime(user.updatedAt.toDate())}',
+              style: CQTheme.body.copyWith(
+                color: CQColors.slate100,
+                fontSize: 14,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TitleValueWidget extends StatelessWidget {
+  const TitleValueWidget({
+    super.key,
+    required this.title,
+    required this.value,
+  });
+
+  final String title;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title.toUpperCase(),
+          style: CQTheme.body.copyWith(
+            color: CQColors.slate100,
+            fontSize: 12,
+          ),
+        ),
+        Text(
+          value,
+          style: CQTheme.h3.copyWith(
+            color: Colors.black,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class QrCodeWidget extends StatelessWidget {
+  final String data;
+  const QrCodeWidget({
+    super.key,
+    required this.data,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: QrImageView(
+            data: data,
+            version: QrVersions.auto,
+          ),
+        ),
+        RotatedBox(
+          quarterTurns: 1,
+          child: Text(
+            'Powered by GoogleMarine',
+            style: CQTheme.body.copyWith(
+              color: CQColors.slate100,
+              fontSize: 10,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class EstadiaWidget extends StatelessWidget {
+  const EstadiaWidget({
+    super.key,
+    required this.user,
+  });
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'ESTADIA',
+              style: CQTheme.body.copyWith(
+                color: CQColors.slate100,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'DE: ',
+                    style: CQTheme.body.copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    Formatter.formatDateTime(user.dataInicial.toDate()),
+                    style: CQTheme.body.copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'ATÉ: ',
+                  style: CQTheme.body.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                ),
+                Text(
+                  Formatter.formatDateTime(user.dataLimite.toDate()),
+                  style: CQTheme.body.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Text(user.numero.toString(),
+              style: CQTheme.h1.copyWith(fontSize: 38, color: Colors.black)),
+        ),
+      ],
     );
   }
 }
