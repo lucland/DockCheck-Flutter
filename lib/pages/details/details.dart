@@ -136,6 +136,7 @@ class Details extends StatelessWidget {
                               title: 'ASO',
                               value:
                                   Formatter.formatDateTime(user.ASO.toDate()),
+                              color: CQColors.iron100,
                             ),
                             const SizedBox(height: 8),
                             Row(
@@ -145,11 +146,13 @@ class Details extends StatelessWidget {
                                   title: 'NR34',
                                   value: Formatter.formatDateTime(
                                       user.NR34.toDate()),
+                                  color: CQColors.iron100,
                                 ),
                                 TitleValueWidget(
                                   title: 'NR10',
                                   value: Formatter.formatDateTime(
                                       user.NR10.toDate()),
+                                  color: CQColors.iron100,
                                 ),
                               ],
                             ),
@@ -167,6 +170,7 @@ class Details extends StatelessWidget {
                                   title: 'NR35',
                                   value: Formatter.formatDateTime(
                                       user.NR35.toDate()),
+                                  color: CQColors.iron100,
                                 ),
                               ],
                             ),
@@ -184,7 +188,7 @@ class Details extends StatelessWidget {
                                 const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 2.0),
                                   child: Divider(
-                                    color: CQColors.slate100,
+                                    color: CQColors.iron100,
                                     thickness: 0.3,
                                   ),
                                 ),

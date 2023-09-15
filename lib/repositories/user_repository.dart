@@ -56,13 +56,29 @@ class UserRepository {
   Future<List<Map<String, dynamic>>> searchUsers(String query) async {
     try {
       SimpleLogger.info("Searching users");
-      QuerySnapshot querySnapshot = await _usersCollection
-          .where('nome', isGreaterThanOrEqualTo: query)
-          .get();
 
-      return querySnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
+      List<Map<String, dynamic>> results = [];
+
+      if (RegExp(r'^\d+$').hasMatch(query)) {
+        // If the query contains only numbers, search by 'identidade'
+        QuerySnapshot querySnapshotIdentidade =
+            await _usersCollection.where('identidade', isEqualTo: query).get();
+        results = querySnapshotIdentidade.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
+      } else {
+        // Otherwise, search by 'nome'
+        QuerySnapshot querySnapshotNome = await _usersCollection
+            .where('nome', isGreaterThanOrEqualTo: query)
+            .get();
+        results = querySnapshotNome.docs
+            .map((doc) => doc.data() as Map<String, dynamic>)
+            .toList();
+      }
+
+      print(results);
+
+      return results;
     } catch (error) {
       SimpleLogger.warning("Failed to search users: $error");
       throw Exception("Failed to search users");

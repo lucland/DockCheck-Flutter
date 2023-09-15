@@ -126,6 +126,7 @@ class _RootState extends State<Root> {
         surfaceTintColor: Colors.transparent,
       ),
       body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
         controller: _pageController,
         children: _widgetOptions,
         onPageChanged: (index) {

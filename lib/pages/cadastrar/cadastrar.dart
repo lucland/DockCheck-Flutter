@@ -168,7 +168,7 @@ class CadastrarView extends StatelessWidget {
                         const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text(
-                            'Local',
+                            'Embarcação',
                             style: CQTheme.h2,
                           ),
                         ),

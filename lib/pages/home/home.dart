@@ -260,7 +260,10 @@ class HomeView extends StatelessWidget {
                 ),*/
                 const Spacer(),
                 PrintButtonWidget(
-                  onPressed: convertWidgetToImage,
+                  onPressed: () {
+                    //push to bluetooth page
+                    Navigator.pushNamed(context, '/bluetooth');
+                  },
                 ),
               ],
             ),

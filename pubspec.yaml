@@ -51,6 +51,8 @@ dependencies:
   esc_pos_bluetooth: ^0.4.1
   esc_pos_utils: ^1.1.0
   image: ^3.0.12
+  widgets_to_image: ^0.0.2
+  blue_thermal_printer: ^1.2.3
 
 dev_dependencies:
   flutter_test:
