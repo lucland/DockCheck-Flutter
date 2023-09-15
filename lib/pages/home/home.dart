@@ -16,7 +16,9 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../models/user.dart';
 
 import '../../repositories/user_repository.dart';
+import '../../widgets/print_button_widget.dart';
 import '../../widgets/semi_circle_painter.dart';
+import '../../widgets/title_value_widget.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -257,7 +259,7 @@ class HomeView extends StatelessWidget {
                   ),
                 ),*/
                 const Spacer(),
-                PrintButton(
+                PrintButtonWidget(
                   onPressed: convertWidgetToImage,
                 ),
               ],
@@ -265,48 +267,6 @@ class HomeView extends StatelessWidget {
           );
         }
       },
-    );
-  }
-}
-
-class PrintButton extends StatelessWidget {
-  const PrintButton({
-    super.key,
-    required this.onPressed,
-  });
-
-  final void Function()? onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: InkWell(
-        onTap: onPressed,
-        child: Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            border: Border.all(color: CQColors.iron100),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          padding: const EdgeInsets.all(8.0),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Icon(
-                Icons.upload_file,
-                color: CQColors.iron100,
-                size: 24,
-              ),
-              Text('Imprimir QR Code',
-                  overflow: TextOverflow.ellipsis, style: CQTheme.h3),
-              SizedBox(
-                width: 24,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
@@ -450,40 +410,6 @@ class TicketFooter extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class TitleValueWidget extends StatelessWidget {
-  const TitleValueWidget({
-    super.key,
-    required this.title,
-    required this.value,
-  });
-
-  final String title;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title.toUpperCase(),
-          style: CQTheme.body.copyWith(
-            color: CQColors.slate100,
-            fontSize: 12,
-          ),
-        ),
-        Text(
-          value,
-          style: CQTheme.h3.copyWith(
-            color: Colors.black,
-            fontSize: 14,
-          ),
-        ),
-      ],
     );
   }
 }
