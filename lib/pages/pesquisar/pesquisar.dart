@@ -17,9 +17,12 @@ class Pesquisar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UserCubit(UserRepository()),
-      child: Container(
-        color: CQColors.white,
-        child: const UserListView(),
+      child: DefaultTabController(
+        length: 2,
+        child: Container(
+          color: CQColors.white,
+          child: const UserListView(),
+        ),
       ),
     );
   }
@@ -78,13 +81,34 @@ class UserListView extends StatelessWidget {
                   },
                 ),
               ),
+              const TabBar(
+                tabs: [
+                  Tab(text: CQStrings.todos),
+                  Tab(text: CQStrings.aBordo),
+                ],
+              ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: state.users.length,
-                  itemBuilder: (context, index) {
-                    User user = state.users[index];
-                    return _buildUserListTile(context, user);
-                  },
+                child: TabBarView(
+                  children: [
+                    ListView.builder(
+                      itemCount: state.users.length,
+                      itemBuilder: (context, index) {
+                        User user = state.users[index];
+                        return _buildUserListTile(context, user);
+                      },
+                    ),
+                    ListView.builder(
+                      itemCount: state.users.length,
+                      itemBuilder: (context, index) {
+                        User user = state.users[index];
+                        if (user.isOnboarded) {
+                          return _buildUserListTile(context, user);
+                        } else {
+                          return Container(); // Return an empty container if isOnboarded is false
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -111,6 +135,20 @@ class UserListView extends StatelessWidget {
             const Icon(Icons.chevron_right_rounded, color: CQColors.slate100),
         title: Text(user.nome, style: CQTheme.h2),
         titleAlignment: ListTileTitleAlignment.center,
+        dense: true,
+        visualDensity: VisualDensity.compact,
+        horizontalTitleGap: 0,
+        leading: user.isOnboarded
+            ? const Icon(
+                Icons.circle,
+                color: CQColors.success100,
+                size: 10,
+              )
+            : const Icon(
+                Icons.circle,
+                color: CQColors.danger100,
+                size: 10,
+              ),
         subtitle: Text(user.identidade),
         onTap: () {
           Navigator.push(
