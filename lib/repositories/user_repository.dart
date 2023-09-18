@@ -5,6 +5,8 @@ import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
 class UserRepository {
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('USER');
+  final CollectionReference _eventsCollection =
+      FirebaseFirestore.instance.collection('EVENTO');
 
   Future<void> addUser(Map<String, dynamic> userMap) async {
     try {
@@ -16,6 +18,36 @@ class UserRepository {
     } on Exception catch (error) {
       SimpleLogger.warning("Failed to add user: $error");
       throw Exception("Failed to add user");
+    }
+  }
+
+  Future<void> addEvent(Map<String, dynamic> eventMap) async {
+    try {
+      await _eventsCollection.add(eventMap);
+      SimpleLogger.fine("Event Added: ${eventMap['acao']}");
+    } on FirebaseException catch (error) {
+      SimpleLogger.warning("Failed to add event: $error");
+      throw Exception("Failed to add event");
+    } on Exception catch (error) {
+      SimpleLogger.warning("Failed to add event: $error");
+      throw Exception("Failed to add event");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchEvents(String identidade) async {
+    try {
+      SimpleLogger.info("Fetching events");
+      QuerySnapshot querySnapshot =
+          await _eventsCollection.where('user', isEqualTo: identidade).get();
+      return querySnapshot.docs
+          .map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+    } on FirebaseException catch (error) {
+      SimpleLogger.warning("Failed to fetch events: $error");
+      throw Exception("Failed to fetch events");
+    } catch (error) {
+      SimpleLogger.warning("Failed to fetch events: $error");
+      throw Exception("Failed to fetch events");
     }
   }
 

@@ -26,7 +26,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               NR10: Timestamp.now(),
               NR33: Timestamp.now(),
               NR35: Timestamp.now(),
-              vessel: '',
+              vessel: 'SKANDI AMAZONAS',
               dataInicial: Timestamp.now(),
               dataLimite: Timestamp.now(),
               isVisitante: false,
@@ -36,14 +36,15 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               updatedAt: Timestamp.now(),
               isBlocked: false,
               area: AreasEnum.casario,
+              reason: "",
+              isOnboarded: false,
+              isSupervisor: false,
             ),
             evento: Evento(
               acao: 'Usuário cadastrado',
-              timestamp: Timestamp.now(),
               user: '',
-              vessel: '',
+              vessel: 'SKANDI AMAZONAS',
               createdAt: Timestamp.now(),
-              updatedAt: Timestamp.now(),
             ),
           ),
         );
@@ -64,9 +65,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   void updateIdentidade(String identidade) {
     final user = state.user.copyWith(identidade: identidade);
+    final evento = state.evento.copyWith(user: identidade);
     checkCadastroHabilitado();
-    emit(state.copyWith(
-        user: user, evento: state.evento.copyWith(user: identidade)));
+    emit(state.copyWith(user: user, evento: evento));
   }
 
   void updateNome(String nome) {
@@ -174,6 +175,19 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     emit(state.copyWith(user: user));
   }
 
+  void createEvent() async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      await userRepository.addEvent(state.evento.toMap());
+      createUser();
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
   void createUser() async {
     emit(state.copyWith(isLoading: true));
     try {
@@ -216,7 +230,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       NR10: Timestamp.now(),
       NR33: Timestamp.now(),
       NR35: Timestamp.now(),
-      vessel: '',
+      vessel: 'SKANDI AMAZONAS',
       dataInicial: Timestamp.now(),
       dataLimite: Timestamp.now(),
       isVisitante: false,
@@ -226,18 +240,21 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       updatedAt: Timestamp.now(),
       isBlocked: false,
       area: AreasEnum.casario,
+      reason: "",
+      isOnboarded: false,
+      isSupervisor: false,
     );
     emit(state.copyWith(
-        user: user,
-        isLoading: false,
-        evento: Evento(
-            acao: 'Usuário cadastrado.',
-            timestamp: Timestamp.now(),
-            user: '',
-            vessel: '',
-            createdAt: Timestamp.now(),
-            updatedAt: Timestamp.now()),
-        userCreated: false,
-        cadastroHabilitado: false));
+      user: user,
+      isLoading: false,
+      evento: Evento(
+        acao: 'Usuário cadastrado.',
+        user: '',
+        vessel: '',
+        createdAt: Timestamp.now(),
+      ),
+      userCreated: false,
+      cadastroHabilitado: false,
+    ));
   }
 }
