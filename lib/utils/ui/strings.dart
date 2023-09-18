@@ -45,4 +45,7 @@ class CQStrings {
   static const String eventos = 'EVENTOS';
   static const String checkOut = 'CHECK-OUT';
   static const String usuarioCadastrado = 'USUÁRIO CADASTRADO.';
+  static const String todos = 'Todos';
+  static const String aBordo = 'À bordo';
+  static const String checkIn = 'CHECK-IN';
 }
