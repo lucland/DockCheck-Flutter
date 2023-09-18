@@ -100,6 +100,29 @@ class DetailsView extends StatelessWidget {
                             ],
                           ),
                         ),
+                        if (user.isOnboarded)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16),
+                            color: CQColors.success20,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.check_circle_rounded,
+                                  color: CQColors.success120,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(CQStrings.aBordo,
+                                    style: CQTheme.h1.copyWith(
+                                        color: CQColors.success120,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16),
+                                    overflow: TextOverflow.ellipsis),
+                              ],
+                            ),
+                          ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 16),
@@ -218,7 +241,24 @@ class DetailsView extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 24),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            color: CQColors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -378,8 +418,9 @@ class DetailsView extends StatelessWidget {
                         cubit.createCheckoutEvento(
                             user.identidade, user.vessel);
                       },
-                      isDisabled: state.eventos[0].acao == CQStrings.checkOut ||
-                          user.isOnboarded == true,
+                      isDisabled:
+                          !(state.eventos[0].acao == CQStrings.checkOut ||
+                              user.isOnboarded == true),
                     ),
                   ],
                 ),
