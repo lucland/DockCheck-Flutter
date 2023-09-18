@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 /// Write here every color you need use in the app to get them centralize
-class CriptoQRColors {
-  CriptoQRColors._();
+class CQColors {
+  CQColors._();
 
   static const Color lightGrey = Color.fromRGBO(229, 234, 237, 1.0);
   static const Color purpleBlue = Color.fromRGBO(99, 102, 241, 1);

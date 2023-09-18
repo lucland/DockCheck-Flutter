@@ -25,7 +25,7 @@ dependencies:
   lottie: ^2.6.0
   meta: ^1.9.1
   provider: ^6.0.5
-  rxdart: ^0.27.7
+  rxdart: ^0.26.0
   uuid: ^4.0.0
   web_socket_channel: ^2.4.0
   url_launcher: ^6.1.14
@@ -43,6 +43,16 @@ dependencies:
   firebase_remote_config: ^4.2.5
   cupertino_icons: ^1.0.2
   qr_code_scanner: ^1.0.1
+  qr_flutter: ^4.1.0
+  encrypt: ^5.0.1
+  image_gallery_saver: '^2.0.3'
+  cloud_firestore: ^4.9.1
+  esc_pos_printer: ^4.1.0
+  esc_pos_bluetooth: ^0.4.1
+  esc_pos_utils: ^1.1.0
+  image: ^3.0.12
+  widgets_to_image: ^0.0.2
+  blue_thermal_printer: ^1.2.3
 
 dev_dependencies:
   flutter_test:
