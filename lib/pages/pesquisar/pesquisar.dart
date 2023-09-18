@@ -9,6 +9,7 @@ import '../../blocs/user/user_cubit.dart';
 import '../../blocs/user/user_state.dart';
 import '../../models/user.dart';
 import '../../repositories/user_repository.dart';
+import '../../utils/ui/strings.dart';
 
 class Pesquisar extends StatelessWidget {
   const Pesquisar({super.key});
@@ -47,7 +48,7 @@ class UserListView extends StatelessWidget {
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 11.5),
-                    hintText: 'Pesquisar',
+                    hintText: CQStrings.pesquisar,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
@@ -90,7 +91,7 @@ class UserListView extends StatelessWidget {
             ],
           );
         } else {
-          return const Center(child: Text('No users found.'));
+          return const Center(child: Text(CQStrings.nenhumUsuarioEncontrado));
         }
       },
     );

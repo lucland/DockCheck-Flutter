@@ -60,14 +60,12 @@ class UserRepository {
       List<Map<String, dynamic>> results = [];
 
       if (RegExp(r'^\d+$').hasMatch(query)) {
-        // If the query contains only numbers, search by 'identidade'
         QuerySnapshot querySnapshotIdentidade =
             await _usersCollection.where('identidade', isEqualTo: query).get();
         results = querySnapshotIdentidade.docs
             .map((doc) => doc.data() as Map<String, dynamic>)
             .toList();
       } else {
-        // Otherwise, search by 'nome'
         QuerySnapshot querySnapshotNome = await _usersCollection
             .where('nome', isGreaterThanOrEqualTo: query)
             .get();
