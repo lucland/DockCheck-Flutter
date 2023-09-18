@@ -454,7 +454,7 @@ class CadastrarView extends StatelessWidget {
                     flex: 1,
                     child: InkWell(
                       onTap: () {
-                        state.cadastroHabilitado ? cubit.createUser() : null;
+                        state.cadastroHabilitado ? cubit.createEvent() : null;
                       },
                       child: Container(
                         alignment: Alignment.center,
