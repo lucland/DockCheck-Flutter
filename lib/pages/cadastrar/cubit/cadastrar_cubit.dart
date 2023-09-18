@@ -41,7 +41,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               isSupervisor: false,
             ),
             evento: Evento(
-              acao: 'Usuário cadastrado',
+              acao: CQStrings.usuarioCadastrado,
               user: '',
               vessel: 'SKANDI AMAZONAS',
               createdAt: Timestamp.now(),
@@ -191,7 +191,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void createUser() async {
     emit(state.copyWith(isLoading: true));
     try {
-      await userRepository.addUser(state.user.toMap());
+      await userRepository.addUser(state.user.toMap(), state.user.identidade);
       clearFields();
       emit(state.copyWith(isLoading: false, userCreated: true));
     } catch (e) {
@@ -248,7 +248,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       user: user,
       isLoading: false,
       evento: Evento(
-        acao: 'Usuário cadastrado.',
+        acao: CQStrings.usuarioCadastrado,
         user: '',
         vessel: '',
         createdAt: Timestamp.now(),

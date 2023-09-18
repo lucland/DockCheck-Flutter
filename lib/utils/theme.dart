@@ -17,7 +17,7 @@ class CQTheme {
     colorScheme: const ColorScheme(
         brightness: Brightness.light,
         primary: CQColors.iron100,
-        onPrimary: CQColors.iron100,
+        onPrimary: CQColors.white,
         secondary: CQColors.slate100,
         onSecondary: CQColors.white,
         error: CQColors.danger100,

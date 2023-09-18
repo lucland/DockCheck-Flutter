@@ -8,9 +8,9 @@ class UserRepository {
   final CollectionReference _eventsCollection =
       FirebaseFirestore.instance.collection('EVENTO');
 
-  Future<void> addUser(Map<String, dynamic> userMap) async {
+  Future<void> addUser(Map<String, dynamic> userMap, String identidade) async {
     try {
-      await _usersCollection.add(userMap);
+      await _usersCollection.doc(identidade).set(userMap);
       SimpleLogger.fine("User Added: ${userMap['name']}");
     } on FirebaseException catch (error) {
       SimpleLogger.warning("Failed to add user: $error");
@@ -124,9 +124,7 @@ class UserRepository {
       print(querySnapshot.docs[0].data());
       if (querySnapshot.docs.isNotEmpty) {
         var data = querySnapshot.docs[0].data() as Map<String, dynamic>;
-        return data != null && data['numero'] != null
-            ? data['numero'] as int
-            : 9999;
+        return data['numero'] != null ? data['numero'] as int : 9999;
       } else {
         return 9999;
       }

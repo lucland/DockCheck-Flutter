@@ -80,7 +80,7 @@ class HomeView extends StatelessWidget {
               ),
             );
 
-            final Image pngImage = Image.memory(pngBytes);
+            // final Image pngImage = Image.memory(pngBytes);
 
             printPngImage(pngBytes);
 
