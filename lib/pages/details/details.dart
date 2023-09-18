@@ -1,5 +1,5 @@
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
+import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
 import 'package:cripto_qr_googlemarine/widgets/print_button_widget.dart';
 import 'package:cripto_qr_googlemarine/widgets/title_value_widget.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,7 @@ class Details extends StatelessWidget {
         ],
         backgroundColor: CQColors.background,
         elevation: 0,
-        title: const Text('Informações',
+        title: const Text(CQStrings.informacoes,
             style: CQTheme.h2, overflow: TextOverflow.ellipsis),
       ),
       body: Column(
@@ -67,39 +67,39 @@ class Details extends StatelessWidget {
                       children: [
                         const SizedBox(height: 8),
                         TitleValueWidget(
-                          title: 'Função',
+                          title: CQStrings.funcao,
                           value: user.funcao,
                           color: CQColors.iron100,
                         ),
                         const SizedBox(height: 12),
                         TitleValueWidget(
-                          title: 'Empresa',
+                          title: CQStrings.empresaTrip,
                           value: user.empresa,
                           color: CQColors.iron100,
                         ),
                         const SizedBox(height: 12),
                         TitleValueWidget(
-                          title: 'Identidade',
+                          title: CQStrings.identidade,
                           value: Formatter.identidade(user.identidade),
                           color: CQColors.iron100,
                         ),
                         if (user.email != '') ...[
                           const SizedBox(height: 12),
                           TitleValueWidget(
-                            title: 'Email',
+                            title: CQStrings.email,
                             value: user.email,
                             color: CQColors.iron100,
                           ),
                         ],
                         const SizedBox(height: 12),
                         TitleValueWidget(
-                          title: 'Embarcação',
+                          title: CQStrings.embarcacao,
                           value: user.vessel,
                           color: CQColors.iron100,
                         ),
                         const SizedBox(height: 12),
                         TitleValueWidget(
-                          title: 'Área',
+                          title: CQStrings.area,
                           value: user.area,
                           color: CQColors.iron100,
                         ),
@@ -119,7 +119,7 @@ class Details extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'VALIDADES',
+                              CQStrings.validades,
                               style: CQTheme.h1.copyWith(
                                 color: Colors.black,
                                 fontSize: 16,
@@ -133,7 +133,7 @@ class Details extends StatelessWidget {
                               ),
                             ),
                             TitleValueWidget(
-                              title: 'ASO',
+                              title: CQStrings.aso,
                               value:
                                   Formatter.formatDateTime(user.ASO.toDate()),
                               color: CQColors.iron100,
@@ -143,13 +143,13 @@ class Details extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TitleValueWidget(
-                                  title: 'NR34',
+                                  title: CQStrings.nr34,
                                   value: Formatter.formatDateTime(
                                       user.NR34.toDate()),
                                   color: CQColors.iron100,
                                 ),
                                 TitleValueWidget(
-                                  title: 'NR10',
+                                  title: CQStrings.nr10,
                                   value: Formatter.formatDateTime(
                                       user.NR10.toDate()),
                                   color: CQColors.iron100,
@@ -161,13 +161,13 @@ class Details extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 TitleValueWidget(
-                                  title: 'NR33',
+                                  title: CQStrings.nr33,
                                   value: Formatter.formatDateTime(
                                       user.NR33.toDate()),
                                   color: CQColors.iron100,
                                 ),
                                 TitleValueWidget(
-                                  title: 'NR35',
+                                  title: CQStrings.nr35,
                                   value: Formatter.formatDateTime(
                                       user.NR35.toDate()),
                                   color: CQColors.iron100,
@@ -179,7 +179,7 @@ class Details extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'ESTADIA',
+                                  CQStrings.estadia,
                                   style: CQTheme.h1.copyWith(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -197,7 +197,7 @@ class Details extends StatelessWidget {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'DE: ',
+                                      CQStrings.de,
                                       style: CQTheme.body.copyWith(
                                         color: CQColors.iron100,
                                         fontWeight: FontWeight.w600,
@@ -221,7 +221,7 @@ class Details extends StatelessWidget {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'ATÉ: ',
+                                      CQStrings.ate,
                                       style: CQTheme.body.copyWith(
                                         color: CQColors.iron100,
                                         fontWeight: FontWeight.w600,

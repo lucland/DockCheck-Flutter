@@ -109,16 +109,16 @@ class _BluetoothState extends State<Bluetooth> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
-                Text(
+                const Text(
                   'Device:',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 30,
                 ),
                 Expanded(
@@ -131,7 +131,7 @@ class _BluetoothState extends State<Bluetooth> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Row(
@@ -143,12 +143,12 @@ class _BluetoothState extends State<Bluetooth> {
                   onPressed: () {
                     initPlatformState();
                   },
-                  child: Text(
+                  child: const Text(
                     'Refresh',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 ElevatedButton(
@@ -157,7 +157,7 @@ class _BluetoothState extends State<Bluetooth> {
                   onPressed: _connected ? _disconnect : _connect,
                   child: Text(
                     _connected ? 'Disconnect' : 'Connect',
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -195,8 +195,8 @@ class _BluetoothState extends State<Bluetooth> {
                     }
                   });
                 },
-                child:
-                    Text('PRINT TEST', style: TextStyle(color: Colors.white)),
+                child: const Text('PRINT TEST',
+                    style: TextStyle(color: Colors.white)),
               ),
             ),
           ],
@@ -208,7 +208,7 @@ class _BluetoothState extends State<Bluetooth> {
   List<DropdownMenuItem<BluetoothDevice>> _getDeviceItems() {
     List<DropdownMenuItem<BluetoothDevice>> items = [];
     if (_devices.isEmpty) {
-      items.add(DropdownMenuItem(
+      items.add(const DropdownMenuItem(
         child: Text('NONE'),
       ));
     } else {

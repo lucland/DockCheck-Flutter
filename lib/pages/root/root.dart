@@ -4,6 +4,7 @@ import 'package:cripto_qr_googlemarine/pages/home/home.dart';
 import 'package:cripto_qr_googlemarine/pages/scan/scan.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
+import 'package:cripto_qr_googlemarine/utils/ui/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,10 +25,10 @@ class _RootState extends State<Root> {
   late List<Widget> _widgetOptions;
 
   static const List<String> _pageTitles = [
-    'Home',
-    'Pesquisar',
-    'Scan',
-    'Cadastrar',
+    CQStrings.home,
+    CQStrings.pesquisar,
+    CQStrings.scan,
+    CQStrings.cadastrar,
   ];
 
   @override

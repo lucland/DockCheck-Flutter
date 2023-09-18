@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../utils/theme.dart';
 import '../utils/ui/colors.dart';
+import '../utils/ui/strings.dart';
 
 class PrintButtonWidget extends StatelessWidget {
   const PrintButtonWidget({
@@ -32,7 +33,7 @@ class PrintButtonWidget extends StatelessWidget {
                 color: CQColors.iron100,
                 size: 24,
               ),
-              Text('Imprimir QR Code',
+              Text(CQStrings.imprimirQRCode,
                   overflow: TextOverflow.ellipsis, style: CQTheme.h3),
               SizedBox(
                 width: 24,
