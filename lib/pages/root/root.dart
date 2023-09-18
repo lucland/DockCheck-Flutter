@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cripto_qr_googlemarine/pages/cadastrar/cadastrar.dart';
 import 'package:cripto_qr_googlemarine/pages/home/home.dart';
 import 'package:cripto_qr_googlemarine/pages/scan/scan.dart';

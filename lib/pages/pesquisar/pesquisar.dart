@@ -1,5 +1,4 @@
 import 'package:cripto_qr_googlemarine/pages/details/details.dart';
-import 'package:cripto_qr_googlemarine/pages/home/home.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:flutter/material.dart';

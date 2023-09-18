@@ -1,8 +1,6 @@
 import 'package:cripto_qr_googlemarine/repositories/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../models/user.dart';
 import 'home_state.dart';

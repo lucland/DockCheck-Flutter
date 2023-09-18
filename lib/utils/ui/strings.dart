@@ -42,4 +42,7 @@ class CQStrings {
   static const String scan = 'Scan';
   static const String cadastrar = 'Cadastrar';
   static const String imprimirQRCode = 'Imprimir QR Code';
+  static const String eventos = 'EVENTOS';
+  static const String checkOut = 'CHECK-OUT';
+  static const String usuarioCadastrado = 'USUÁRIO CADASTRADO.';
 }
