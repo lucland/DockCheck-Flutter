@@ -16,6 +16,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import '../../models/user.dart';
 
 import '../../repositories/user_repository.dart';
+import '../../utils/ui/strings.dart';
 import '../../widgets/print_button_widget.dart';
 import '../../widgets/semi_circle_painter.dart';
 import '../../widgets/title_value_widget.dart';
@@ -79,7 +80,7 @@ class HomeView extends StatelessWidget {
               ),
             );
 
-            final Image pngImage = Image.memory(pngBytes);
+            // final Image pngImage = Image.memory(pngBytes);
 
             printPngImage(pngBytes);
 
@@ -89,7 +90,7 @@ class HomeView extends StatelessWidget {
             //return snackbar
             ScaffoldMessenger.of(globalKey.currentContext!).showSnackBar(
               SnackBar(
-                content: Text('QR Code salvo na galeria',
+                content: Text(CQStrings.qrCodeSalvoNaGaleria,
                     style: CQTheme.body.copyWith(color: CQColors.white)),
                 backgroundColor: CQColors.success100,
               ),
@@ -118,7 +119,7 @@ class HomeView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    "Bem vindo(a) a bordo!",
+                    CQStrings.benVindoABordo,
                     style: CQTheme.h3.copyWith(
                       color: Colors.black,
                       fontSize: 24,
@@ -305,11 +306,12 @@ class TicketBody extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TitleValueWidget(title: 'Embarcação', value: user.vessel),
+                TitleValueWidget(
+                    title: CQStrings.embarcacao, value: user.vessel),
                 const SizedBox(height: 16),
-                TitleValueWidget(title: 'Função', value: user.funcao),
+                TitleValueWidget(title: CQStrings.funcao, value: user.funcao),
                 const SizedBox(height: 16),
-                TitleValueWidget(title: 'Empresa', value: user.empresa),
+                TitleValueWidget(title: CQStrings.empresa, value: user.empresa),
               ],
             ),
           ),
@@ -403,7 +405,8 @@ class TicketFooter extends StatelessWidget {
             const Icon(Icons.info_outline, color: CQColors.slate100, size: 14),
             const SizedBox(width: 8),
             Text(
-              'Atualizado em: ${Formatter.formatDateTime(user.updatedAt.toDate())}',
+              CQStrings.atualizadoEm(
+                  Formatter.formatDateTime(user.updatedAt.toDate())),
               style: CQTheme.body.copyWith(
                 color: CQColors.slate100,
                 fontSize: 14,
@@ -437,7 +440,7 @@ class QrCodeWidget extends StatelessWidget {
         RotatedBox(
           quarterTurns: 1,
           child: Text(
-            'Powered by GoogleMarine',
+            CQStrings.poweredBy,
             style: CQTheme.body.copyWith(
               color: CQColors.slate100,
               fontSize: 10,
@@ -466,7 +469,7 @@ class EstadiaWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'ESTADIA',
+              CQStrings.estadia,
               style: CQTheme.body.copyWith(
                 color: CQColors.slate100,
                 fontSize: 12,
@@ -479,7 +482,7 @@ class EstadiaWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'DE: ',
+                    CQStrings.de,
                     style: CQTheme.body.copyWith(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
@@ -502,7 +505,7 @@ class EstadiaWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'ATÉ: ',
+                  CQStrings.ate,
                   style: CQTheme.body.copyWith(
                     color: Colors.black,
                     fontWeight: FontWeight.w600,

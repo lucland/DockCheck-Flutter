@@ -1,5 +1,4 @@
 import 'package:cripto_qr_googlemarine/pages/details/details.dart';
-import 'package:cripto_qr_googlemarine/pages/home/home.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import '../../blocs/user/user_cubit.dart';
 import '../../blocs/user/user_state.dart';
 import '../../models/user.dart';
 import '../../repositories/user_repository.dart';
+import '../../utils/ui/strings.dart';
 
 class Pesquisar extends StatelessWidget {
   const Pesquisar({super.key});
@@ -17,9 +17,12 @@ class Pesquisar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UserCubit(UserRepository()),
-      child: Container(
-        color: CQColors.white,
-        child: const UserListView(),
+      child: DefaultTabController(
+        length: 2,
+        child: Container(
+          color: CQColors.white,
+          child: const UserListView(),
+        ),
       ),
     );
   }
@@ -47,7 +50,7 @@ class UserListView extends StatelessWidget {
                   decoration: InputDecoration(
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 11.5),
-                    hintText: 'Pesquisar',
+                    hintText: CQStrings.pesquisar,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
@@ -78,19 +81,40 @@ class UserListView extends StatelessWidget {
                   },
                 ),
               ),
+              const TabBar(
+                tabs: [
+                  Tab(text: CQStrings.todos),
+                  Tab(text: CQStrings.aBordo),
+                ],
+              ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: state.users.length,
-                  itemBuilder: (context, index) {
-                    User user = state.users[index];
-                    return _buildUserListTile(context, user);
-                  },
+                child: TabBarView(
+                  children: [
+                    ListView.builder(
+                      itemCount: state.users.length,
+                      itemBuilder: (context, index) {
+                        User user = state.users[index];
+                        return _buildUserListTile(context, user);
+                      },
+                    ),
+                    ListView.builder(
+                      itemCount: state.users.length,
+                      itemBuilder: (context, index) {
+                        User user = state.users[index];
+                        if (user.isOnboarded) {
+                          return _buildUserListTile(context, user);
+                        } else {
+                          return Container(); // Return an empty container if isOnboarded is false
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
           );
         } else {
-          return const Center(child: Text('No users found.'));
+          return const Center(child: Text(CQStrings.nenhumUsuarioEncontrado));
         }
       },
     );
@@ -111,6 +135,20 @@ class UserListView extends StatelessWidget {
             const Icon(Icons.chevron_right_rounded, color: CQColors.slate100),
         title: Text(user.nome, style: CQTheme.h2),
         titleAlignment: ListTileTitleAlignment.center,
+        dense: true,
+        visualDensity: VisualDensity.compact,
+        horizontalTitleGap: 0,
+        leading: user.isOnboarded
+            ? const Icon(
+                Icons.circle,
+                color: CQColors.success100,
+                size: 10,
+              )
+            : const Icon(
+                Icons.circle,
+                color: CQColors.danger100,
+                size: 10,
+              ),
         subtitle: Text(user.identidade),
         onTap: () {
           Navigator.push(

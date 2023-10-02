@@ -22,6 +22,10 @@ class User {
   Timestamp updatedAt;
   bool isBlocked;
   String area;
+  String reason;
+  bool isOnboarded;
+  bool isSupervisor;
+  String password;
 
   User({
     required this.numero,
@@ -45,6 +49,10 @@ class User {
     required this.updatedAt,
     required this.isBlocked,
     required this.area,
+    required this.reason,
+    required this.isOnboarded,
+    required this.isSupervisor,
+    required this.password,
   });
 
   User copyWith({
@@ -69,6 +77,10 @@ class User {
     Timestamp? updatedAt,
     bool? isBlocked,
     String? area,
+    String? reason,
+    bool? isOnboarded,
+    bool? isSupervisor,
+    String? password,
   }) {
     return User(
       numero: numero ?? this.numero,
@@ -92,6 +104,10 @@ class User {
       updatedAt: updatedAt ?? this.updatedAt,
       isBlocked: isBlocked ?? this.isBlocked,
       area: area ?? this.area,
+      reason: reason ?? this.reason,
+      isOnboarded: isOnboarded ?? this.isOnboarded,
+      isSupervisor: isSupervisor ?? this.isSupervisor,
+      password: password ?? this.password,
     );
   }
 
@@ -118,6 +134,10 @@ class User {
       'updatedAt': updatedAt,
       'isBlocked': isBlocked,
       'area': area,
+      'reason': reason,
+      'isOnboarded': isOnboarded,
+      'isSupervisor': isSupervisor,
+      'password': password,
     };
   }
 
@@ -144,6 +164,10 @@ class User {
       updatedAt: map['updatedAt'],
       isBlocked: map['isBlocked'],
       area: map['area'],
+      reason: map['reason'],
+      isOnboarded: map['isOnboarded'],
+      isSupervisor: map['isSupervisor'],
+      password: map['password'],
     );
   }
 

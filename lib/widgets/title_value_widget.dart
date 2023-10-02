@@ -27,11 +27,14 @@ class TitleValueWidget extends StatelessWidget {
             fontSize: 12,
           ),
         ),
-        Text(
-          value,
-          style: CQTheme.h3.copyWith(
-            color: color,
-            fontSize: 14,
+        Padding(
+          padding: const EdgeInsets.only(left: 4.0),
+          child: Text(
+            value,
+            style: CQTheme.h3.copyWith(
+              color: color,
+              fontSize: 14,
+            ),
           ),
         ),
       ],

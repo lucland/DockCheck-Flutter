@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 

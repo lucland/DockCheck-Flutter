@@ -5,16 +5,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/user.dart';
 import '../../../repositories/user_repository.dart';
-import 'cadastrar_state.dart';
+import 'editar_state.dart';
 
-class CadastrarCubit extends Cubit<CadastrarState> {
+class EditarCubit extends Cubit<EditarState> {
   final UserRepository userRepository;
+  final User originalUser;
 
-  bool isClosed = false;
-
-  CadastrarCubit(this.userRepository)
+  EditarCubit(this.userRepository, this.originalUser)
       : super(
-          CadastrarState(
+          EditarState(
             numero: 0,
             user: User(
               numero: 0,
@@ -44,7 +43,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               password: '',
             ),
             evento: Evento(
-              acao: CQStrings.usuarioCadastrado,
+              acao: CQStrings.usuarioEditado,
               user: '',
               vessel: 'SKANDI AMAZONAS',
               createdAt: Timestamp.now(),
@@ -52,20 +51,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           ),
         );
 
-  void fetchNumero() async {
-    if (!isClosed) {
-      try {
-        var numero = await userRepository.fetchNumero();
-        numero++;
-        final user = state.user.copyWith(numero: numero);
-        emit(state.copyWith(user: user, isLoading: false, numero: numero));
-      } catch (e) {
-        emit(state.copyWith(
-          isLoading: false,
-          errorMessage: e.toString(),
-        ));
-      }
-    }
+  void originalUserData(User userr) async {
+    await Future.delayed(Duration(milliseconds: 500));
+    emit(state.copyWith(user: userr, isLoading: false, numero: userr.numero));
   }
 
   void updateIdentidade(String identidade) {
@@ -166,11 +154,6 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     emit(state.copyWith(user: user));
   }
 
-  void updateCreatedAt(Timestamp createdAt) {
-    final user = state.user.copyWith(createdAt: createdAt);
-    emit(state.copyWith(user: user));
-  }
-
   void updateUpdatedAt(Timestamp updatedAt) {
     final user = state.user.copyWith(updatedAt: updatedAt);
     emit(state.copyWith(user: user));
@@ -203,7 +186,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void createUser() async {
     emit(state.copyWith(isLoading: true));
     try {
-      await userRepository.addUser(state.user.toMap(), state.user.identidade);
+      await userRepository.updateUser(state.user);
       clearFields();
       emit(state.copyWith(isLoading: false, userCreated: true));
     } catch (e) {
@@ -223,7 +206,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         state.user.funcao.isNotEmpty &&
         state.user.identidade.isNotEmpty &&
         state.user.empresa.isNotEmpty &&
-        (state.user.dataLimite.seconds - todayTimestamp.seconds >= -43200);
+        (state.user.dataLimite.seconds - todayTimestamp.seconds >= -80000);
 
     bool adminCheckPassed = !state.user.isAdmin ||
         (state.user.isAdmin && state.user.password.isNotEmpty);
@@ -272,7 +255,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       user: user,
       isLoading: false,
       evento: Evento(
-        acao: CQStrings.usuarioCadastrado,
+        acao: CQStrings.usuarioEditado,
         user: '',
         vessel: '',
         createdAt: Timestamp.now(),
@@ -280,11 +263,5 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       userCreated: false,
       cadastroHabilitado: false,
     ));
-  }
-
-  @override
-  Future<void> close() {
-    isClosed = true;
-    return super.close();
   }
 }

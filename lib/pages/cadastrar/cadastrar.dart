@@ -1,3 +1,4 @@
+import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/user_repository.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui/colors.dart';
-import '../../utils/ui/constants.dart';
+import '../../utils/ui/strings.dart';
 import '../../widgets/calendar_picker_widget.dart';
 import '../../widgets/text_input_widget.dart';
 import 'cubit/cadastrar_cubit.dart';
@@ -37,21 +38,16 @@ class CadastrarView extends StatelessWidget {
     final TextEditingController funcaoController = TextEditingController();
     final TextEditingController empresaController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
-    final TextEditingController asoController = TextEditingController(
-        text:
-            "${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}");
-    final TextEditingController nr34Controller = TextEditingController(
-        text:
-            "${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}");
+    final TextEditingController senhaController = TextEditingController();
+    final TextEditingController asoController = TextEditingController();
+    final TextEditingController nr34Controller = TextEditingController();
     final TextEditingController nr10Controller = TextEditingController();
     final TextEditingController nr33Controller = TextEditingController();
     final TextEditingController nr35Controller = TextEditingController();
-    final TextEditingController dataInicialController = TextEditingController(
-        text:
-            "${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}");
-    final TextEditingController dataFinalController = TextEditingController(
-        text:
-            "${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}");
+    final TextEditingController dataInicialController =
+        TextEditingController(text: Formatter.formatDateTime(DateTime.now()));
+    final TextEditingController dataFinalController =
+        TextEditingController(text: Formatter.formatDateTime(DateTime.now()));
 
     return BlocConsumer<CadastrarCubit, CadastrarState>(
         listener: (context, state) {
@@ -82,7 +78,7 @@ class CadastrarView extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Usuário cadastrado com sucesso!',
+              CQStrings.usuarioCadastradoComSucesso,
               style: CQTheme.body.copyWith(color: CQColors.white),
             ),
             backgroundColor: CQColors.success100,
@@ -112,7 +108,7 @@ class CadastrarView extends StatelessWidget {
                         Text('N° ${state.user.numero}', style: CQTheme.h1),
                         const Divider(),
                         TextInputWidget(
-                          title: CriptoQRUIConstants.nome,
+                          title: CQStrings.nome,
                           isRequired: true,
                           controller: nomeController,
                           onChanged: (text) => cubit.updateNome(text),
@@ -122,7 +118,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: TextInputWidget(
-                                title: 'Email',
+                                title: CQStrings.email,
                                 controller: emailController,
                                 onChanged: (text) => cubit.updateEmail(text),
                               ),
@@ -130,7 +126,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: TextInputWidget(
-                                title: 'Identidade',
+                                title: CQStrings.identidade,
                                 keyboardType: TextInputType.number,
                                 controller: identidadeController,
                                 onChanged: (text) => cubit.updateIdentidade(
@@ -147,7 +143,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: TextInputWidget(
-                                title: 'Função',
+                                title: CQStrings.funcao,
                                 controller: funcaoController,
                                 onChanged: (text) => cubit.updateFuncao(text),
                                 isRequired: true,
@@ -156,7 +152,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: TextInputWidget(
-                                title: 'Empresa/Trip',
+                                title: CQStrings.empresaTrip,
                                 keyboardType: TextInputType.text,
                                 controller: empresaController,
                                 onChanged: (text) => cubit.updateEmpresa(text),
@@ -168,7 +164,7 @@ class CadastrarView extends StatelessWidget {
                         const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text(
-                            'Embarcação',
+                            CQStrings.embarcacao,
                             style: CQTheme.h2,
                           ),
                         ),
@@ -247,7 +243,7 @@ class CadastrarView extends StatelessWidget {
                         const Padding(
                           padding: EdgeInsets.fromLTRB(8.0, 16.0, 16, 0.0),
                           child: Text(
-                            'Área',
+                            CQStrings.area,
                             style: CQTheme.h2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -261,7 +257,7 @@ class CadastrarView extends StatelessWidget {
                         ),
                         const Divider(),
                         CalendarPickerWidget(
-                          title: 'ASO',
+                          title: CQStrings.aso,
                           isRequired: true,
                           controller: asoController,
                           onChanged: (time) => cubit.updateASO(time),
@@ -271,7 +267,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: CalendarPickerWidget(
-                                title: 'NR-34',
+                                title: CQStrings.nr34,
                                 isRequired: true,
                                 controller: nr34Controller,
                                 onChanged: (time) => cubit.updateNR34(time),
@@ -280,7 +276,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: CalendarPickerWidget(
-                                title: 'NR-10',
+                                title: CQStrings.nr10,
                                 controller: nr10Controller,
                                 onChanged: (time) => cubit.updateNR10(time),
                               ),
@@ -292,7 +288,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: CalendarPickerWidget(
-                                title: 'NR-33',
+                                title: CQStrings.nr33,
                                 controller: nr33Controller,
                                 onChanged: (time) => cubit.updateNR33(time),
                               ),
@@ -300,7 +296,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: CalendarPickerWidget(
-                                title: 'NR-35',
+                                title: CQStrings.nr35,
                                 controller: nr35Controller,
                                 onChanged: (time) => cubit.updateNR35(time),
                               ),
@@ -325,7 +321,7 @@ class CadastrarView extends StatelessWidget {
                                     children: [
                                       const Expanded(
                                         child: Text(
-                                          'Visitante',
+                                          CQStrings.visitante,
                                           style: CQTheme.h2,
                                         ),
                                       ),
@@ -363,7 +359,7 @@ class CadastrarView extends StatelessWidget {
                                     children: [
                                       const Expanded(
                                         child: Text(
-                                          'Admin',
+                                          CQStrings.admin,
                                           style: CQTheme.h2,
                                         ),
                                       ),
@@ -382,13 +378,20 @@ class CadastrarView extends StatelessWidget {
                             ),
                           ],
                         ),
+                        if (state.user.isAdmin)
+                          TextInputWidget(
+                            title: CQStrings.senha,
+                            isRequired: true,
+                            controller: senhaController,
+                            onChanged: (text) => cubit.updatePassword(text),
+                          ),
                         const Divider(),
                         Row(
                           children: [
                             Flexible(
                               flex: 1,
                               child: CalendarPickerWidget(
-                                title: 'Data Inicial',
+                                title: CQStrings.dataInicial,
                                 isRequired: true,
                                 controller: dataInicialController,
                                 onChanged: (time) =>
@@ -398,7 +401,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: CalendarPickerWidget(
-                                title: 'Data Limite',
+                                title: CQStrings.dataLimite,
                                 isRequired: true,
                                 controller: dataFinalController,
                                 onChanged: (time) =>
@@ -434,6 +437,7 @@ class CadastrarView extends StatelessWidget {
                         nr35Controller.clear();
                         dataInicialController.clear();
                         dataFinalController.clear();
+                        senhaController.clear();
                         cubit.clearFields();
                       },
                       child: Container(
@@ -444,7 +448,7 @@ class CadastrarView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         padding: const EdgeInsets.all(8.0),
-                        child: const Text('LIMPAR',
+                        child: const Text(CQStrings.limpar,
                             overflow: TextOverflow.ellipsis, style: CQTheme.h3),
                       ),
                     ),
@@ -453,7 +457,7 @@ class CadastrarView extends StatelessWidget {
                     flex: 1,
                     child: InkWell(
                       onTap: () {
-                        state.cadastroHabilitado ? cubit.createUser() : null;
+                        state.cadastroHabilitado ? cubit.createEvent() : null;
                       },
                       child: Container(
                         alignment: Alignment.center,
@@ -466,7 +470,7 @@ class CadastrarView extends StatelessWidget {
                         ),
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'CADASTRAR',
+                          CQStrings.cadastrarUpper,
                           overflow: TextOverflow.ellipsis,
                           style: CQTheme.h3.copyWith(color: CQColors.white),
                         ),

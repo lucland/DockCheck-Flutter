@@ -1,4 +1,4 @@
-import 'package:cripto_qr_googlemarine/pages/editar/editar.dart';
+/*import 'package:cripto_qr_googlemarine/pages/editar/editar.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
 import 'package:cripto_qr_googlemarine/widgets/checkout_button_widget.dart';
@@ -10,70 +10,43 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/user.dart';
 import '../../repositories/user_repository.dart';
 import '../../utils/theme.dart';
-import 'cubit/details_cubit.dart';
-import 'cubit/details_state.dart';
 
-class Details extends StatelessWidget {
-  final User user;
-  const Details({
+class Login extends StatelessWidget {
+  const Login({
     super.key,
-    required this.user,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DetailsCubit(UserRepository()),
+      create: (context) => LoginCubit(UserRepository()),
       child: Container(
         color: CQColors.white,
-        child: DetailsView(
-          user: user,
-        ),
+        child: LoginView(),
       ),
     );
   }
 }
 
-class DetailsView extends StatelessWidget {
-  final User user;
-  const DetailsView({
+class LoginView extends StatelessWidget {
+  const LoginView({
     super.key,
-    required this.user,
   });
 
   @override
   Widget build(BuildContext context) {
-    var cubit = context.read<DetailsCubit>();
-    context.read<DetailsCubit>().fetchEvents(user.identidade);
+    var cubit = context.read<LoginCubit>();
 
-    return BlocBuilder<DetailsCubit, DetailsState>(
+    return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
-        if (state is DetailsLoading) {
+        if (state is LoginLoading) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is DetailsError) {
+        } else if (state is LoginError) {
           return Center(child: Text('Error: ${state.message}'));
-        } else if (state is DetailsLoaded) {
+        } else if (state is LoginLoaded) {
           return Scaffold(
             appBar: AppBar(
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Editar(
-                          user: user,
-                          onSalvar: () => Navigator.pop,
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.edit_rounded,
-                    color: CQColors.iron100,
-                  ),
-                ),
-              ],
+              automaticallyImplyLeading: false,
               backgroundColor: CQColors.background,
               foregroundColor: CQColors.iron100,
               elevation: 0,
@@ -421,9 +394,6 @@ class DetailsView extends StatelessWidget {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PrintButtonWidget(
-                      onPressed: () {},
-                    ),
                     CheckOutButtonWidget(
                       onPressed: () {
                         cubit.createCheckoutEvento(
@@ -445,3 +415,4 @@ class DetailsView extends StatelessWidget {
     );
   }
 }
+*/
