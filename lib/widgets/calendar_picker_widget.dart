@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
 import 'package:flutter/material.dart';
@@ -75,9 +76,7 @@ class CalendarPickerWidget extends StatelessWidget {
                   lastDate: DateTime(2101),
                 );
                 if (selectedDate != null) {
-                  String formattedDate =
-                      "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}";
-                  controller.text = formattedDate;
+                  controller.text = Formatter.formatDateTime(selectedDate);
                   Timestamp timestamp = Timestamp.fromDate(selectedDate);
                   onChanged(timestamp);
                 }
