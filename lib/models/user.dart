@@ -25,6 +25,7 @@ class User {
   String reason;
   bool isOnboarded;
   bool isSupervisor;
+  String password;
 
   User({
     required this.numero,
@@ -51,6 +52,7 @@ class User {
     required this.reason,
     required this.isOnboarded,
     required this.isSupervisor,
+    required this.password,
   });
 
   User copyWith({
@@ -78,6 +80,7 @@ class User {
     String? reason,
     bool? isOnboarded,
     bool? isSupervisor,
+    String? password,
   }) {
     return User(
       numero: numero ?? this.numero,
@@ -104,6 +107,7 @@ class User {
       reason: reason ?? this.reason,
       isOnboarded: isOnboarded ?? this.isOnboarded,
       isSupervisor: isSupervisor ?? this.isSupervisor,
+      password: password ?? this.password,
     );
   }
 
@@ -133,6 +137,7 @@ class User {
       'reason': reason,
       'isOnboarded': isOnboarded,
       'isSupervisor': isSupervisor,
+      'password': password,
     };
   }
 
@@ -162,6 +167,7 @@ class User {
       reason: map['reason'],
       isOnboarded: map['isOnboarded'],
       isSupervisor: map['isSupervisor'],
+      password: map['password'],
     );
   }
 
