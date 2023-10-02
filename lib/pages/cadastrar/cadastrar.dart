@@ -1,3 +1,4 @@
+import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../repositories/user_repository.dart';
 import '../../utils/theme.dart';
 import '../../utils/ui/colors.dart';
-import '../../utils/ui/constants.dart';
 import '../../utils/ui/strings.dart';
 import '../../widgets/calendar_picker_widget.dart';
 import '../../widgets/text_input_widget.dart';
@@ -38,21 +38,16 @@ class CadastrarView extends StatelessWidget {
     final TextEditingController funcaoController = TextEditingController();
     final TextEditingController empresaController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
-    final TextEditingController asoController = TextEditingController(
-        text:
-            "${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}");
-    final TextEditingController nr34Controller = TextEditingController(
-        text:
-            "${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}");
+    final TextEditingController senhaController = TextEditingController();
+    final TextEditingController asoController = TextEditingController();
+    final TextEditingController nr34Controller = TextEditingController();
     final TextEditingController nr10Controller = TextEditingController();
     final TextEditingController nr33Controller = TextEditingController();
     final TextEditingController nr35Controller = TextEditingController();
-    final TextEditingController dataInicialController = TextEditingController(
-        text:
-            "${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}");
-    final TextEditingController dataFinalController = TextEditingController(
-        text:
-            "${DateTime.now().day.toString()}/${DateTime.now().month.toString()}/${DateTime.now().year.toString()}");
+    final TextEditingController dataInicialController =
+        TextEditingController(text: Formatter.formatDateTime(DateTime.now()));
+    final TextEditingController dataFinalController =
+        TextEditingController(text: Formatter.formatDateTime(DateTime.now()));
 
     return BlocConsumer<CadastrarCubit, CadastrarState>(
         listener: (context, state) {
@@ -113,7 +108,7 @@ class CadastrarView extends StatelessWidget {
                         Text('N° ${state.user.numero}', style: CQTheme.h1),
                         const Divider(),
                         TextInputWidget(
-                          title: CriptoQRUIConstants.nome,
+                          title: CQStrings.nome,
                           isRequired: true,
                           controller: nomeController,
                           onChanged: (text) => cubit.updateNome(text),
@@ -383,6 +378,13 @@ class CadastrarView extends StatelessWidget {
                             ),
                           ],
                         ),
+                        if (state.user.isAdmin)
+                          TextInputWidget(
+                            title: CQStrings.senha,
+                            isRequired: true,
+                            controller: senhaController,
+                            onChanged: (text) => cubit.updatePassword(text),
+                          ),
                         const Divider(),
                         Row(
                           children: [
@@ -435,6 +437,7 @@ class CadastrarView extends StatelessWidget {
                         nr35Controller.clear();
                         dataInicialController.clear();
                         dataFinalController.clear();
+                        senhaController.clear();
                         cubit.clearFields();
                       },
                       child: Container(

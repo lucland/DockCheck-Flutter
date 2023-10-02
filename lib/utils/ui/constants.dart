@@ -1,13 +1,5 @@
 import 'package:flutter/material.dart';
 
-class CriptoQRUIConstants {
-  const CriptoQRUIConstants._();
-
-  static const schedule = _ScheduleConstants();
-
-  static const String nome = "Nome";
-}
-
 class _ScheduleConstants {
   const _ScheduleConstants();
 

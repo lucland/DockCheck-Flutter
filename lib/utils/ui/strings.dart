@@ -10,6 +10,8 @@ class CQStrings {
   static String atualizadoEm(String data) => 'Atualizado em: $data';
   static const String usuarioCadastradoComSucesso =
       'Usuário cadastrado com sucesso!';
+  static const String usuarioEditadoComSucesso = 'Usuário editado com sucesso!';
+  static const String nome = "Nome";
   static const String email = 'Email';
   static const String identidade = 'Identidade';
   static const String funcao = 'Função';
@@ -48,4 +50,7 @@ class CQStrings {
   static const String todos = 'Todos';
   static const String aBordo = 'À bordo';
   static const String checkIn = 'CHECK-IN';
+  static const String senha = 'Senha';
+  static const String salvar = 'SALVAR';
+  static const String usuarioEditado = 'USUÁRIO EDITADO.';
 }

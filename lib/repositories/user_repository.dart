@@ -115,6 +115,27 @@ class UserRepository {
     }
   }
 
+  Future<void> updateUserData(
+      String identidade, String field, dynamic data) async {
+    try {
+      SimpleLogger.info("Updating user data");
+      await _usersCollection.doc(identidade).update({field: data});
+    } catch (error) {
+      SimpleLogger.warning("Failed to update user data: $error");
+      throw Exception("Failed to update user data");
+    }
+  }
+
+  Future<void> updateUser(User user) async {
+    try {
+      SimpleLogger.info("Updating user");
+      await _usersCollection.doc(user.identidade).update(user.toMap());
+    } catch (error) {
+      SimpleLogger.warning("Failed to update user: $error");
+      throw Exception("Failed to update user");
+    }
+  }
+
   Future<int> fetchNumero() async {
     try {
       QuerySnapshot querySnapshot = await _usersCollection
@@ -131,6 +152,24 @@ class UserRepository {
     } catch (error) {
       SimpleLogger.warning("Failed to fetch numero: $error");
       throw Exception("Failed to fetch numero");
+    }
+  }
+
+  Future<bool> login(String identidade, String password) async {
+    try {
+      SimpleLogger.info("Logging in");
+      QuerySnapshot querySnapshot = await _usersCollection
+          .where('identidade', isEqualTo: identidade)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        var data = querySnapshot.docs[0].data() as Map<String, dynamic>;
+        return data['password'] == password;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      SimpleLogger.warning("Failed to login: $error");
+      throw Exception("Failed to login");
     }
   }
 }
