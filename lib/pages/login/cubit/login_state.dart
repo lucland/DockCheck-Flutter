@@ -18,7 +18,7 @@ class EditarState {
     this.errorMessage,
     required this.evento,
     this.userCreated = false,
-    this.cadastroHabilitado = false,
+    this.cadastroHabilitado = true,
   });
 
   EditarState copyWith({
