@@ -73,6 +73,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     final evento = state.evento.copyWith(user: identidade);
     checkCadastroHabilitado();
     emit(state.copyWith(user: user, evento: evento));
+    print("novo usuario");
   }
 
   void updateNome(String nome) {
