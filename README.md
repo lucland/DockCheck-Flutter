@@ -1,36 +1,40 @@
-# DockCheck Mobile - Flutter
+# DockCheck-Flutter
 
-## Description
+## Overview
+DockCheck is a comprehensive Flutter-based application designed for maritime operations. It leverages modern technologies to streamline processes, enhance safety, and improve efficiency in maritime environments.
 
-Briefly describe what your Flutter mobile application does. Include any unique features or functionality that sets your application apart.
+## Features
+
+### User Management
+- **User Profiles**: Manage detailed user profiles, including personal information and maritime-specific details.
+- **Access Control**: Implement role-based access control with admin, supervisor, and visitor roles.
+- **Onboarding Process**: Efficiently onboard users with a streamlined process.
+
+### Vessel Management
+- **Vessel Tracking**: Keep track of vessels, including onboarded personnel and vessel details.
+- **Event Logging**: Log and monitor maritime events in real-time.
+
+### Safety Compliance
+- **Compliance Tracking**: Ensure compliance with maritime safety regulations like NR34, NR10, NR33, and NR35.
+
+### Real-Time Data Handling
+- **Firebase Integration**: Utilize Firebase for real-time data handling and storage.
+- **Efficient Data Processing**: Process and manage large sets of maritime data efficiently.
+
+### User Interface
+- **Intuitive Design**: Experience a user-friendly interface designed for ease of use in maritime environments.
+- **Responsive Layouts**: Enjoy seamless usability across various devices and screen sizes.
+
+## Technical Stack
+- **Flutter**: For a cross-platform mobile application experience.
+- **Firebase**: For backend services including database and authentication.
+- **Bloc Pattern**: For state management, ensuring a responsive and efficient user experience.
 
 ## Getting Started
+To get started with DockCheck, clone the repository and follow the setup instructions provided in the documentation.
 
-### Dependencies
+## Contribution
+Contributions to DockCheck are welcome. Please read our contribution guidelines to get started.
 
-List any dependencies that are required for your application, such as:
-
-- Windows operating system (specify which versions are supported)
-- .NET Framework or .NET Core version (specify the required version)
-- Any other libraries or frameworks used in the project
-
-### Installing
-
-Provide step-by-step instructions on how to install your application. For example:
-
-1. Download the installer from [link to installer].
-2. Run the installer and follow the on-screen instructions.
-
-### Executing Program
-
-Explain how to run the application after installation. For example:
-
-1. Open the application from the Start menu or desktop shortcut.
-2. [Any additional steps required for using the application.]
-
-## Usage
-
-Include examples of how to use your application. Screenshots or code snippets can be very helpful here. For instance:
-
-```csharp
-// Example of how to use a specific functionality in your application
+## License
+DockCheck is released under [LICENSE TYPE]. See the LICENSE file for more details.
