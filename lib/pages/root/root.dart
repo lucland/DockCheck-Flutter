@@ -1,6 +1,5 @@
 import 'package:cripto_qr_googlemarine/pages/cadastrar/cadastrar.dart';
 import 'package:cripto_qr_googlemarine/pages/home/home.dart';
-import 'package:cripto_qr_googlemarine/pages/scan/scan.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/strings.dart';
@@ -26,7 +25,6 @@ class _RootState extends State<Root> {
   static const List<String> _pageTitles = [
     CQStrings.home,
     CQStrings.pesquisar,
-    CQStrings.scan,
     CQStrings.cadastrar,
   ];
 
@@ -37,7 +35,6 @@ class _RootState extends State<Root> {
     _widgetOptions = [
       const Home(),
       const Pesquisar(),
-      const QRViewExample(),
       Cadastrar(
         onCadastrar: () {
           _pageController.jumpToPage(0);
@@ -54,10 +51,6 @@ class _RootState extends State<Root> {
     BottomNavigationBarItem(
         icon: Icon(Icons.search_rounded),
         label: 'Pesquisar',
-        backgroundColor: CQColors.background),
-    BottomNavigationBarItem(
-        icon: Icon(Icons.qr_code_scanner_rounded),
-        label: 'Scan',
         backgroundColor: CQColors.background),
     BottomNavigationBarItem(
         icon: Icon(Icons.person_add_rounded),
