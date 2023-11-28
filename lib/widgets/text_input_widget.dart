@@ -9,6 +9,7 @@ class TextInputWidget extends StatelessWidget {
   final TextInputType keyboardType;
   final bool isRequired;
   final bool isID;
+  final bool isPassword;
   final void Function(String)? onChanged;
 
   const TextInputWidget({
@@ -19,6 +20,7 @@ class TextInputWidget extends StatelessWidget {
     this.isRequired = false,
     this.isID = false,
     this.onChanged,
+    this.isPassword = false,
   }) : super(key: key);
 
   @override
@@ -71,6 +73,7 @@ class TextInputWidget extends StatelessWidget {
               keyboardType: keyboardType,
               controller: controller,
               onChanged: onChanged,
+              obscureText: isPassword,
               inputFormatters: isID
                   ? [
                       IDInputFormatter(),
