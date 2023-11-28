@@ -1,3 +1,4 @@
+import 'package:cripto_qr_googlemarine/pages/login/login.dart';
 import 'package:cripto_qr_googlemarine/pages/root/root.dart';
 import 'package:cripto_qr_googlemarine/utils/simple_blo_observer.dart';
 import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
@@ -23,7 +24,7 @@ void main() async {
   runApp(
     MaterialApp(
       theme: CQTheme.theme,
-      home: const Root(),
+      home: const LoginPage(),
       debugShowCheckedModeBanner: false,
     ),
   );
