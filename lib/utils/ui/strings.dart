@@ -19,6 +19,7 @@ class CQStrings {
   static const String embarcacao = 'Embarcação';
   static const String area = 'Área';
   static const String aso = 'ASO';
+  static const String login = 'ENTRAR';
   static const String nr34 = 'NR-34';
   static const String nr10 = 'NR-10';
   static const String nr33 = 'NR-33';
