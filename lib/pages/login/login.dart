@@ -12,9 +12,9 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, // Optional
-      statusBarIconBrightness: Brightness.light, // White status bar icons
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
     ));
 
     return Scaffold(
@@ -22,7 +22,7 @@ class LoginPage extends StatelessWidget {
         children: <Widget>[
           // Top half with the logo
           Expanded(
-            flex: 4, // Adjust flex ratio if needed
+            flex: 4,
             child: Container(
               color: CQColors.iron100,
               child: Center(
@@ -34,7 +34,7 @@ class LoginPage extends StatelessWidget {
             ),
           ),
           Expanded(
-            flex: 6, // Adjust flex ratio if needed
+            flex: 6,
             child: Container(
               color: CQColors.background,
               child: Padding(
@@ -62,7 +62,6 @@ class LoginPage extends StatelessWidget {
                     ),
                     InkWell(
                       onTap: () {
-                        //navigate to Root()
                         Navigator.push(
                           context,
                           MaterialPageRoute(
