@@ -20,7 +20,6 @@ class LoginPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          // Top half with the logo
           Expanded(
             flex: 4,
             child: Container(
@@ -38,7 +37,7 @@ class LoginPage extends StatelessWidget {
             child: Container(
               color: CQColors.background,
               child: Padding(
-                padding: const EdgeInsets.all(0.0),
+                padding: const EdgeInsets.only(top: 4.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
