@@ -1,11 +1,15 @@
 import 'package:cripto_qr_googlemarine/pages/cadastrar/cadastrar.dart';
 import 'package:cripto_qr_googlemarine/pages/home/home.dart';
+import 'package:cripto_qr_googlemarine/repositories/login_repository.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/strings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
+import '../login/login.dart';
 import '../pesquisar/pesquisar.dart';
 
 class Root extends StatefulWidget {
@@ -16,6 +20,7 @@ class Root extends StatefulWidget {
 }
 
 class _RootState extends State<Root> {
+  String appVersion = '';
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
 
@@ -30,6 +35,7 @@ class _RootState extends State<Root> {
   @override
   void initState() {
     super.initState();
+    _loadAppVersion();
 
     _widgetOptions = [
       const Home(),
@@ -40,6 +46,13 @@ class _RootState extends State<Root> {
         },
       ),
     ];
+  }
+
+  Future<void> _loadAppVersion() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      appVersion = packageInfo.version;
+    });
   }
 
   static const List<BottomNavigationBarItem> _bottomNavBarItems = [
@@ -74,6 +87,8 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
+    final LoginRepository loginRepository = context.read<LoginRepository>();
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -82,10 +97,10 @@ class _RootState extends State<Root> {
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 16.0, 0, 12.0),
               child: SvgPicture.asset(
-                'assets/imgs/dof_logo.svg',
+                'assets/imgs/logo_dock_check.svg',
                 semanticsLabel: 'CriptoQRLogo',
-                height: 24.0,
-                width: 24.0,
+                height: 30.0,
+                width: 80.0,
               ),
             ),
             Container(
@@ -116,6 +131,57 @@ class _RootState extends State<Root> {
         elevation: 0.0,
         scrolledUnderElevation: 4.0,
         surfaceTintColor: Colors.transparent,
+      ),
+      drawer: Drawer(
+        surfaceTintColor: CQColors.iron100,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: CQColors.iron100,
+              ),
+              child: Row(children: [
+                Expanded(
+                  child: Text(
+                    'Menu',
+                    style: TextStyle(
+                      color: CQColors.background,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+            Expanded(
+              child: ListView(children: const [
+                ListTile(
+                  leading: Icon(Icons.home),
+                  title: Text('Home'),
+                ),
+              ]),
+            ),
+            ListTile(
+              leading: const Icon(Icons.exit_to_app),
+              title: const Text('Logout'),
+              onTap: () {
+                // Implement logout logic here
+                // For example, clear user token and navigate to login screen
+                loginRepository.logout();
+
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+                // Close the drawer
+                // Navigate to login screen or handle logout
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text('Version: $appVersion'),
+            ),
+            // Add other drawer items if needed
+          ],
+        ),
       ),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
