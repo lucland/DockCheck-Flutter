@@ -3,6 +3,7 @@ import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import '../../blocs/user/user_cubit.dart';
 import '../../blocs/user/user_state.dart';
@@ -15,8 +16,12 @@ class Pesquisar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get UserRepository from Provider
+    final userRepository = Provider.of<UserRepository>(context, listen: false);
+
     return BlocProvider(
-      create: (context) => UserCubit(UserRepository()),
+      // Use the provided UserRepository
+      create: (context) => UserCubit(userRepository),
       child: DefaultTabController(
         length: 2,
         child: Container(
@@ -133,7 +138,7 @@ class UserListView extends StatelessWidget {
       child: ListTile(
         trailing:
             const Icon(Icons.chevron_right_rounded, color: CQColors.slate100),
-        title: Text(user.nome, style: CQTheme.h2),
+        title: Text(user.name, style: CQTheme.h2),
         titleAlignment: ListTileTitleAlignment.center,
         dense: true,
         visualDensity: VisualDensity.compact,
