@@ -35,9 +35,11 @@ class CheckOutButtonWidget extends StatelessWidget {
                 color: CQColors.white,
                 size: 24,
               ),
-              Text(CQStrings.checkOut,
-                  overflow: TextOverflow.ellipsis,
-                  style: CQTheme.h3.copyWith(color: CQColors.white)),
+              Text(
+                CQStrings.checkOut,
+                overflow: TextOverflow.ellipsis,
+                style: CQTheme.h3.copyWith(color: CQColors.white),
+              ),
               const SizedBox(
                 width: 24,
               ),

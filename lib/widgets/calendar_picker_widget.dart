@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
@@ -8,7 +7,7 @@ class CalendarPickerWidget extends StatelessWidget {
   final String title;
   final bool isRequired;
   final TextEditingController controller;
-  final void Function(Timestamp) onChanged;
+  final void Function(DateTime) onChanged;
 
   const CalendarPickerWidget(
       {Key? key,
@@ -77,8 +76,7 @@ class CalendarPickerWidget extends StatelessWidget {
                 );
                 if (selectedDate != null) {
                   controller.text = Formatter.formatDateTime(selectedDate);
-                  Timestamp timestamp = Timestamp.fromDate(selectedDate);
-                  onChanged(timestamp);
+                  onChanged(selectedDate);
                 }
               },
             ),

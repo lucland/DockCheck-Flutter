@@ -19,14 +19,18 @@ class CirclePainter extends CustomPainter {
           color,
           CQColors.slate100.withOpacity(0.3),
         ],
-      ).createShader(Rect.fromCircle(center: const Offset(10, 10), radius: 7));
+      ).createShader(
+        Rect.fromCircle(center: const Offset(10, 10), radius: 7),
+      );
 
     final Paint shadowPaint = Paint()
       ..color = CQColors.slate100.withOpacity(0.1)
       ..maskFilter = const MaskFilter.blur(BlurStyle.inner, 5);
 
     final Path path = Path();
-    path.addOval(Rect.fromCircle(center: const Offset(10, 10), radius: 7));
+    path.addOval(
+      Rect.fromCircle(center: const Offset(10, 10), radius: 7),
+    );
 
     canvas.drawPath(path, shadowPaint);
     canvas.drawPath(path, paint);

@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../utils/theme.dart';
 import '../utils/ui/colors.dart';
-import '../utils/ui/strings.dart';
 
-class PrintButtonWidget extends StatelessWidget {
-  const PrintButtonWidget({
+class SyncButtonWidget extends StatelessWidget {
+  const SyncButtonWidget({
     super.key,
     required this.onPressed,
   });
@@ -29,11 +28,11 @@ class PrintButtonWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Icon(
-                Icons.upload_file,
+                Icons.sync_rounded,
                 color: CQColors.iron100,
                 size: 24,
               ),
-              Text(CQStrings.imprimirQRCode,
+              Text('Sincronizar com portal',
                   overflow: TextOverflow.ellipsis, style: CQTheme.h3),
               SizedBox(
                 width: 24,
