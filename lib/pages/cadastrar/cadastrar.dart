@@ -1,7 +1,9 @@
+import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import '../../repositories/user_repository.dart';
 import '../../utils/theme.dart';
@@ -18,8 +20,12 @@ class Cadastrar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final UserRepository userRepository = Provider.of<UserRepository>(context);
+    final EventRepository eventRepository =
+        Provider.of<EventRepository>(context);
+
     return BlocProvider(
-      create: (context) => CadastrarCubit(UserRepository()),
+      create: (context) => CadastrarCubit(userRepository, eventRepository),
       child: CadastrarView(
         onCadastrar: onCadastrar,
       ),
@@ -105,7 +111,7 @@ class CadastrarView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('N° ${state.user.numero}', style: CQTheme.h1),
+                        Text('N° ${state.user.number}', style: CQTheme.h1),
                         const Divider(),
                         TextInputWidget(
                           title: CQStrings.nome,
@@ -161,6 +167,7 @@ class CadastrarView extends StatelessWidget {
                             ),
                           ],
                         ),
+                        /*
                         const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text(
@@ -238,7 +245,7 @@ class CadastrarView extends StatelessWidget {
                               ),
                             ),
                           ),
-                        ),
+                        ),*/
                         const Divider(),
                         const Padding(
                           padding: EdgeInsets.fromLTRB(8.0, 16.0, 16, 0.0),
@@ -310,7 +317,7 @@ class CadastrarView extends StatelessWidget {
                               flex: 1,
                               child: InkWell(
                                 onTap: () {
-                                  state.user.isVisitante
+                                  state.user.isVisitor
                                       ? cubit.updateIsVisitante(false)
                                       : cubit.updateIsVisitante(true);
                                 },
@@ -326,9 +333,9 @@ class CadastrarView extends StatelessWidget {
                                         ),
                                       ),
                                       Checkbox(
-                                        value: state.user.isVisitante,
+                                        value: state.user.isVisitor,
                                         onChanged: (value) {
-                                          state.user.isVisitante
+                                          state.user.isVisitor
                                               ? cubit.updateIsVisitante(false)
                                               : cubit.updateIsVisitante(true);
                                         },
