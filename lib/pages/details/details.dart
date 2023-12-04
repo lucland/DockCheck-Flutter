@@ -1,14 +1,17 @@
 import 'package:cripto_qr_googlemarine/pages/editar/editar.dart';
+import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
 import 'package:cripto_qr_googlemarine/widgets/checkout_button_widget.dart';
-import 'package:cripto_qr_googlemarine/widgets/print_button_widget.dart';
+import 'package:cripto_qr_googlemarine/widgets/sync_button_widget.dart';
 import 'package:cripto_qr_googlemarine/widgets/title_value_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/user.dart';
 import '../../repositories/user_repository.dart';
+import '../../utils/action_enum.dart';
 import '../../utils/theme.dart';
 import 'cubit/details_cubit.dart';
 import 'cubit/details_state.dart';
@@ -22,8 +25,12 @@ class Details extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final UserRepository userRepository = Provider.of<UserRepository>(context);
+    final EventRepository eventRepository =
+        Provider.of<EventRepository>(context);
+
     return BlocProvider(
-      create: (context) => DetailsCubit(UserRepository()),
+      create: (context) => DetailsCubit(userRepository, eventRepository),
       child: Container(
         color: CQColors.white,
         child: DetailsView(
@@ -43,7 +50,7 @@ class DetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var cubit = context.read<DetailsCubit>();
+    // var cubit = context.read<DetailsCubit>();
     context.read<DetailsCubit>().fetchEvents(user.identidade);
 
     return BlocBuilder<DetailsCubit, DetailsState>(
@@ -98,13 +105,13 @@ class DetailsView extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
-                                child: Text(user.nome,
+                                child: Text(user.name,
                                     style: CQTheme.h1.copyWith(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w600),
                                     overflow: TextOverflow.ellipsis),
                               ),
-                              Text('|   N° ${user.numero.toString()}',
+                              Text('|   N° ${user.number.toString()}',
                                   style:
                                       CQTheme.h1.copyWith(color: Colors.white),
                                   overflow: TextOverflow.ellipsis),
@@ -143,13 +150,13 @@ class DetailsView extends StatelessWidget {
                               const SizedBox(height: 8),
                               TitleValueWidget(
                                 title: CQStrings.funcao,
-                                value: user.funcao,
+                                value: user.role,
                                 color: CQColors.iron100,
                               ),
                               const SizedBox(height: 12),
                               TitleValueWidget(
                                 title: CQStrings.empresaTrip,
-                                value: user.empresa,
+                                value: user.company,
                                 color: CQColors.iron100,
                               ),
                               const SizedBox(height: 12),
@@ -167,11 +174,13 @@ class DetailsView extends StatelessWidget {
                                 ),
                               ],
                               const SizedBox(height: 12),
+                              //TODO: Add vessel
+                              /*
                               TitleValueWidget(
                                 title: CQStrings.embarcacao,
                                 value: user.vessel,
                                 color: CQColors.iron100,
-                              ),
+                              ),*/
                               const SizedBox(height: 12),
                               TitleValueWidget(
                                 title: CQStrings.area,
@@ -210,8 +219,7 @@ class DetailsView extends StatelessWidget {
                                   ),
                                   TitleValueWidget(
                                     title: CQStrings.aso,
-                                    value: Formatter.formatDateTime(
-                                        user.ASO.toDate()),
+                                    value: Formatter.formatDateTime(user.aso),
                                     color: CQColors.iron100,
                                   ),
                                   const SizedBox(height: 8),
@@ -221,14 +229,14 @@ class DetailsView extends StatelessWidget {
                                     children: [
                                       TitleValueWidget(
                                         title: CQStrings.nr34,
-                                        value: Formatter.formatDateTime(
-                                            user.NR34.toDate()),
+                                        value:
+                                            Formatter.formatDateTime(user.nr34),
                                         color: CQColors.iron100,
                                       ),
                                       TitleValueWidget(
                                         title: CQStrings.nr10,
-                                        value: Formatter.formatDateTime(
-                                            user.NR10.toDate()),
+                                        value:
+                                            Formatter.formatDateTime(user.nr10),
                                         color: CQColors.iron100,
                                       ),
                                     ],
@@ -240,14 +248,14 @@ class DetailsView extends StatelessWidget {
                                     children: [
                                       TitleValueWidget(
                                         title: CQStrings.nr33,
-                                        value: Formatter.formatDateTime(
-                                            user.NR33.toDate()),
+                                        value:
+                                            Formatter.formatDateTime(user.nr33),
                                         color: CQColors.iron100,
                                       ),
                                       TitleValueWidget(
                                         title: CQStrings.nr35,
-                                        value: Formatter.formatDateTime(
-                                            user.NR35.toDate()),
+                                        value:
+                                            Formatter.formatDateTime(user.nr35),
                                         color: CQColors.iron100,
                                       ),
                                     ],
@@ -303,7 +311,7 @@ class DetailsView extends StatelessWidget {
                                           ),
                                           Text(
                                             Formatter.formatDateTime(
-                                                user.dataInicial.toDate()),
+                                                user.startJob),
                                             style: CQTheme.body.copyWith(
                                               color: CQColors.iron100,
                                               fontWeight: FontWeight.w700,
@@ -327,7 +335,7 @@ class DetailsView extends StatelessWidget {
                                           ),
                                           Text(
                                             Formatter.formatDateTime(
-                                                user.dataLimite.toDate()),
+                                                user.endJob),
                                             style: CQTheme.body.copyWith(
                                               color: CQColors.iron100,
                                               fontWeight: FontWeight.w700,
@@ -382,7 +390,8 @@ class DetailsView extends StatelessWidget {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            state.eventos[index].acao,
+                                            actionEnumToString(
+                                                state.eventos[index].action),
                                             style: CQTheme.body.copyWith(
                                               color: CQColors.iron100,
                                               fontWeight: FontWeight.w600,
@@ -395,8 +404,7 @@ class DetailsView extends StatelessWidget {
                                                 left: 8.0),
                                             child: Text(
                                               Formatter.fromatHourDateTime(state
-                                                  .eventos[index].createdAt
-                                                  .toDate()),
+                                                  .eventos[index].timestamp),
                                               style: CQTheme.body.copyWith(
                                                 color: CQColors.iron100,
                                                 fontWeight: FontWeight.w700,
@@ -421,17 +429,19 @@ class DetailsView extends StatelessWidget {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PrintButtonWidget(
+                    SyncButtonWidget(
                       onPressed: () {},
                     ),
+                    //TODO: create checkout event
                     CheckOutButtonWidget(
                       onPressed: () {
+                        /*
                         cubit.createCheckoutEvento(
                             user.identidade, user.vessel);
+                            */
                       },
-                      isDisabled:
-                          !(state.eventos[0].acao == CQStrings.checkOut ||
-                              user.isOnboarded == true),
+                      isDisabled: !(state.eventos[0].action == 1 ||
+                          user.isOnboarded == true),
                     ),
                   ],
                 ),
