@@ -1,4 +1,4 @@
-import 'package:cripto_qr_googlemarine/models/evento.dart';
+import 'package:cripto_qr_googlemarine/models/event.dart';
 
 abstract class DetailsState {}
 
@@ -7,7 +7,7 @@ class DetailsInitial extends DetailsState {}
 class DetailsLoading extends DetailsState {}
 
 class DetailsLoaded extends DetailsState {
-  final List<Evento> eventos;
+  final List<Event> eventos;
   DetailsLoaded(this.eventos);
 }
 

@@ -1,25 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cripto_qr_googlemarine/models/event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../models/evento.dart';
+import '../../../repositories/event_repository.dart';
 import '../../../repositories/user_repository.dart';
-import '../../../utils/ui/strings.dart';
 import 'details_state.dart';
 
 class DetailsCubit extends Cubit<DetailsState> {
   final UserRepository userRepository;
+  final EventRepository eventRepository;
 
-  DetailsCubit(this.userRepository) : super(DetailsInitial());
+  DetailsCubit(this.userRepository, this.eventRepository)
+      : super(DetailsInitial());
 
-  fetchEvents(String identidade) async {
+  fetchEvents(String userId) async {
     try {
       emit(DetailsLoading());
-      var eventos = await userRepository.fetchEvents(identidade);
-      List<Evento> eventosMapped = eventos
-          .map((eventoMap) => Evento.fromMap(eventoMap))
-          .toList()
-          .reversed
-          .toList();
+      var eventos = await eventRepository.getEventsByUser(userId);
+      List<Event> eventosMapped = eventos;
       print("Events fetched: ${eventos[0]}");
       emit(DetailsLoaded(eventosMapped));
     } catch (e) {
@@ -28,17 +25,26 @@ class DetailsCubit extends Cubit<DetailsState> {
     }
   }
 
-  createCheckoutEvento(String identidade, String vessel) async {
+  createCheckoutEvento(String userId, String vesselId, String portalId) async {
     try {
       emit(DetailsLoading());
-      Evento evento = Evento(
-        acao: CQStrings.checkOut,
-        user: identidade,
-        vessel: vessel,
-        createdAt: Timestamp.fromDate(DateTime.now()),
-      );
-      await userRepository.addEvent(evento.toMap());
-      fetchEvents(identidade);
+      //generate unique id
+      String UUID = DateTime.now().millisecondsSinceEpoch.toString();
+      Event event = Event(
+          id: UUID,
+          portalId: portalId,
+          userId: userId,
+          timestamp: DateTime.now(),
+          direction: 1,
+          vesselId: vesselId,
+          picture: '',
+          action: 1,
+          manual: false,
+          justification: '');
+
+      await eventRepository.createEvent(event);
+      fetchEvents(userId);
+      emit(DetailsLoaded([]));
     } catch (e) {
       print(e.toString());
       emit(DetailsError("Failed to create event."));
