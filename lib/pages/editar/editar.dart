@@ -1,7 +1,9 @@
+import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/user.dart';
 import '../../repositories/user_repository.dart';
@@ -20,8 +22,11 @@ class Editar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final UserRepository userRepository = Provider.of<UserRepository>(context);
+    final EventRepository eventRepository =
+        Provider.of<EventRepository>(context);
     return BlocProvider(
-      create: (context) => EditarCubit(UserRepository(), user),
+      create: (context) => EditarCubit(userRepository, user, eventRepository),
       child: EditarView(
         onSalvar: onSalvar,
         user: user,
@@ -40,25 +45,26 @@ class EditarView extends StatelessWidget {
     final TextEditingController identidadeController =
         TextEditingController(text: Formatter.identidade(user.identidade));
     final TextEditingController nomeController =
-        TextEditingController(text: user.nome);
+        TextEditingController(text: user.name);
     final TextEditingController funcaoController =
-        TextEditingController(text: user.funcao);
+        TextEditingController(text: user.role);
     final TextEditingController empresaController =
-        TextEditingController(text: user.empresa);
+        TextEditingController(text: user.company);
     final TextEditingController emailController =
         TextEditingController(text: user.email);
+    //TODO: senhaController
     final TextEditingController senhaController =
-        TextEditingController(text: user.password);
-    final TextEditingController asoController = TextEditingController(
-        text: Formatter.formatDateTime(user.ASO.toDate()));
-    final TextEditingController nr34Controller = TextEditingController(
-        text: Formatter.formatDateTime(user.NR34.toDate()));
-    final TextEditingController nr10Controller = TextEditingController(
-        text: Formatter.formatDateTime(user.NR10.toDate()));
-    final TextEditingController nr33Controller = TextEditingController(
-        text: Formatter.formatDateTime(user.NR33.toDate()));
-    final TextEditingController nr35Controller = TextEditingController(
-        text: Formatter.formatDateTime(user.NR35.toDate()));
+        TextEditingController(text: user.name);
+    final TextEditingController asoController =
+        TextEditingController(text: Formatter.formatDateTime(user.aso));
+    final TextEditingController nr34Controller =
+        TextEditingController(text: Formatter.formatDateTime(user.nr34));
+    final TextEditingController nr10Controller =
+        TextEditingController(text: Formatter.formatDateTime(user.nr10));
+    final TextEditingController nr33Controller =
+        TextEditingController(text: Formatter.formatDateTime(user.nr33));
+    final TextEditingController nr35Controller =
+        TextEditingController(text: Formatter.formatDateTime(user.nr35));
     final TextEditingController dataInicialController =
         TextEditingController(text: Formatter.formatDateTime(DateTime.now()));
     final TextEditingController dataFinalController =
@@ -126,7 +132,7 @@ class EditarView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('N° ${state.user.numero}', style: CQTheme.h1),
+                          Text('N° ${state.user.number}', style: CQTheme.h1),
                           const Divider(),
                           TextInputWidget(
                             title: CQStrings.nome,
@@ -185,6 +191,7 @@ class EditarView extends StatelessWidget {
                               ),
                             ],
                           ),
+                          /*
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text(
@@ -263,7 +270,7 @@ class EditarView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          ),
+                          ),*/
                           const Divider(),
                           const Padding(
                             padding: EdgeInsets.fromLTRB(8.0, 16.0, 16, 0.0),
@@ -335,7 +342,7 @@ class EditarView extends StatelessWidget {
                                 flex: 1,
                                 child: InkWell(
                                   onTap: () {
-                                    state.user.isVisitante
+                                    state.user.isVisitor
                                         ? cubit.updateIsVisitante(false)
                                         : cubit.updateIsVisitante(true);
                                   },
@@ -351,9 +358,9 @@ class EditarView extends StatelessWidget {
                                           ),
                                         ),
                                         Checkbox(
-                                          value: state.user.isVisitante,
+                                          value: state.user.isVisitor,
                                           onChanged: (value) {
-                                            state.user.isVisitante
+                                            state.user.isVisitor
                                                 ? cubit.updateIsVisitante(false)
                                                 : cubit.updateIsVisitante(true);
                                           },
@@ -403,13 +410,6 @@ class EditarView extends StatelessWidget {
                               ),
                             ],
                           ),
-                          if (state.user.isAdmin)
-                            TextInputWidget(
-                              title: CQStrings.senha,
-                              isRequired: true,
-                              controller: senhaController,
-                              onChanged: (text) => cubit.updatePassword(text),
-                            ),
                           const Divider(),
                           Row(
                             children: [
