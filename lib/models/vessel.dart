@@ -1,39 +1,43 @@
 class Vessel {
+  String name;
+  String companyId;
+  DateTime updatedAt;
   String id;
-  String nome;
-  int onBoarded;
-  List<String> users;
-  String createdAt;
-  String updatedAt;
+  List<String> admins;
+  int onboardedCount;
+  List<String> portals;
 
   Vessel({
-    required this.id,
-    required this.nome,
-    required this.onBoarded,
-    required this.users,
-    required this.createdAt,
+    required this.name,
+    required this.companyId,
     required this.updatedAt,
+    required this.id,
+    required this.admins,
+    required this.onboardedCount,
+    required this.portals,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'nome': nome,
-      'onBoarded': onBoarded,
-      'users': users,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-    };
+  factory Vessel.fromJson(Map<String, dynamic> json) {
+    return Vessel(
+      name: json['name'],
+      companyId: json['company_id'],
+      updatedAt: DateTime.parse(json['updated_at']),
+      id: json['id'],
+      admins: List<String>.from(json['admins']),
+      onboardedCount: json['onboarded_count'],
+      portals: List<String>.from(json['portals']),
+    );
   }
 
-  static Vessel fromMap(Map<String, dynamic> map) {
-    return Vessel(
-      id: map['id'],
-      nome: map['nome'],
-      onBoarded: map['onBoarded'],
-      users: List<String>.from(map['users']),
-      createdAt: map['createdAt'],
-      updatedAt: map['updatedAt'],
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'company_id': companyId,
+      'updated_at': updatedAt.toIso8601String(),
+      'id': id,
+      'admins': admins,
+      'onboarded_count': onboardedCount,
+      'portals': portals,
+    };
   }
 }
