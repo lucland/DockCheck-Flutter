@@ -1,31 +1,91 @@
-import 'package:cripto_qr_googlemarine/pages/login/login.dart';
-import 'package:cripto_qr_googlemarine/pages/root/root.dart';
-import 'package:cripto_qr_googlemarine/utils/simple_blo_observer.dart';
-import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cripto_qr_googlemarine/utils/theme.dart';
+import 'package:cripto_qr_googlemarine/pages/cadastrar/cubit/cadastrar_cubit.dart';
+import 'package:cripto_qr_googlemarine/pages/details/cubit/details_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
+import 'package:cripto_qr_googlemarine/repositories/login_repository.dart';
+import 'package:cripto_qr_googlemarine/repositories/authorization_repository.dart';
+import 'package:cripto_qr_googlemarine/services/api_service.dart';
+import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
+import 'blocs/user/user_cubit.dart';
+import 'pages/init.dart';
+import 'pages/login/cubit/login_cubit.dart';
+import 'repositories/company_repository.dart';
+import 'repositories/docking_repository.dart';
+import 'repositories/event_repository.dart';
+import 'repositories/portal_repository.dart';
+import 'repositories/supervisor_repository.dart';
+import 'repositories/user_repository.dart';
+import 'repositories/vessel_repository.dart';
+import 'services/permission_handler_service.dart';
+import 'utils/simple_logger.dart';
+import 'utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+  var localStorageService = LocalStorageService();
+  await localStorageService.initDB();
+  await localStorageService.init();
+
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  Bloc.observer = SimpleBlocObserver();
 
   SimpleLogger.shared.set(level: LoggerLevel.info, mode: LoggerMode.log);
-
   SimpleLogger.info('Launching -----');
   SimpleLogger.info('App ID: ${packageInfo.packageName}');
   SimpleLogger.info('Version: ${packageInfo.version}');
 
+  var apiService = ApiService(localStorageService);
+  var permissionHandlerService = PermissionHandlerService();
+
+  var loginRepository = LoginRepository(apiService);
+  var authorizationRepository =
+      AuthorizationRepository(apiService, localStorageService);
+  var companyRepository = CompanyRepository(apiService, localStorageService);
+  var dockingRepository = DockingRepository(apiService, localStorageService);
+  var eventRepository = EventRepository(apiService, localStorageService);
+  var portalRepository = PortalRepository(apiService, localStorageService);
+  var supervisorRepository =
+      SupervisorRepository(apiService, localStorageService);
+  var userRepository = UserRepository(apiService, localStorageService);
+  var vesselRepository = VesselRepository(apiService, localStorageService);
+
+  var loginCubit =
+      LoginCubit(loginRepository, userRepository, localStorageService);
+  var userCubit = UserCubit(userRepository);
+  var cadastrarCubit = CadastrarCubit(userRepository, eventRepository);
+  var detailsCubit = DetailsCubit(userRepository, eventRepository);
+
   runApp(
-    MaterialApp(
-      theme: CQTheme.theme,
-      home: const LoginPage(),
-      debugShowCheckedModeBanner: false,
+    MultiBlocProvider(
+      providers: [
+        Provider<LoginRepository>(create: (_) => loginRepository),
+        Provider<AuthorizationRepository>(
+            create: (_) => authorizationRepository),
+        Provider<CompanyRepository>(create: (_) => companyRepository),
+        Provider<DockingRepository>(create: (_) => dockingRepository),
+        Provider<EventRepository>(create: (_) => eventRepository),
+        Provider<PortalRepository>(create: (_) => portalRepository),
+        Provider<SupervisorRepository>(create: (_) => supervisorRepository),
+        Provider<UserRepository>(create: (_) => userRepository),
+        Provider<VesselRepository>(create: (_) => vesselRepository),
+        Provider<PermissionHandlerService>(
+            create: (_) => permissionHandlerService),
+        Provider<ApiService>(create: (_) => apiService),
+        Provider<LocalStorageService>(create: (_) => localStorageService),
+        BlocProvider<LoginCubit>(create: (_) => loginCubit),
+        BlocProvider<UserCubit>(create: (_) => userCubit),
+        BlocProvider<CadastrarCubit>(create: (_) => cadastrarCubit),
+        BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
+      ],
+      child: MaterialApp(
+        theme: CQTheme.theme,
+        home: const InitPage(),
+        debugShowCheckedModeBanner: false,
+      ),
     ),
   );
 }
