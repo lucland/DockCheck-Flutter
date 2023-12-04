@@ -1,95 +1,105 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:cripto_qr_googlemarine/pages/root/root.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:cripto_qr_googlemarine/utils/theme.dart';
+import 'package:cripto_qr_googlemarine/utils/ui/strings.dart';
+import 'package:cripto_qr_googlemarine/widgets/text_input_widget.dart';
 
-import '../../utils/theme.dart';
-import '../../utils/ui/strings.dart';
-import '../../widgets/text_input_widget.dart';
+import 'cubit/login_cubit.dart';
+import 'cubit/login_state.dart';
 
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-    ));
-
     return Scaffold(
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            flex: 4,
-            child: Container(
-              color: CQColors.iron100,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Image.asset('assets/imgs/logo_dock_check.png'),
-                ), // Logo
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 6,
-            child: Container(
-              color: CQColors.background,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextInputWidget(
-                          title: 'Usuário',
-                          keyboardType: TextInputType.emailAddress,
-                          controller: TextEditingController(),
-                          onChanged: (text) => {},
-                        ),
-                        TextInputWidget(
-                          title: 'Senha',
-                          keyboardType: TextInputType.text,
-                          controller: TextEditingController(),
-                          isPassword: true,
-                          onChanged: (text) => {},
-                        ),
-                      ],
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            settings: const RouteSettings(name: '/root'),
-                            builder: (context) => const Root(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(0.0),
-                          color: CQColors.iron100,
-                        ),
-                        padding: const EdgeInsets.all(24.0),
-                        child: Text(
-                          CQStrings.login,
-                          overflow: TextOverflow.ellipsis,
-                          style:
-                              CQTheme.headLine.copyWith(color: CQColors.white),
-                        ),
-                      ),
-                    ),
-                  ],
+      body: BlocListener<LoginCubit, LoginState>(
+        listener: (context, state) {
+          if (state is LoginSuccess) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Root()),
+            );
+          } else if (state is LoginError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Login Failed')),
+            );
+          }
+        },
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 4,
+              child: Container(
+                color: CQColors.iron100,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Image.asset('assets/imgs/logo_dock_check.png'),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+            Expanded(
+              flex: 6,
+              child: Container(
+                color: CQColors.background,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 4.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          TextInputWidget(
+                            title: 'Usuário',
+                            keyboardType: TextInputType.emailAddress,
+                            controller: _usernameController,
+                          ),
+                          TextInputWidget(
+                            title: 'Senha',
+                            keyboardType: TextInputType.text,
+                            controller: _passwordController,
+                            isPassword: true,
+                          ),
+                        ],
+                      ),
+                      InkWell(
+                        onTap: () {
+                          BlocProvider.of<LoginCubit>(context).logIn(
+                            _usernameController.text,
+                            _passwordController.text,
+                          );
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(0.0),
+                            color: CQColors.iron100,
+                          ),
+                          padding: const EdgeInsets.all(24.0),
+                          child: Text(
+                            CQStrings.login,
+                            overflow: TextOverflow.ellipsis,
+                            style: CQTheme.headLine
+                                .copyWith(color: CQColors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
