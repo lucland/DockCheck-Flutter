@@ -1,53 +1,77 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cripto_qr_googlemarine/models/evento.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
+import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../models/event.dart';
 import '../../../models/user.dart';
 import '../../../repositories/user_repository.dart';
 import 'cadastrar_state.dart';
 
 class CadastrarCubit extends Cubit<CadastrarState> {
   final UserRepository userRepository;
+  final EventRepository eventRepository;
 
   bool isClosed = false;
 
-  CadastrarCubit(this.userRepository)
+  CadastrarCubit(this.userRepository, this.eventRepository)
       : super(
           CadastrarState(
             numero: 0,
             user: User(
-              numero: 0,
+              id: '', // Provide an initial value or keep it empty if appropriate
+              authorizationsId: [], // An empty list as an initial value
+              name: '',
+              company: '',
+              role: '',
+              project: '',
+              number: 0,
               identidade: '',
-              nome: '',
-              funcao: '',
+              cpf: '',
+              aso: DateTime.now(), // Current timestamp or a placeholder date
+              asoDocument: '',
+              hasAso: false,
+              nr34: DateTime.now(), // Similar to aso
+              nr34Document: '',
+              hasNr34: false,
+              nr35: DateTime.now(), // Similar to aso
+              nr35Document: '',
+              hasNr35: false,
+              nr33: DateTime.now(), // Similar to aso
+              nr33Document: '',
+              hasNr33: false,
+              nr10: DateTime.now(), // Similar to aso
+              nr10Document: '',
+              hasNr10: false,
               email: '',
-              empresa: '',
-              ASO: Timestamp.now(),
-              NR34: Timestamp.now(),
-              NR10: Timestamp.now(),
-              NR33: Timestamp.now(),
-              NR35: Timestamp.now(),
-              vessel: 'SKANDI AMAZONAS',
-              dataInicial: Timestamp.now(),
-              dataLimite: Timestamp.now(),
-              isVisitante: false,
+              area: '', // Provide a default area or keep it empty
               isAdmin: false,
-              eventos: [],
-              createdAt: Timestamp.now(),
-              updatedAt: Timestamp.now(),
-              isBlocked: false,
-              area: AreasEnum.pracaDeMaquinas,
-              reason: '',
+              isVisitor: false,
+              isGuardian: false,
               isOnboarded: false,
-              isSupervisor: false,
-              password: '',
+              isBlocked: false,
+              blockReason: '',
+              rfid: '',
+              picture: '',
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+              events: [],
+              typeJob: '',
+              startJob: DateTime.now(),
+              endJob: DateTime.now(),
+              username: '',
+              salt: '',
+              hash: '',
             ),
-            evento: Evento(
-              acao: CQStrings.usuarioCadastrado,
-              user: '',
-              vessel: 'SKANDI AMAZONAS',
-              createdAt: Timestamp.now(),
+            evento: Event(
+              id: '',
+              portalId: '',
+              userId: '',
+              timestamp: DateTime.now(),
+              direction: 0,
+              picture: '',
+              vesselId: '',
+              action: 0,
+              manual: false,
+              justification: '',
             ),
           ),
         );
@@ -55,9 +79,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void fetchNumero() async {
     if (!isClosed) {
       try {
-        var numero = await userRepository.fetchNumero();
+        var numero = await userRepository.getLastUserNumber();
         numero++;
-        final user = state.user.copyWith(numero: numero);
+        final user = state.user.copyWith(number: numero);
         emit(state.copyWith(user: user, isLoading: false, numero: numero));
       } catch (e) {
         emit(state.copyWith(
@@ -68,21 +92,21 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
   }
 
-  void updateIdentidade(String identidade) {
-    final user = state.user.copyWith(identidade: identidade);
-    final evento = state.evento.copyWith(user: identidade);
+  void updateIdentidade(String userId) {
+    final user = state.user.copyWith(identidade: userId);
+    final evento = state.evento.copyWith(userId: userId);
     checkCadastroHabilitado();
     emit(state.copyWith(user: user, evento: evento));
   }
 
   void updateNome(String nome) {
-    final user = state.user.copyWith(nome: nome);
+    final user = state.user.copyWith(name: nome);
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
 
   void updateFuncao(String funcao) {
-    final user = state.user.copyWith(funcao: funcao);
+    final user = state.user.copyWith(role: funcao);
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
@@ -94,58 +118,58 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   void updateEmpresa(String empresa) {
-    final user = state.user.copyWith(empresa: empresa);
+    final user = state.user.copyWith(company: empresa);
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
 
-  void updateASO(Timestamp ASO) {
-    final user = state.user.copyWith(ASO: ASO);
+  void updateASO(DateTime ASO) {
+    final user = state.user.copyWith(aso: ASO);
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
 
-  void updateNR34(Timestamp NR34) {
-    final user = state.user.copyWith(NR34: NR34);
+  void updateNR34(DateTime NR34) {
+    final user = state.user.copyWith(nr34: NR34);
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
 
-  void updateNR10(Timestamp NR10) {
-    final user = state.user.copyWith(NR10: NR10);
+  void updateNR10(DateTime NR10) {
+    final user = state.user.copyWith(nr10: NR10);
     emit(state.copyWith(user: user));
   }
 
   void updatePassword(String password) {
-    final user = state.user.copyWith(password: password);
+    final user = state.user.copyWith(salt: password, hash: '');
     emit(state.copyWith(user: user));
   }
 
-  void updateNR33(Timestamp NR33) {
-    final user = state.user.copyWith(NR33: NR33);
+  void updateNR33(DateTime NR33) {
+    final user = state.user.copyWith(nr33: NR33);
     emit(state.copyWith(user: user));
   }
 
-  void updateNR35(Timestamp NR35) {
-    final user = state.user.copyWith(NR35: NR35);
+  void updateNR35(DateTime NR35) {
+    final user = state.user.copyWith(nr35: NR35);
     emit(state.copyWith(user: user));
   }
 
-  void updateDataInicial(Timestamp dataInicial) {
-    final user = state.user.copyWith(dataInicial: dataInicial);
+  void updateDataInicial(DateTime dataInicial) {
+    final user = state.user.copyWith(startJob: dataInicial);
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
 
-  void updateDataLimite(Timestamp dataLimite) {
-    final user = state.user.copyWith(dataLimite: dataLimite);
+  void updateDataLimite(DateTime dataLimite) {
+    final user = state.user.copyWith(endJob: dataLimite);
     checkCadastroHabilitado();
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
 
   void updateIsVisitante(bool isVisitante) {
-    final user = state.user.copyWith(isVisitante: isVisitante);
+    final user = state.user.copyWith(isVisitor: isVisitante);
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
@@ -155,23 +179,17 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     emit(state.copyWith(user: user));
   }
 
-  void updateVessel(String vessel) {
-    final evento = state.evento.copyWith(vessel: vessel);
-    final user = state.user.copyWith(vessel: vessel);
-    emit(state.copyWith(evento: evento, user: user));
-  }
-
   void updateEventos(List<String> eventos) {
-    final user = state.user.copyWith(eventos: eventos);
+    final user = state.user.copyWith(events: eventos);
     emit(state.copyWith(user: user));
   }
 
-  void updateCreatedAt(Timestamp createdAt) {
+  void updateCreatedAt(DateTime createdAt) {
     final user = state.user.copyWith(createdAt: createdAt);
     emit(state.copyWith(user: user));
   }
 
-  void updateUpdatedAt(Timestamp updatedAt) {
+  void updateUpdatedAt(DateTime updatedAt) {
     final user = state.user.copyWith(updatedAt: updatedAt);
     emit(state.copyWith(user: user));
   }
@@ -190,7 +208,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void createEvent() async {
     emit(state.copyWith(isLoading: true));
     try {
-      await userRepository.addEvent(state.evento.toMap());
+      await eventRepository.createEvent(state.evento);
       createUser();
     } catch (e) {
       emit(state.copyWith(
@@ -203,7 +221,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   void createUser() async {
     emit(state.copyWith(isLoading: true));
     try {
-      await userRepository.addUser(state.user.toMap(), state.user.identidade);
+      await userRepository.createUser(state.user);
       clearFields();
       emit(state.copyWith(isLoading: false, userCreated: true));
     } catch (e) {
@@ -216,22 +234,22 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   void checkCadastroHabilitado() {
     DateTime now = DateTime.now();
-    Timestamp todayTimestamp =
-        Timestamp.fromDate(DateTime(now.year, now.month, now.day));
+    DateTime today = DateTime(now.year, now.month, now.day);
 
-    bool commonChecksPassed = state.user.nome.isNotEmpty &&
-        state.user.funcao.isNotEmpty &&
+    bool commonChecksPassed = state.user.name.isNotEmpty &&
+        state.user.role.isNotEmpty &&
         state.user.identidade.isNotEmpty &&
-        state.user.empresa.isNotEmpty &&
-        (state.user.dataLimite.seconds - todayTimestamp.seconds >= -43200);
+        state.user.company.isNotEmpty &&
+        state.user.endJob.isAfter(state.user.startJob) &&
+        state.user.endJob.isAfter(today);
+
+    bool nonVisitorChecksPassed = state.user.isVisitor ||
+        (!state.user.isVisitor &&
+            state.user.aso.isBefore(today) &&
+            state.user.nr34.isBefore(today));
 
     bool adminCheckPassed = !state.user.isAdmin ||
-        (state.user.isAdmin && state.user.password.isNotEmpty);
-
-    bool nonVisitorChecksPassed = state.user.isVisitante ||
-        (!state.user.isVisitante &&
-            state.user.ASO.seconds - todayTimestamp.seconds >= 86400 &&
-            state.user.NR34.seconds - todayTimestamp.seconds >= 86400);
+        (state.user.isAdmin && state.user.hash.isNotEmpty);
 
     if (commonChecksPassed && adminCheckPassed && nonVisitorChecksPassed) {
       emit(state.copyWith(cadastroHabilitado: true));
@@ -242,40 +260,64 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   void clearFields() {
     final user = state.user.copyWith(
-      numero: state.numero,
+      id: '', // Provide an initial value or keep it empty if appropriate
+      authorizationsId: [], // An empty list as an initial value
+      name: '',
+      company: '',
+      role: '',
+      project: '',
+      number: 0,
       identidade: '',
-      nome: '',
-      funcao: '',
+      cpf: '',
+      aso: DateTime.now(), // Current timestamp or a placeholder date
+      asoDocument: '',
+      hasAso: false,
+      nr34: DateTime.now(), // Similar to aso
+      nr34Document: '',
+      hasNr34: false,
+      nr35: DateTime.now(), // Similar to aso
+      nr35Document: '',
+      hasNr35: false,
+      nr33: DateTime.now(), // Similar to aso
+      nr33Document: '',
+      hasNr33: false,
+      nr10: DateTime.now(), // Similar to aso
+      nr10Document: '',
+      hasNr10: false,
       email: '',
-      empresa: '',
-      ASO: Timestamp.now(),
-      NR34: Timestamp.now(),
-      NR10: Timestamp.now(),
-      NR33: Timestamp.now(),
-      NR35: Timestamp.now(),
-      vessel: 'SKANDI AMAZONAS',
-      dataInicial: Timestamp.now(),
-      dataLimite: Timestamp.now(),
-      isVisitante: false,
+      area: '', // Provide a default area or keep it empty
       isAdmin: false,
-      eventos: [],
-      createdAt: Timestamp.now(),
-      updatedAt: Timestamp.now(),
-      isBlocked: false,
-      area: AreasEnum.pracaDeMaquinas,
-      reason: "",
+      isVisitor: false,
+      isGuardian: false,
       isOnboarded: false,
-      isSupervisor: false,
-      password: "",
+      isBlocked: false,
+      blockReason: '',
+      rfid: '',
+      picture: '',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      events: [],
+      typeJob: '',
+      startJob: DateTime.now(),
+      endJob: DateTime.now(),
+      username: '',
+      salt: '',
+      hash: '',
     );
     emit(state.copyWith(
       user: user,
       isLoading: false,
-      evento: Evento(
-        acao: CQStrings.usuarioCadastrado,
-        user: '',
-        vessel: '',
-        createdAt: Timestamp.now(),
+      evento: Event(
+        id: '',
+        portalId: '',
+        userId: '',
+        timestamp: DateTime.now(),
+        direction: 0,
+        picture: '',
+        vesselId: '',
+        action: 0,
+        manual: false,
+        justification: '',
       ),
       userCreated: false,
       cadastroHabilitado: false,

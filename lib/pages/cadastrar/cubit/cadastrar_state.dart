@@ -1,4 +1,4 @@
-import 'package:cripto_qr_googlemarine/models/evento.dart';
+import 'package:cripto_qr_googlemarine/models/event.dart';
 
 import '../../../models/user.dart';
 
@@ -7,7 +7,7 @@ class CadastrarState {
   final User user;
   final bool isLoading;
   final String? errorMessage;
-  final Evento evento;
+  final Event evento;
   final bool userCreated;
   final bool cadastroHabilitado;
 
@@ -26,7 +26,7 @@ class CadastrarState {
     User? user,
     bool? isLoading,
     String? errorMessage,
-    Evento? evento,
+    Event? evento,
     bool? userCreated,
     bool? cadastroHabilitado,
   }) {
