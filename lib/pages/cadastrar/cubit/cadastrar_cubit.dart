@@ -1,4 +1,7 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
+import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/event.dart';
@@ -10,6 +13,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   final UserRepository userRepository;
   final EventRepository eventRepository;
 
+  @override
   bool isClosed = false;
 
   CadastrarCubit(this.userRepository, this.eventRepository)
@@ -17,8 +21,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           CadastrarState(
             numero: 0,
             user: User(
-              id: '', // Provide an initial value or keep it empty if appropriate
-              authorizationsId: [], // An empty list as an initial value
+              id: '',
+              authorizationsId: [],
               name: '',
               company: '',
               role: '',
@@ -26,23 +30,23 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               number: 0,
               identidade: '',
               cpf: '',
-              aso: DateTime.now(), // Current timestamp or a placeholder date
+              aso: DateTime.now(),
               asoDocument: '',
               hasAso: false,
-              nr34: DateTime.now(), // Similar to aso
+              nr34: DateTime.now(),
               nr34Document: '',
               hasNr34: false,
-              nr35: DateTime.now(), // Similar to aso
+              nr35: DateTime.now(),
               nr35Document: '',
               hasNr35: false,
-              nr33: DateTime.now(), // Similar to aso
+              nr33: DateTime.now(),
               nr33Document: '',
               hasNr33: false,
-              nr10: DateTime.now(), // Similar to aso
+              nr10: DateTime.now(),
               nr10Document: '',
               hasNr10: false,
               email: '',
-              area: '', // Provide a default area or keep it empty
+              area: '',
               isAdmin: false,
               isVisitor: false,
               isGuardian: false,
@@ -86,6 +90,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         final user = state.user.copyWith(number: numero);
         emit(state.copyWith(user: user, isLoading: false, numero: numero));
       } catch (e) {
+        SimpleLogger.warning('Error during data synchronization: $e');
         emit(state.copyWith(
           isLoading: false,
           errorMessage: e.toString(),
@@ -213,6 +218,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       await eventRepository.createEvent(state.evento);
       createUser();
     } catch (e) {
+      SimpleLogger.warning('Error during data synchronization: $e');
       emit(state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
@@ -227,6 +233,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       clearFields();
       emit(state.copyWith(isLoading: false, userCreated: true));
     } catch (e) {
+      SimpleLogger.warning('Error during data synchronization: $e');
       emit(state.copyWith(
         isLoading: false,
         errorMessage: e.toString(),
@@ -262,8 +269,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   void clearFields() {
     final user = state.user.copyWith(
-      id: '', // Provide an initial value or keep it empty if appropriate
-      authorizationsId: [], // An empty list as an initial value
+      id: '',
+      authorizationsId: [],
       name: '',
       company: '',
       role: '',
@@ -271,23 +278,23 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       number: 0,
       identidade: '',
       cpf: '',
-      aso: DateTime.now(), // Current timestamp or a placeholder date
+      aso: DateTime.now(),
       asoDocument: '',
       hasAso: false,
-      nr34: DateTime.now(), // Similar to aso
+      nr34: DateTime.now(),
       nr34Document: '',
       hasNr34: false,
-      nr35: DateTime.now(), // Similar to aso
+      nr35: DateTime.now(),
       nr35Document: '',
       hasNr35: false,
-      nr33: DateTime.now(), // Similar to aso
+      nr33: DateTime.now(),
       nr33Document: '',
       hasNr33: false,
-      nr10: DateTime.now(), // Similar to aso
+      nr10: DateTime.now(),
       nr10Document: '',
       hasNr10: false,
       email: '',
-      area: '', // Provide a default area or keep it empty
+      area: '',
       isAdmin: false,
       isVisitor: false,
       isGuardian: false,
