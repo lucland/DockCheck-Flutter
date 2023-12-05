@@ -49,5 +49,9 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to scan QR codes</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Need Bluetooth access to connect to devices</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Need Bluetooth access to connect to devices</string>
 </dict>
 </plist>
