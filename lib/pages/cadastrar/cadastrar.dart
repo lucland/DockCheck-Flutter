@@ -1,6 +1,7 @@
 import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/widgets/attach_file.dart';
+import 'package:cripto_qr_googlemarine/widgets/picture_profile.dart';
 import 'package:cripto_qr_googlemarine/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -168,6 +169,7 @@ class CadastrarView extends StatelessWidget {
                             ),
                           ],
                         ),
+                        TakeAPicture(),
                         /*
                         const Padding(
                           padding: EdgeInsets.all(8.0),
