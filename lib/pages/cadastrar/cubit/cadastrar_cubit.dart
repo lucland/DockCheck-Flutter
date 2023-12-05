@@ -333,4 +333,6 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     isClosed = true;
     return super.close();
   }
+
+  void updateLongName(bool value) {}
 }

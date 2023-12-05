@@ -1,5 +1,7 @@
 import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
+import 'package:cripto_qr_googlemarine/widgets/attach_file.dart';
+import 'package:cripto_qr_googlemarine/widgets/picture_profile.dart';
 import 'package:cripto_qr_googlemarine/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -167,6 +169,7 @@ class CadastrarView extends StatelessWidget {
                             ),
                           ],
                         ),
+                        TakeAPicture(),
                         /*
                         const Padding(
                           padding: EdgeInsets.all(8.0),
@@ -269,23 +272,38 @@ class CadastrarView extends StatelessWidget {
                           controller: asoController,
                           onChanged: (time) => cubit.updateASO(time),
                         ),
+                        AttachFileWidget(),
                         Row(
                           children: [
                             Flexible(
                               flex: 1,
-                              child: CalendarPickerWidget(
-                                title: CQStrings.nr34,
-                                isRequired: true,
-                                controller: nr34Controller,
-                                onChanged: (time) => cubit.updateNR34(time),
+                              child: Column(
+                                children: [
+                                  CalendarPickerWidget(
+                                    title: CQStrings.nr34,
+                                    isRequired: true,
+                                    controller: nr34Controller,
+                                    onChanged: (time) => cubit.updateNR34(time),
+                                  ),
+                                  AttachFileWidget(
+                                    longName: false,
+                                  ),
+                                ],
                               ),
                             ),
                             Flexible(
                               flex: 1,
-                              child: CalendarPickerWidget(
-                                title: CQStrings.nr10,
-                                controller: nr10Controller,
-                                onChanged: (time) => cubit.updateNR10(time),
+                              child: Column(
+                                children: [
+                                  CalendarPickerWidget(
+                                    title: CQStrings.nr10,
+                                    controller: nr10Controller,
+                                    onChanged: (time) => cubit.updateNR10(time),
+                                  ),
+                                  AttachFileWidget(
+                                    longName: false,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -294,18 +312,32 @@ class CadastrarView extends StatelessWidget {
                           children: [
                             Flexible(
                               flex: 1,
-                              child: CalendarPickerWidget(
-                                title: CQStrings.nr33,
-                                controller: nr33Controller,
-                                onChanged: (time) => cubit.updateNR33(time),
+                              child: Column(
+                                children: [
+                                  CalendarPickerWidget(
+                                    title: CQStrings.nr33,
+                                    controller: nr33Controller,
+                                    onChanged: (time) => cubit.updateNR33(time),
+                                  ),
+                                  AttachFileWidget(
+                                    longName: false,
+                                  ),
+                                ],
                               ),
                             ),
                             Flexible(
                               flex: 1,
-                              child: CalendarPickerWidget(
-                                title: CQStrings.nr35,
-                                controller: nr35Controller,
-                                onChanged: (time) => cubit.updateNR35(time),
+                              child: Column(
+                                children: [
+                                  CalendarPickerWidget(
+                                    title: CQStrings.nr35,
+                                    controller: nr35Controller,
+                                    onChanged: (time) => cubit.updateNR35(time),
+                                  ),
+                                  AttachFileWidget(
+                                    longName: false,
+                                  ),
+                                ],
                               ),
                             ),
                           ],
