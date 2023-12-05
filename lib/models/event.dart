@@ -9,6 +9,8 @@ class Event {
   int action;
   bool manual;
   String justification;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   Event({
     required this.id,
@@ -21,6 +23,8 @@ class Event {
     required this.action,
     required this.manual,
     required this.justification,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -35,6 +39,8 @@ class Event {
       action: json['action'],
       manual: json['manual'],
       justification: json['justification'],
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 
@@ -50,6 +56,8 @@ class Event {
       'action': action,
       'manual': manual,
       'justification': justification,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
     };
   }
 
@@ -64,6 +72,8 @@ class Event {
     int? action,
     bool? manual,
     String? justification,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return Event(
       id: id ?? this.id,
@@ -76,6 +86,8 @@ class Event {
       action: action ?? this.action,
       manual: manual ?? this.manual,
       justification: justification ?? this.justification,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }
