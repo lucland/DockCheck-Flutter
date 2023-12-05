@@ -2,6 +2,8 @@ import 'package:cripto_qr_googlemarine/models/portal.dart';
 import 'package:cripto_qr_googlemarine/services/api_service.dart';
 import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
 
+import '../utils/simple_logger.dart';
+
 class PortalRepository {
   final ApiService apiService;
   final LocalStorageService localStorageService;
@@ -37,16 +39,21 @@ class PortalRepository {
     return (data as List).map((item) => Portal.fromJson(item)).toList();
   }
 
-  // Sync portals from the server and update local database
   Future<void> syncPortals() async {
     try {
-      // Fetch data from the server
-      final serverPortals = await getAllPortals();
+      final localIds = await localStorageService.getIds('portals');
+      final serverIds = await getPortalIdsFromServer();
 
-      // Update local database
-      await updateLocalDatabase(serverPortals);
+      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
+
+      if (newIds.isNotEmpty) {
+        await fetchAndStoreNewPortals(newIds).then(
+            (value) => SimpleLogger.fine('Portal synchronization completed'),
+            onError: (e) =>
+                SimpleLogger.severe('Portal synchronization failed'));
+      }
     } catch (e) {
-      // Handle errors
+      SimpleLogger.severe('Portal synchronization failed');
     }
   }
 
@@ -57,6 +64,20 @@ class PortalRepository {
     // Insert new data into the local database
     for (var portal in serverPortals) {
       await localStorageService.insertData('portals', portal.toJson());
+    }
+  }
+
+  //getPortalIdsFromServer returns a list of portal ids
+  Future<List<String>> getPortalIdsFromServer() async {
+    final data = await apiService.get('portals/ids');
+    return (data as List).map((item) => item.toString()).toList();
+  }
+
+  Future<void> fetchAndStoreNewPortals(List<String> newIds) async {
+    for (String id in newIds) {
+      final authData = await apiService.get('portals/$id');
+      final auth = Portal.fromJson(authData);
+      await localStorageService.insertData('portals', auth.toJson());
     }
   }
 }
