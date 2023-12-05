@@ -6,6 +6,7 @@ class Vessel {
   List<String> admins;
   int onboardedCount;
   List<String> portals;
+  List<String> onboardedUsers;
 
   Vessel({
     required this.name,
@@ -15,6 +16,7 @@ class Vessel {
     required this.admins,
     required this.onboardedCount,
     required this.portals,
+    required this.onboardedUsers,
   });
 
   factory Vessel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Vessel {
       admins: List<String>.from(json['admins']),
       onboardedCount: json['onboarded_count'],
       portals: List<String>.from(json['portals']),
+      onboardedUsers: List<String>.from(json['onboarded_users']),
     );
   }
 
@@ -38,6 +41,7 @@ class Vessel {
       'admins': admins,
       'onboarded_count': onboardedCount,
       'portals': portals,
+      'onboarded_users': onboardedUsers,
     };
   }
 }
