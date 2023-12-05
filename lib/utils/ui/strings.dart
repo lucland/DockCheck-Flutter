@@ -16,6 +16,7 @@ class CQStrings {
   static const String identidade = 'Identidade';
   static const String funcao = 'Função';
   static const String empresaTrip = 'Empresa/Trip';
+  static const String mypicture = 'Foto';
   static const String embarcacao = 'Embarcação';
   static const String area = 'Área';
   static const String aso = 'ASO';

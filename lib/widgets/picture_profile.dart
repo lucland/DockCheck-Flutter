@@ -1,4 +1,6 @@
+import 'package:cripto_qr_googlemarine/utils/theme.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
+import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
 import 'package:flutter/material.dart';
 
 class TakeAPicture extends StatefulWidget {
@@ -47,50 +49,63 @@ class _TakeAPictureState extends State<TakeAPicture> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 5),
-            child: GestureDetector(
-              onTap: () {
-                // o que acontece quando clicar no botão
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: CQColors.slate100,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(8.0),
-                  color: CQColors.white,
-                ),
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 10, bottom: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.camera_alt_sharp,
-                          color: CQColors.iron100,
+        Padding(
+          padding: EdgeInsets.fromLTRB(10, 0, 0, 5),
+          child: Text(
+            CQStrings.mypicture,
+            style: CQTheme.h2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 5),
+                child: GestureDetector(
+                  onTap: () {
+                    // o que acontece quando clicar no botão
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: CQColors.slate100,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: CQColors.white,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.camera_alt_sharp,
+                              color: CQColors.iron100,
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              'TIRAR FOTO',
+                              style: TextStyle(
+                                color: CQColors.iron100,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 8),
-                        Text(
-                          'TIRAR FOTO',
-                          style: TextStyle(
-                            color: CQColors.iron100,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ],
     );
