@@ -3,6 +3,7 @@ import 'package:cripto_qr_googlemarine/services/api_service.dart';
 import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
 
 import '../models/authorization.dart';
+import '../utils/simple_logger.dart';
 
 class UserRepository {
   final ApiService apiService;
@@ -67,16 +68,20 @@ class UserRepository {
     return List<String>.from(data);
   }
 
-  // Sync users from the server and update local database
   Future<void> syncUsers() async {
     try {
-      // Fetch data from the server
-      final serverUsers = await getAllUsers();
+      final localIds = await localStorageService.getIds('users');
+      final serverIds = await getUsersIdsFromServer();
 
-      // Update local database
-      await updateLocalDatabase(serverUsers);
+      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
+
+      if (newIds.isNotEmpty) {
+        await fetchAndStoreNewUsers(newIds).then(
+            (value) => SimpleLogger.fine('User synchronization completed'),
+            onError: (e) => SimpleLogger.severe('User synchronization failed'));
+      }
     } catch (e) {
-      // Handle errors
+      SimpleLogger.severe('User synchronization failed');
     }
   }
 
@@ -87,6 +92,21 @@ class UserRepository {
     // Insert new data into the local database
     for (var user in serverUsers) {
       await localStorageService.insertData('users', user.toJson());
+    }
+  }
+
+  //getUsersIdsFromServer returns a list of user ids
+  Future<List<String>> getUsersIdsFromServer() async {
+    final data = await apiService.get('users/ids');
+    return (data as List).map((item) => item.toString()).toList();
+  }
+
+  //fetch and store new users
+  Future<void> fetchAndStoreNewUsers(List<String> newIds) async {
+    for (String id in newIds) {
+      final authData = await apiService.get('users/$id');
+      final auth = User.fromJson(authData);
+      await localStorageService.insertData('users', auth.toJson());
     }
   }
 }
