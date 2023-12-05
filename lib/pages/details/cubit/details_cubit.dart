@@ -40,7 +40,9 @@ class DetailsCubit extends Cubit<DetailsState> {
           picture: '',
           action: 1,
           manual: false,
-          justification: '');
+          justification: '',
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now());
 
       await eventRepository.createEvent(event);
       fetchEvents(userId);
