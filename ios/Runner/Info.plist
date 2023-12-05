@@ -49,9 +49,15 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs camera access to scan QR codes</string>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Need Bluetooth access to connect to devices</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Need Bluetooth access to connect to devices</string>
+	<string>Need BLE permission</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Need BLE permission</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Need Location permission</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Need Location permission</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Need Location permission</string>
 </dict>
 </plist>
