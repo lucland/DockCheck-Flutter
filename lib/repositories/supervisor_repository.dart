@@ -33,19 +33,6 @@ class SupervisorRepository {
     return (data as List).map((item) => Supervisor.fromJson(item)).toList();
   }
 
-  // Sync supervisors from the server and update local database
-  Future<void> syncSupervisors() async {
-    try {
-      // Fetch data from the server
-      final serverSupervisors = await getAllSupervisors();
-
-      // Update local database
-      await updateLocalDatabase(serverSupervisors);
-    } catch (e) {
-      // Handle errors
-    }
-  }
-
   Future<void> updateLocalDatabase(List<Supervisor> serverSupervisors) async {
     // Clear local data
     await localStorageService.clearTable('supervisors');
