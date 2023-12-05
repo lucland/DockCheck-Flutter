@@ -51,7 +51,7 @@ class DetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // var cubit = context.read<DetailsCubit>();
-    context.read<DetailsCubit>().fetchEvents(user.identidade);
+    context.read<DetailsCubit>().fetchEvents(user.id);
 
     return BlocBuilder<DetailsCubit, DetailsState>(
       builder: (context, state) {
