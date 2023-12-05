@@ -71,6 +71,8 @@ class EditarCubit extends Cubit<EditarState> {
               action: 0,
               manual: false,
               justification: '',
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
             ),
           ),
         );
@@ -292,6 +294,8 @@ class EditarCubit extends Cubit<EditarState> {
         action: 0,
         manual: false,
         justification: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       ),
       userCreated: false,
       cadastroHabilitado: false,
