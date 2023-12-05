@@ -11,37 +11,44 @@ class VesselRepository {
   VesselRepository(this.apiService, this.localStorageService);
 
   Future<Vessel> createVessel(Vessel vessel) async {
-    final data = await apiService.post('vessel/create', vessel.toJson());
+    final data = await apiService.post('vessels/create', vessel.toJson());
     return Vessel.fromJson(data);
   }
 
   Future<Vessel> getVessel(String id) async {
-    final data = await apiService.get('vessel/$id');
+    final data = await apiService.get('vessels/$id');
+    SimpleLogger.info('Vessel: $data');
     return Vessel.fromJson(data);
   }
 
   Future<List<Vessel>> getVesselsByName(String name) async {
-    final data = await apiService.get('vessel/name/$name');
+    final data = await apiService.get('vessels/name/$name');
     return (data as List).map((item) => Vessel.fromJson(item)).toList();
   }
 
   Future<Vessel> updateVessel(String id, Vessel vessel) async {
-    final data = await apiService.put('vessel/$id', vessel.toJson());
+    final data = await apiService.put('vessels/$id', vessel.toJson());
     return Vessel.fromJson(data);
   }
 
   Future<void> deleteVessel(String id) async {
-    await apiService.delete('vessel/$id');
+    await apiService.delete('vessels/$id');
   }
 
   Future<List<Vessel>> getVesselsByCompany(String companyId) async {
-    final data = await apiService.get('vessel/company/$companyId');
+    final data = await apiService.get('vessels/company/$companyId');
     return (data as List).map((item) => Vessel.fromJson(item)).toList();
   }
 
   Future<List<Vessel>> getAllVessels() async {
     final data = await apiService.get('vessels');
     return (data as List).map((item) => Vessel.fromJson(item)).toList();
+  }
+
+  //get onboarded users of a vessel with /vessels/onboarded/{id}/
+  Future<List<String>> getOnboardedUsers(String id) async {
+    final data = await apiService.get('vessels/onboarded/$id');
+    return (data as List).map((item) => item.toString()).toList();
   }
 
   Future<void> syncVessels() async {
