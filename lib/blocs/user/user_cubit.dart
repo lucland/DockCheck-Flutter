@@ -1,3 +1,4 @@
+import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../repositories/user_repository.dart';
@@ -12,12 +13,11 @@ class UserCubit extends Cubit<UserState> {
     try {
       emit(UserLoading());
 
-      // Fetch users with default limit and offset
       var users = await userRepository.getAllUsers();
 
       emit(UserLoaded(users));
     } catch (e) {
-      print(e.toString());
+      SimpleLogger.warning('Error during data synchronization: $e');
       emit(UserError("Failed to fetch users."));
     }
   }
@@ -25,14 +25,14 @@ class UserCubit extends Cubit<UserState> {
   Future<void> searchUsers(String query) async {
     try {
       emit(UserLoading());
-      // Assuming the default page number and page size
-      int page = 1; // You can modify this as needed
-      int pageSize = 10; // You can modify this as needed
+
+      int page = 1;
+      int pageSize = 10;
 
       var users = await userRepository.searchUsers(query, page, pageSize);
       emit(UserLoaded(users));
     } catch (e) {
-      print(e.toString());
+      SimpleLogger.warning('Error during data synchronization: $e');
       emit(UserError("Failed to fetch users."));
     }
   }
