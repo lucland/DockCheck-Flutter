@@ -1,6 +1,7 @@
 import '../models/authorization.dart';
 import '../services/api_service.dart';
 import '../services/local_storage_service.dart';
+import '../utils/simple_logger.dart';
 
 class AuthorizationRepository {
   final ApiService apiService;
@@ -45,11 +46,20 @@ class AuthorizationRepository {
 
   Future<void> syncAuthorizations() async {
     try {
-      final serverAuthorizations = await getAuthorizationsFromServer();
+      final localIds = await localStorageService.getIds('authorizations');
+      final serverIds = await getAuthorizationIdsFromServer();
 
-      await updateLocalDatabase(serverAuthorizations);
+      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
+
+      if (newIds.isNotEmpty) {
+        await fetchAndStoreNewAuthorizations(newIds).then(
+            (value) =>
+                SimpleLogger.fine('Authorization synchronization completed'),
+            onError: (e) =>
+                SimpleLogger.severe('Authorization synchronization failed'));
+      }
     } catch (e) {
-      // Handle errors
+      SimpleLogger.severe('Authorization synchronization failed');
     }
   }
 
@@ -65,6 +75,20 @@ class AuthorizationRepository {
 
     // Insert fetched data into the local database
     for (var auth in serverAuthorizations) {
+      await localStorageService.insertData('authorizations', auth.toJson());
+    }
+  }
+
+  //getAuthorizationIdsFromServer returns a list of authorization ids
+  Future<List<String>> getAuthorizationIdsFromServer() async {
+    final data = await apiService.get('authorizations/ids');
+    return (data as List).map((item) => item.toString()).toList();
+  }
+
+  Future<void> fetchAndStoreNewAuthorizations(List<String> newIds) async {
+    for (String id in newIds) {
+      final authData = await apiService.get('authorizations/$id');
+      final auth = Authorization.fromJson(authData);
       await localStorageService.insertData('authorizations', auth.toJson());
     }
   }
