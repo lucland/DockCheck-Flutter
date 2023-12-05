@@ -2,6 +2,8 @@ import 'package:cripto_qr_googlemarine/models/event.dart';
 import 'package:cripto_qr_googlemarine/services/api_service.dart';
 import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
 
+import '../utils/simple_logger.dart';
+
 class EventRepository {
   final ApiService apiService;
   final LocalStorageService localStorageService;
@@ -37,18 +39,25 @@ class EventRepository {
     return (data as List).map((item) => Event.fromJson(item)).toList();
   }
 
-  // Sync events from the server and update local database
   Future<void> syncEvents() async {
     try {
-      // Fetch data from the server
-      final serverEvents = await getAllEvents();
+      final localIds = await localStorageService.getIds('events');
+      final serverIds = await getEventsIdsFromServer();
 
-      // Update local database
-      await updateLocalDatabase(serverEvents);
+      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
+
+      if (newIds.isNotEmpty) {
+        await fetchAndStoreNewEvents(newIds).then(
+            (value) => SimpleLogger.fine('Events synchronization completed'),
+            onError: (e) =>
+                SimpleLogger.severe('Events synchronization failed'));
+      }
     } catch (e) {
-      // Handle errors
+      SimpleLogger.severe('Events synchronization failed');
     }
   }
+
+// Implement fetchAndStoreNewEvents similarly
 
   Future<void> updateLocalDatabase(List<Event> serverEvents) async {
     // Clear local data
@@ -57,6 +66,20 @@ class EventRepository {
     // Insert new data into the local database
     for (var event in serverEvents) {
       await localStorageService.insertData('events', event.toJson());
+    }
+  }
+
+  //getEventsIdsFromServer returns a list of event ids
+  Future<List<String>> getEventsIdsFromServer() async {
+    final data = await apiService.get('events/ids');
+    return (data as List).map((item) => item.toString()).toList();
+  }
+
+  Future<void> fetchAndStoreNewEvents(List<String> newIds) async {
+    for (String id in newIds) {
+      final authData = await apiService.get('events/$id');
+      final auth = Event.fromJson(authData);
+      await localStorageService.insertData('events', auth.toJson());
     }
   }
 }
