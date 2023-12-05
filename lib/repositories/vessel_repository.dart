@@ -2,6 +2,8 @@ import 'package:cripto_qr_googlemarine/models/vessel.dart';
 import 'package:cripto_qr_googlemarine/services/api_service.dart';
 import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
 
+import '../utils/simple_logger.dart';
+
 class VesselRepository {
   final ApiService apiService;
   final LocalStorageService localStorageService;
@@ -42,18 +44,25 @@ class VesselRepository {
     return (data as List).map((item) => Vessel.fromJson(item)).toList();
   }
 
-  // Sync vessels from the server and update the local database
   Future<void> syncVessels() async {
     try {
-      // Fetch data from the server
-      final serverVessels = await getAllVessels();
+      final localIds = await localStorageService.getIds('vessels');
+      final serverIds = await getAllVesselsIdsFromServer();
 
-      // Update local database
-      await updateLocalDatabase(serverVessels);
+      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
+
+      if (newIds.isNotEmpty) {
+        await fetchAndStoreNewVessels(newIds).then(
+            (value) => SimpleLogger.fine('Vessel synchronization completed'),
+            onError: (e) =>
+                SimpleLogger.severe('Vessel synchronization failed'));
+      }
     } catch (e) {
-      // Handle errors
+      SimpleLogger.severe('Vessel synchronization failed');
     }
   }
+
+// Implement fetchAndStoreNewVessels similarly
 
   Future<void> updateLocalDatabase(List<Vessel> serverVessels) async {
     // Clear local data
@@ -62,6 +71,20 @@ class VesselRepository {
     // Insert new data into the local database
     for (var vessel in serverVessels) {
       await localStorageService.insertData('vessels', vessel.toJson());
+    }
+  }
+
+  //get all vessels ids from server with /vessels/ids
+  Future<List<String>> getAllVesselsIdsFromServer() async {
+    final data = await apiService.get('vessels/ids');
+    return (data as List).map((item) => item.toString()).toList();
+  }
+
+  Future<void> fetchAndStoreNewVessels(List<String> newIds) async {
+    for (String id in newIds) {
+      final authData = await apiService.get('vessels/$id');
+      final auth = Vessel.fromJson(authData);
+      await localStorageService.insertData('vessels', auth.toJson());
     }
   }
 }
