@@ -1,5 +1,6 @@
 import 'package:cripto_qr_googlemarine/pages/editar/editar.dart';
 import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
+import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
 import 'package:cripto_qr_googlemarine/widgets/checkout_button_widget.dart';
@@ -10,7 +11,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/user.dart';
+import '../../repositories/authorization_repository.dart';
 import '../../repositories/user_repository.dart';
+import '../../repositories/vessel_repository.dart';
 import '../../utils/action_enum.dart';
 import '../../utils/theme.dart';
 import 'cubit/details_cubit.dart';
@@ -28,9 +31,16 @@ class Details extends StatelessWidget {
     final UserRepository userRepository = Provider.of<UserRepository>(context);
     final EventRepository eventRepository =
         Provider.of<EventRepository>(context);
+    final LocalStorageService localStorageService =
+        Provider.of<LocalStorageService>(context);
+    final AuthorizationRepository authorizationRepository =
+        Provider.of<AuthorizationRepository>(context);
+    final VesselRepository vesselRepository =
+        Provider.of<VesselRepository>(context);
 
     return BlocProvider(
-      create: (context) => DetailsCubit(userRepository, eventRepository),
+      create: (context) => DetailsCubit(userRepository, eventRepository,
+          localStorageService, authorizationRepository, vesselRepository),
       child: Container(
         color: CQColors.white,
         child: DetailsView(
@@ -50,7 +60,6 @@ class DetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // var cubit = context.read<DetailsCubit>();
     context.read<DetailsCubit>().fetchEvents(user.id);
 
     return BlocBuilder<DetailsCubit, DetailsState>(
@@ -173,14 +182,6 @@ class DetailsView extends StatelessWidget {
                                   color: CQColors.iron100,
                                 ),
                               ],
-                              const SizedBox(height: 12),
-                              //TODO: Add vessel
-                              /*
-                              TitleValueWidget(
-                                title: CQStrings.embarcacao,
-                                value: user.vessel,
-                                color: CQColors.iron100,
-                              ),*/
                               const SizedBox(height: 12),
                               TitleValueWidget(
                                 title: CQStrings.area,
@@ -430,15 +431,48 @@ class DetailsView extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     SyncButtonWidget(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.read<DetailsCubit>().fetchEvents(user.id);
+                      },
                     ),
-                    //TODO: create checkout event
                     CheckOutButtonWidget(
                       onPressed: () {
-                        /*
-                        cubit.createCheckoutEvento(
-                            user.identidade, user.vessel);
-                            */
+                        String justification = '';
+
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Justificativa'),
+                              content: TextFormField(
+                                decoration: const InputDecoration(
+                                  hintText: 'Justificativa',
+                                ),
+                                onChanged: (value) {
+                                  justification = value;
+                                },
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    context
+                                        .read<DetailsCubit>()
+                                        .createCheckoutEvento(
+                                            user.id, justification);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Confirmar'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       },
                       isDisabled: !(state.eventos[0].action == 1 ||
                           user.isOnboarded == true),
