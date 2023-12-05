@@ -72,6 +72,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               action: 0,
               manual: false,
               justification: '',
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
             ),
           ),
         );
@@ -318,6 +320,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         action: 0,
         manual: false,
         justification: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
       ),
       userCreated: false,
       cadastroHabilitado: false,
