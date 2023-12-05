@@ -57,7 +57,8 @@ void main() async {
       LoginCubit(loginRepository, userRepository, localStorageService);
   var userCubit = UserCubit(userRepository);
   var cadastrarCubit = CadastrarCubit(userRepository, eventRepository);
-  var detailsCubit = DetailsCubit(userRepository, eventRepository);
+  var detailsCubit = DetailsCubit(userRepository, eventRepository,
+      localStorageService, authorizationRepository, vesselRepository);
 
   runApp(
     MultiBlocProvider(
