@@ -91,7 +91,6 @@ class CadastrarView extends StatelessWidget {
           ),
         );
         context.read<CadastrarCubit>().clearFields();
-        //ir para a home page
         onCadastrar();
       }
     }, builder: (context, state) {
