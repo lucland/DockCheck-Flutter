@@ -111,4 +111,10 @@ class LocalStorageService {
   Future closeDB() async {
     await _database?.close();
   }
+
+  Future<List<String>> getIds(String table) async {
+    final List<Map<String, dynamic>> result =
+        await _database?.query(table, columns: ['id']) ?? [];
+    return result.map((item) => item['id'] as String).toList();
+  }
 }
