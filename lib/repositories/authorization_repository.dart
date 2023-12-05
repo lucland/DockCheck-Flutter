@@ -20,11 +20,7 @@ class AuthorizationRepository {
     var authorizations =
         (data as List).map((item) => Authorization.fromJson(item)).toList();
 
-    // Store the data locally
-    for (var auth in authorizations) {
-      await localStorageService.insertData('authorizations', auth.toJson());
-    }
-
+    SimpleLogger.info('Authorizations: $authorizations');
     return authorizations;
   }
 
