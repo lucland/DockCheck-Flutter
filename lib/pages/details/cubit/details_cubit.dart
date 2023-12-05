@@ -1,15 +1,29 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:cripto_qr_googlemarine/models/event.dart';
+import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
+import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../repositories/authorization_repository.dart';
 import '../../../repositories/event_repository.dart';
 import '../../../repositories/user_repository.dart';
+import '../../../repositories/vessel_repository.dart';
 import 'details_state.dart';
 
 class DetailsCubit extends Cubit<DetailsState> {
   final UserRepository userRepository;
   final EventRepository eventRepository;
+  final AuthorizationRepository authorizationRepository;
+  final VesselRepository vesselRepository;
+  final LocalStorageService localStorageService;
 
-  DetailsCubit(this.userRepository, this.eventRepository)
+  DetailsCubit(
+      this.userRepository,
+      this.eventRepository,
+      this.localStorageService,
+      this.authorizationRepository,
+      this.vesselRepository)
       : super(DetailsInitial());
 
   fetchEvents(String userId) async {
@@ -17,30 +31,36 @@ class DetailsCubit extends Cubit<DetailsState> {
       emit(DetailsLoading());
       var eventos = await eventRepository.getEventsByUser(userId);
       List<Event> eventosMapped = eventos;
-      print("Events fetched: ${eventos[0]}");
       emit(DetailsLoaded(eventosMapped));
     } catch (e) {
-      print(e.toString());
+      SimpleLogger.warning('Error during data synchronization: $e');
       emit(DetailsError("Failed to fetch events."));
     }
   }
 
-  createCheckoutEvento(String userId, String vesselId, String portalId) async {
+  createCheckoutEvento(String userId, String justification) async {
     try {
       emit(DetailsLoading());
-      //generate unique id
+
+      var user = await localStorageService.getUser();
+
+      var authorizations =
+          await authorizationRepository.getAuthorizations(user!.id);
+
+      var vessel = await vesselRepository.getVessel(authorizations[0].vesselId);
+
       String UUID = DateTime.now().millisecondsSinceEpoch.toString();
       Event event = Event(
           id: UUID,
-          portalId: portalId,
+          portalId: '0',
           userId: userId,
           timestamp: DateTime.now(),
           direction: 1,
-          vesselId: vesselId,
+          vesselId: vessel.id,
           picture: '',
           action: 1,
-          manual: false,
-          justification: '',
+          manual: true,
+          justification: justification,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now());
 
@@ -48,7 +68,7 @@ class DetailsCubit extends Cubit<DetailsState> {
       fetchEvents(userId);
       emit(DetailsLoaded([]));
     } catch (e) {
-      print(e.toString());
+      SimpleLogger.warning('Error during data synchronization: $e');
       emit(DetailsError("Failed to create event."));
     }
   }
