@@ -85,7 +85,7 @@ class SimpleLogger {
         developer.log(
           log,
           level: level.value,
-          name: 'field_service',
+          name: 'dock_check',
           time: info.time,
         );
         break;
