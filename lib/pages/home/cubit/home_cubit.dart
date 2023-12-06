@@ -56,6 +56,7 @@ class HomeCubit extends Cubit<HomeState> {
         Vessel vessel =
             await vesselRepository.getVessel(authorization.vesselId);
         vessels.add(vessel);
+        localStorageService.saveVesselId(vessel.id);
       }
       SimpleLogger.info('vessels cubit: $vessels');
       //for each vessel, fetch the onboard users
