@@ -12,6 +12,8 @@ class UserRepository {
   UserRepository(this.apiService, this.localStorageService);
 
   Future<User> createUser(User user) async {
+    SimpleLogger.info('User: $user');
+    SimpleLogger.info('User JSON: ${user.toJson()}');
     final data = await apiService.post('users/create', user.toJson());
     return User.fromJson(data);
   }
