@@ -56,7 +56,8 @@ void main() async {
   var loginCubit =
       LoginCubit(loginRepository, userRepository, localStorageService);
   var userCubit = UserCubit(userRepository);
-  var cadastrarCubit = CadastrarCubit(userRepository, eventRepository);
+  var cadastrarCubit =
+      CadastrarCubit(userRepository, eventRepository, localStorageService);
   var detailsCubit = DetailsCubit(userRepository, eventRepository,
       localStorageService, authorizationRepository, vesselRepository);
 
