@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../utils/simple_logger.dart';
 import 'local_storage_service.dart';
 
 class ApiService {
@@ -22,6 +23,7 @@ class ApiService {
       headers: await _getHeaders(),
       body: jsonEncode(data),
     );
+    SimpleLogger.info('Response: ${response.body}');
     return _processResponse(response);
   }
 
@@ -67,10 +69,10 @@ class ApiService {
 
   dynamic _processResponse(http.Response response) {
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print('Success: ${response.body}');
+      SimpleLogger.fine('Success: ${response.body}');
       return json.decode(response.body);
     } else {
-      print('Error: ${response.body}');
+      SimpleLogger.severe('Error: ${response.body}');
       throw Exception('Failed to process request: ${response.statusCode}');
     }
   }
