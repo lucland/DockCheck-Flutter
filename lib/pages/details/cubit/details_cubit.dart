@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'package:cripto_qr_googlemarine/models/event.dart';
 import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
 import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
@@ -33,7 +31,7 @@ class DetailsCubit extends Cubit<DetailsState> {
       List<Event> eventosMapped = eventos;
       emit(DetailsLoaded(eventosMapped));
     } catch (e) {
-      SimpleLogger.warning('Error during data synchronization: $e');
+      SimpleLogger.warning('Error during details_cubit fetchEvents: $e');
       emit(DetailsError("Failed to fetch events."));
     }
   }
@@ -43,9 +41,14 @@ class DetailsCubit extends Cubit<DetailsState> {
       emit(DetailsLoading());
 
       var user = await localStorageService.getUser();
+      if (user == null) {
+        SimpleLogger.warning('No logged-in user found.');
+        emit(DetailsError("No logged-in user found."));
+        return;
+      }
 
       var authorizations =
-          await authorizationRepository.getAuthorizations(user!.id);
+          await authorizationRepository.getAuthorizations(user.id);
 
       var vessel = await vesselRepository.getVessel(authorizations[0].vesselId);
 
@@ -65,10 +68,12 @@ class DetailsCubit extends Cubit<DetailsState> {
           updatedAt: DateTime.now());
 
       await eventRepository.createEvent(event);
+
       fetchEvents(userId);
       emit(DetailsLoaded([]));
     } catch (e) {
-      SimpleLogger.warning('Error during data synchronization: $e');
+      SimpleLogger.warning(
+          'Error during details_cubit createCheckoutEvento: $e');
       emit(DetailsError("Failed to create event."));
     }
   }
