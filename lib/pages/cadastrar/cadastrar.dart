@@ -1,4 +1,5 @@
 import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
+import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
 import 'package:cripto_qr_googlemarine/utils/formatter.dart';
 import 'package:cripto_qr_googlemarine/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
@@ -23,9 +24,12 @@ class Cadastrar extends StatelessWidget {
     final UserRepository userRepository = Provider.of<UserRepository>(context);
     final EventRepository eventRepository =
         Provider.of<EventRepository>(context);
+    final LocalStorageService localStorageService =
+        Provider.of<LocalStorageService>(context);
 
     return BlocProvider(
-      create: (context) => CadastrarCubit(userRepository, eventRepository),
+      create: (context) =>
+          CadastrarCubit(userRepository, eventRepository, localStorageService),
       child: CadastrarView(
         onCadastrar: onCadastrar,
       ),
@@ -463,7 +467,7 @@ class CadastrarView extends StatelessWidget {
                     flex: 1,
                     child: InkWell(
                       onTap: () {
-                        state.cadastroHabilitado ? cubit.createEvent() : null;
+                        state.cadastroHabilitado ? cubit.createUser() : null;
                       },
                       child: Container(
                         alignment: Alignment.center,
