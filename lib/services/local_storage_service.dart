@@ -29,6 +29,20 @@ class LocalStorageService {
     return await _secureStorage.read(key: 'jwt_token');
   }
 
+  //save vesselId
+  Future<void> saveVesselId(String vesselId) async {
+    await _secureStorage.write(key: 'vessel_id', value: vesselId);
+  }
+
+  //delete vesselId
+  Future<void> deleteVesselId() async {
+    await _secureStorage.delete(key: 'vessel_id');
+  }
+
+  Future<String?> getVesselId() async {
+    return await _secureStorage.read(key: 'vessel_id');
+  }
+
   //save userId
   Future<void> saveUserId(String userId) async {
     await _secureStorage.write(key: 'user_id', value: userId);
@@ -53,19 +67,28 @@ class LocalStorageService {
     await _secureStorage.delete(key: 'username');
   }
 
-  //save loggedUser
   Future<void> saveUser(User user) async {
-    await _secureStorage.write(key: 'user', value: user.toJson().toString());
+    await _secureStorage.write(key: 'user', value: jsonEncode(user.toJson()));
   }
 
   Future<User?> getUser() async {
-    final userString = await _secureStorage.read(key: 'user');
-    if (userString != null) {
-      final Map<String, dynamic> userMap = jsonDecode(userString);
-      return User.fromJson(userMap);
-    } else {
-      return null;
+    try {
+      final userString = await _secureStorage.read(key: 'user');
+      if (userString != null &&
+          userString.startsWith('{') &&
+          userString.endsWith('}')) {
+        final Map<String, dynamic> userMap = jsonDecode(userString);
+        print('User JSON: $userMap');
+        return User.fromJson(userMap);
+      } else {
+        print('Invalid or null user string: $userString');
+        // Handle the case where userString is not a valid JSON
+      }
+    } catch (e) {
+      print('Error decoding user JSON: $e');
+      // Handle or log the error
     }
+    return null;
   }
 
 //delete user
