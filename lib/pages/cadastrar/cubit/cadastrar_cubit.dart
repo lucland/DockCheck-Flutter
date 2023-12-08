@@ -296,7 +296,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   bool adminCheckPassed() {
     return commonChecksPassed() && !state.user.isAdmin ||
-        state.password.isNotEmpty;
+        state.user.salt.isNotEmpty;
   }
 
   void clearFields() {
