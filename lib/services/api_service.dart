@@ -4,7 +4,10 @@ import '../utils/simple_logger.dart';
 import 'local_storage_service.dart';
 
 class ApiService {
-  final String baseUrl = 'http://10.0.2.2:3000/api/v1';
+  //final String baseUrl = 'http://10.0.2.2:3000/api/v1';
+  //final String baseUrl = 'http://localhost:3000/api/v1';
+  final String baseUrl = 'http://192.168.0.24:3000/api/v1';
+  //
   final LocalStorageService localStorageService;
 
   ApiService(this.localStorageService);
