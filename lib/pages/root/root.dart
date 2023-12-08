@@ -1,3 +1,4 @@
+import 'package:cripto_qr_googlemarine/pages/bluetooth/bluetooth.dart';
 import 'package:cripto_qr_googlemarine/pages/cadastrar/cadastrar.dart';
 import 'package:cripto_qr_googlemarine/pages/home/home.dart';
 import 'package:cripto_qr_googlemarine/repositories/login_repository.dart';
@@ -30,6 +31,7 @@ class _RootState extends State<Root> {
     CQStrings.home,
     CQStrings.pesquisar,
     CQStrings.cadastrar,
+    CQStrings.conectar,
   ];
 
   @override
@@ -45,6 +47,7 @@ class _RootState extends State<Root> {
           _pageController.jumpToPage(0);
         },
       ),
+      const BluetoothRoot(),
     ];
   }
 
@@ -52,6 +55,14 @@ class _RootState extends State<Root> {
     final packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       appVersion = packageInfo.version;
+    });
+  }
+
+  void _navigateToPage(int index) {
+    Navigator.of(context).pop(); // Close the drawer
+    _pageController.jumpToPage(index);
+    setState(() {
+      _selectedIndex = index;
     });
   }
 
@@ -67,6 +78,10 @@ class _RootState extends State<Root> {
     BottomNavigationBarItem(
         icon: Icon(Icons.person_add_rounded),
         label: 'Cadastrar',
+        backgroundColor: CQColors.background),
+    BottomNavigationBarItem(
+        icon: Icon(Icons.bluetooth),
+        label: 'Conectar',
         backgroundColor: CQColors.background),
   ];
 
@@ -137,27 +152,94 @@ class _RootState extends State<Root> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            DrawerHeader(
+              decoration: const BoxDecoration(
                 color: CQColors.iron100,
               ),
               child: Row(children: [
                 Expanded(
-                  child: Text(
-                    'Menu',
-                    style: TextStyle(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+                    child: SvgPicture.asset(
+                      'assets/imgs/googlemarine_logo.svg',
                       color: CQColors.background,
-                      fontSize: 24,
+                      semanticsLabel: 'CriptoQR',
+                      height: 90.0,
+                      width: 80.0,
                     ),
                   ),
                 ),
               ]),
             ),
             Expanded(
-              child: ListView(children: const [
+              child: ListView(children: [
                 ListTile(
-                  leading: Icon(Icons.home),
-                  title: Text('Home'),
+                  leading: Icon(Icons.home,
+                      color: _selectedIndex == 0
+                          ? CQColors.iron100
+                          : CQColors.iron60),
+                  title: Text(
+                    'Home',
+                    style: TextStyle(
+                        color: _selectedIndex == 0
+                            ? CQColors.iron100
+                            : CQColors.iron60,
+                        fontWeight: _selectedIndex == 0
+                            ? FontWeight.bold
+                            : FontWeight.normal),
+                  ),
+                  onTap: () => _navigateToPage(0),
+                ),
+                ListTile(
+                  leading: Icon(Icons.search,
+                      color: _selectedIndex == 1
+                          ? CQColors.iron100
+                          : CQColors.iron60),
+                  title: Text(
+                    'Pesquisar',
+                    style: TextStyle(
+                        color: _selectedIndex == 1
+                            ? CQColors.iron100
+                            : CQColors.iron60,
+                        fontWeight: _selectedIndex == 1
+                            ? FontWeight.bold
+                            : FontWeight.normal),
+                  ),
+                  onTap: () => _navigateToPage(1),
+                ),
+                ListTile(
+                  leading: Icon(Icons.person_add,
+                      color: _selectedIndex == 2
+                          ? CQColors.iron100
+                          : CQColors.iron60),
+                  title: Text(
+                    'Cadastrar',
+                    style: TextStyle(
+                        color: _selectedIndex == 2
+                            ? CQColors.iron100
+                            : CQColors.iron60,
+                        fontWeight: _selectedIndex == 2
+                            ? FontWeight.bold
+                            : FontWeight.normal),
+                  ),
+                  onTap: () => _navigateToPage(2),
+                ),
+                ListTile(
+                  leading: Icon(Icons.bluetooth,
+                      color: _selectedIndex == 3
+                          ? CQColors.iron100
+                          : CQColors.iron60),
+                  title: Text(
+                    'Conectar',
+                    style: TextStyle(
+                        color: _selectedIndex == 3
+                            ? CQColors.iron100
+                            : CQColors.iron60,
+                        fontWeight: _selectedIndex == 3
+                            ? FontWeight.bold
+                            : FontWeight.normal),
+                  ),
+                  onTap: () => _navigateToPage(3),
                 ),
               ]),
             ),
