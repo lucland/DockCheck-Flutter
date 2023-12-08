@@ -8,9 +8,15 @@ class CQStrings {
   static const String scheduleNoConnectionTitle =
       'We can\'t load your schedule without service';
   static String atualizadoEm(String data) => 'Atualizado em: $data';
+  static String bluetoothAdapterAvailableState(String state) =>
+      'Bluetooth Adapter is $state';
+  static const String bluetoothAdapterIsNotAvailable =
+      'Bluetooth Adapter is not available';
   static const String usuarioCadastradoComSucesso =
       'Usuário cadastrado com sucesso!';
   static const String usuarioEditadoComSucesso = 'Usuário editado com sucesso!';
+  static const String bluetooth = 'Bluetooth';
+  static const String conectar = 'Conectar';
   static const String nome = "Nome";
   static const String email = 'Email';
   static const String identidade = 'Identidade';
