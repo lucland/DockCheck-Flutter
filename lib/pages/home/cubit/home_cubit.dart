@@ -31,11 +31,23 @@ class HomeCubit extends Cubit<HomeState> {
   //fetch last added user
   void fetchLoggedUser() async {
     emit(HomeState(isLoading: true));
-    //fetch logged user
-    String? userNumber = await localStorageService.getUserId();
-    User user = await userRepository.getUser(userNumber ?? "");
-    _loggedUser = user;
-    fetchVessels();
+    try {
+      String? userNumber = await localStorageService.getUserId();
+      User user = await userRepository.getUser(userNumber ?? "");
+      _loggedUser = user;
+      fetchVessels();
+    } catch (e) {
+      if (e is Exception && e.toString() == "Exception: InvalidTokenError") {
+        // Handle the specific 'jwt expired' error
+        emit(HomeState(
+            isLoading: false,
+            error: 'Session expired. Please login again.',
+            invalidToken: true));
+      } else {
+        // Handle other errors
+        emit(HomeState(isLoading: false, error: 'An error occurred.'));
+      }
+    }
   }
 
   //fetch list of vessels from logged user based on user.authorization and the authorization.vesselId from vessel repository and set it to state, if any
