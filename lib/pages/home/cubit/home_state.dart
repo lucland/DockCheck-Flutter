@@ -11,6 +11,9 @@ class HomeState {
   final bool isLoading;
   List<Vessel> vessels;
   List<User> onboardUsers = [];
+  final String? error;
+
+  final bool invalidToken;
 
   HomeState({
     this.pngBytes,
@@ -19,5 +22,7 @@ class HomeState {
     this.isLoading = true,
     this.vessels = const [],
     this.onboardUsers = const [],
+    this.error,
+    this.invalidToken = false,
   });
 }
