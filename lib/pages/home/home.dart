@@ -16,6 +16,7 @@ import '../../utils/ui/strings.dart';
 import '../../widgets/sync_button_widget.dart';
 import '../../widgets/semi_circle_painter.dart';
 import '../../widgets/title_value_widget.dart';
+import '../login/login.dart';
 import 'cubit/home_cubit.dart';
 import 'cubit/home_state.dart';
 
@@ -130,7 +131,13 @@ class HomeView extends StatelessWidget {
             ),
           );
         } else {
-          return const Center(child: CircularProgressIndicator());
+          // Delete the token and navigate to the login page
+          Provider.of<LocalStorageService>(context, listen: false)
+              .deleteToken();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => LoginPage()),
+          );
+          return const SizedBox.shrink(); // Or any other placeholder widget
         }
       },
     );
