@@ -19,8 +19,15 @@ class UserRepository {
   }
 
   Future<User> getUser(String id) async {
-    final data = await apiService.get('users/$id');
-    return User.fromJson(data);
+    try {
+      final data = await apiService.get('users/$id');
+      return User.fromJson(data);
+    } catch (e) {
+      if (e.toString().contains("jwt expired")) {
+        throw Exception("InvalidTokenError");
+      }
+      rethrow;
+    }
   }
 
   Future<User> updateUser(String id, User user) async {
