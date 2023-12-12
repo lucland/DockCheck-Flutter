@@ -19,6 +19,7 @@ import 'repositories/portal_repository.dart';
 import 'repositories/supervisor_repository.dart';
 import 'repositories/user_repository.dart';
 import 'repositories/vessel_repository.dart';
+import 'services/background_service.dart';
 import 'services/permission_handler_service.dart';
 import 'utils/simple_logger.dart';
 import 'utils/theme.dart';
@@ -60,6 +61,8 @@ void main() async {
       CadastrarCubit(userRepository, eventRepository, localStorageService);
   var detailsCubit = DetailsCubit(userRepository, eventRepository,
       localStorageService, authorizationRepository, vesselRepository);
+
+  BackgroundService();
 
   runApp(
     MultiBlocProvider(
