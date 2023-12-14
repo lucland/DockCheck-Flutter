@@ -1,4 +1,4 @@
-import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
+import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../repositories/user_repository.dart';
