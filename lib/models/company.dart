@@ -6,6 +6,7 @@ class Company {
   DateTime updatedAt;
   String id;
   DateTime expirationDate;
+  String status;
 
   Company({
     required this.name,
@@ -15,6 +16,7 @@ class Company {
     required this.updatedAt,
     required this.id,
     required this.expirationDate,
+    required this.status,
   });
 
   factory Company.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Company {
       updatedAt: DateTime.parse(json['updated_at']),
       id: json['id'],
       expirationDate: DateTime.parse(json['expiration_date']),
+      status: json['status'],
     );
   }
 
@@ -38,6 +41,7 @@ class Company {
       'updated_at': updatedAt.toIso8601String(),
       'id': id,
       'expiration_date': expirationDate.toIso8601String(),
+      'status': status,
     };
   }
 }
