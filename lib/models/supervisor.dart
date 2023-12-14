@@ -6,6 +6,7 @@ class Supervisor {
   String companyId;
   String id;
   DateTime updatedAt;
+  String status;
 
   Supervisor({
     required this.name,
@@ -15,6 +16,7 @@ class Supervisor {
     required this.companyId,
     required this.id,
     required this.updatedAt,
+    required this.status,
   });
 
   factory Supervisor.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Supervisor {
       companyId: json['company_id'],
       id: json['id'],
       updatedAt: DateTime.parse(json['updated_at']),
+      status: json['status'],
     );
   }
 
@@ -38,6 +41,7 @@ class Supervisor {
       'company_id': companyId,
       'id': id,
       'updated_at': updatedAt.toIso8601String(),
+      'status': status,
     };
   }
 }
