@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "cripto_qr_googlemarine",
+            "name": "dockcheck",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "cripto_qr_googlemarine (profile mode)",
+            "name": "dockcheck (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "cripto_qr_googlemarine (release mode)",
+            "name": "dockcheck (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
