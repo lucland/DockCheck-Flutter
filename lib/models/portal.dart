@@ -8,6 +8,7 @@ class Portal {
   String rfidIp;
   DateTime createdAt;
   DateTime updatedAt;
+  String status;
 
   Portal({
     required this.name,
@@ -19,6 +20,7 @@ class Portal {
     required this.rfidIp,
     required this.createdAt,
     required this.updatedAt,
+    required this.status,
   });
 
   factory Portal.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class Portal {
       rfidIp: json['rfid_ip'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
+      status: json['status'],
     );
   }
 
@@ -46,6 +49,7 @@ class Portal {
       'rfid_ip': rfidIp,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'status': status,
     };
   }
 }
