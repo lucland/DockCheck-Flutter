@@ -11,6 +11,7 @@ class Event {
   String justification;
   DateTime createdAt;
   DateTime updatedAt;
+  String status;
 
   Event({
     required this.id,
@@ -25,6 +26,7 @@ class Event {
     required this.justification,
     required this.createdAt,
     required this.updatedAt,
+    required this.status,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class Event {
       justification: json['justification'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
+      status: json['status'],
     );
   }
 
@@ -58,6 +61,7 @@ class Event {
       'justification': justification,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'status': status,
     };
   }
 
@@ -74,6 +78,7 @@ class Event {
     String? justification,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? status,
   }) {
     return Event(
       id: id ?? this.id,
@@ -88,6 +93,7 @@ class Event {
       justification: justification ?? this.justification,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      status: status ?? this.status,
     );
   }
 }
