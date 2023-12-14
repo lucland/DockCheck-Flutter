@@ -4,6 +4,7 @@ class Beacon {
   final String userId;
   final DateTime updatedAt;
   final String id;
+  late final String status;
 
   Beacon({
     required this.rssi,
@@ -11,6 +12,7 @@ class Beacon {
     required this.userId,
     required this.updatedAt,
     required this.id,
+    required this.status,
   });
 
   factory Beacon.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class Beacon {
       userId: json['user_id'] as String,
       updatedAt: DateTime.parse(json['updated_at']),
       id: json['id'] as String,
+      status: json['status'] as String,
     );
   }
 
@@ -30,6 +33,7 @@ class Beacon {
       'user_id': userId,
       'updated_at': updatedAt.toIso8601String(),
       'id': id,
+      'status': status,
     };
   }
 
@@ -39,6 +43,7 @@ class Beacon {
     String? userId,
     DateTime? updatedAt,
     String? id,
+    String? status,
   }) {
     return Beacon(
       rssi: rssi ?? this.rssi,
@@ -46,6 +51,7 @@ class Beacon {
       userId: userId ?? this.userId,
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
+      status: status ?? this.status,
     );
   }
 }
