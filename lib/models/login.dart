@@ -6,6 +6,7 @@ class Login {
   String system;
   DateTime createdAt;
   DateTime updatedAt;
+  String status;
 
   Login({
     required this.id,
@@ -15,6 +16,7 @@ class Login {
     required this.system,
     required this.createdAt,
     required this.updatedAt,
+    required this.status,
   });
 
   factory Login.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class Login {
       system: json['system'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
+      status: json['status'],
     );
   }
 
@@ -38,6 +41,7 @@ class Login {
       'system': system,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'status': status,
     };
   }
 }
