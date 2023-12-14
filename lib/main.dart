@@ -1,14 +1,13 @@
-import 'package:cripto_qr_googlemarine/pages/cadastrar/cubit/cadastrar_cubit.dart';
-import 'package:cripto_qr_googlemarine/pages/details/cubit/details_cubit.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
+import 'package:dockcheck/pages/details/cubit/details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:cripto_qr_googlemarine/repositories/login_repository.dart';
-import 'package:cripto_qr_googlemarine/repositories/authorization_repository.dart';
-import 'package:cripto_qr_googlemarine/services/api_service.dart';
-import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
+import 'package:dockcheck/repositories/login_repository.dart';
+import 'package:dockcheck/repositories/authorization_repository.dart';
+import 'package:dockcheck/services/api_service.dart';
+import 'package:dockcheck/services/local_storage_service.dart';
 import 'blocs/user/user_cubit.dart';
 import 'pages/init.dart';
 import 'pages/login/cubit/login_cubit.dart';
@@ -26,7 +25,6 @@ import 'utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
 
   var localStorageService = LocalStorageService();
   await localStorageService.initDB();
