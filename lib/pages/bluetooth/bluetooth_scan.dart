@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cripto_qr_googlemarine/pages/bluetooth/widgets/streams.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
+import 'package:dockcheck/pages/bluetooth/widgets/streams.dart';
+import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'device_screen.dart'; // Make sure to import the DeviceScreen
