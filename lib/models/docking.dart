@@ -7,6 +7,7 @@ class Docking {
   String vesselId;
   DateTime updatedAt;
   double draftMeters;
+  String status;
 
   Docking({
     required this.onboardedCount,
@@ -17,6 +18,7 @@ class Docking {
     required this.vesselId,
     required this.updatedAt,
     required this.draftMeters,
+    required this.status,
   });
 
   factory Docking.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class Docking {
       vesselId: json['vessel_id'],
       updatedAt: DateTime.parse(json['updated_at']),
       draftMeters: json['draft_meters'],
+      status: json['status'],
     );
   }
 
@@ -42,6 +45,7 @@ class Docking {
       'vessel_id': vesselId,
       'updated_at': updatedAt.toIso8601String(),
       'draft_meters': draftMeters,
+      'status': status,
     };
   }
 }
