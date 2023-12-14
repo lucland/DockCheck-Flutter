@@ -42,6 +42,7 @@ class User {
   String username;
   String salt;
   String hash;
+  String status;
 
   User({
     required this.id,
@@ -87,6 +88,7 @@ class User {
     required this.username,
     required this.salt,
     required this.hash,
+    required this.status,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -134,6 +136,7 @@ class User {
       username: json['username'],
       salt: json['salt'],
       hash: json['hash'],
+      status: json['status'],
     );
   }
 
@@ -182,6 +185,7 @@ class User {
       'username': username,
       'salt': salt,
       'hash': hash,
+      'status': status,
     };
   }
 
@@ -229,6 +233,7 @@ class User {
     String? username,
     String? salt,
     String? hash,
+    String? status,
   }) {
     return User(
       id: id ?? this.id,
@@ -274,6 +279,7 @@ class User {
       username: username ?? this.username,
       salt: salt ?? this.salt,
       hash: hash ?? this.hash,
+      status: status ?? this.status,
     );
   }
 }
