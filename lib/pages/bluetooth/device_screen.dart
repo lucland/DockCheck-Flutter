@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:cripto_qr_googlemarine/pages/bluetooth/widgets/streams.dart';
+import 'package:dockcheck/pages/bluetooth/widgets/streams.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
