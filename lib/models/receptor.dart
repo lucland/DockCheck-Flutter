@@ -3,12 +3,14 @@ class Receptor {
   final String vessel;
   final DateTime updatedAt;
   final String id;
+  late final String status;
 
   Receptor({
     required this.beacons,
     required this.vessel,
     required this.updatedAt,
     required this.id,
+    required this.status,
   });
 
   factory Receptor.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class Receptor {
       vessel: json['vessel'] as String,
       updatedAt: DateTime.parse(json['updated_at']),
       id: json['id'] as String,
+      status: json['status'] as String,
     );
   }
 
@@ -26,6 +29,7 @@ class Receptor {
       'vessel': vessel,
       'updated_at': updatedAt.toIso8601String(),
       'id': id,
+      'status': status,
     };
   }
 
@@ -34,12 +38,14 @@ class Receptor {
     String? vessel,
     DateTime? updatedAt,
     String? id,
+    String? status,
   }) {
     return Receptor(
       beacons: beacons ?? this.beacons,
       vessel: vessel ?? this.vessel,
       updatedAt: updatedAt ?? this.updatedAt,
       id: id ?? this.id,
+      status: status ?? this.status,
     );
   }
 }
