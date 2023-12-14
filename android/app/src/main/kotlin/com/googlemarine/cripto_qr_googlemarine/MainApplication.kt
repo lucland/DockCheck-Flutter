@@ -1,4 +1,4 @@
-package com.googlemarine.cripto_qr_googlemarine
+package com.googlemarine.dockcheck
 
 import android.app.Application
 import androidx.multidex.MultiDexApplication
