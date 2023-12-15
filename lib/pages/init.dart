@@ -1,3 +1,6 @@
+import 'package:dockcheck/repositories/beacon_repository.dart';
+import 'package:dockcheck/repositories/receptor_repository.dart';
+import 'package:dockcheck/repositories/supervisor_repository.dart';
 import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,21 +41,48 @@ class _InitPageState extends State<InitPage> {
     } else {
       _navigateToLoginPage();
     }
+
+    await _syncData();
   }
 
   Future<void> _syncData() async {
-    // Call sync functions from all repositories
+    //create tables if not exists
+    final localStorageService = context.read<LocalStorageService>();
+    final authorizationRepository = context.read<AuthorizationRepository>();
+    final companyRepository = context.read<CompanyRepository>();
+    final dockingRepository = context.read<DockingRepository>();
+    final eventRepository = context.read<EventRepository>();
+    final portalRepository = context.read<PortalRepository>();
+    final supervisorRepository = context.read<SupervisorRepository>();
+    final userRepository = context.read<UserRepository>();
+    final vesselRepository = context.read<VesselRepository>();
+    final beaconRepository = context.read<BeaconRepository>();
+    final receptorRepository = context.read<ReceptorRepository>();
+
     try {
-      context.read<AuthorizationRepository>().syncAuthorizations();
-      context.read<CompanyRepository>().syncCompanies();
-      context.read<DockingRepository>().syncDockings();
-      context.read<EventRepository>().syncEvents();
-      context.read<PortalRepository>().syncPortals();
-      context.read<UserRepository>().syncUsers();
-      context.read<VesselRepository>().syncVessels();
+      SimpleLogger.info('Starting data synchronization');
+      await localStorageService.ensureTableExists('authorizations');
+      authorizationRepository.syncAuthorizations();
+      await localStorageService.ensureTableExists('companies');
+      companyRepository.syncCompanies();
+      await localStorageService.ensureTableExists('dockings');
+      dockingRepository.syncDockings();
+      await localStorageService.ensureTableExists('events');
+      eventRepository.syncEvents();
+      await localStorageService.ensureTableExists('portals');
+      portalRepository.syncPortals();
+      await localStorageService.ensureTableExists('users');
+      userRepository.syncPendingUsers();
+      await localStorageService.ensureTableExists('supervisors');
+      supervisorRepository.syncPendingSupervisors();
+      await localStorageService.ensureTableExists('vessels');
+      vesselRepository.syncPendingVessels();
+      await localStorageService.ensureTableExists('beacons');
+      beaconRepository.syncBeacons();
+      await localStorageService.ensureTableExists('receptors');
+      receptorRepository.syncReceptors();
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
-      print('Error during data synchronization: $e');
     }
   }
 
