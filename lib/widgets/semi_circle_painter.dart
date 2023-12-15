@@ -1,4 +1,4 @@
-import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
+import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 
 enum Direction { left, right }
