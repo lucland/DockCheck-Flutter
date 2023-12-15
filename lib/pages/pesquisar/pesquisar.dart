@@ -1,6 +1,6 @@
-import 'package:cripto_qr_googlemarine/pages/details/details.dart';
-import 'package:cripto_qr_googlemarine/utils/theme.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
+import 'package:dockcheck/pages/details/details.dart';
+import 'package:dockcheck/utils/theme.dart';
+import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
