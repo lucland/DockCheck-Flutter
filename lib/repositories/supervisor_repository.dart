@@ -1,6 +1,7 @@
-import 'package:cripto_qr_googlemarine/models/supervisor.dart';
-import 'package:cripto_qr_googlemarine/services/api_service.dart';
-import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
+import 'package:dockcheck/models/supervisor.dart';
+import 'package:dockcheck/services/api_service.dart';
+import 'package:dockcheck/services/local_storage_service.dart';
+import 'package:dockcheck/utils/simple_logger.dart';
 
 class SupervisorRepository {
   final ApiService apiService;
@@ -33,13 +34,48 @@ class SupervisorRepository {
     return (data as List).map((item) => Supervisor.fromJson(item)).toList();
   }
 
-  Future<void> updateLocalDatabase(List<Supervisor> serverSupervisors) async {
-    // Clear local data
-    await localStorageService.clearTable('supervisors');
+  Future<void> syncPendingSupervisors() async {
+    SimpleLogger.info('Syncing Supervisors');
+    var pendingSupervisors =
+        await localStorageService.getPendingData('supervisors', 'status');
 
-    // Insert new data into the local database
+    for (var pending in pendingSupervisors) {
+      try {
+        var response;
+        if (pending['status'] == 'pending_creation') {
+          response = await apiService.post('supervisors/create', pending);
+        } else if (pending['status'] == 'pending_update') {
+          response =
+              await apiService.put('supervisors/${pending['id']}', pending);
+        }
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          pending['status'] = 'synced';
+          await localStorageService.insertOrUpdate(
+              'supervisors', pending, 'id');
+          SimpleLogger.info('Supervisor synchronized');
+        }
+      } catch (e) {
+        SimpleLogger.severe(
+            'Failed to sync pending supervisor: ${e.toString()}');
+        // If syncing fails, leave it as pending
+      }
+    }
+  }
+
+  // ... (fetch and store new supervisors method if needed) ...
+
+  Future<void> updateLocalDatabase(List<Supervisor> serverSupervisors) async {
     for (var supervisor in serverSupervisors) {
-      await localStorageService.insertData('supervisors', supervisor.toJson());
+      var localData =
+          await localStorageService.getDataById('supervisors', supervisor.id);
+      if (localData.isEmpty) {
+        await localStorageService.insertData(
+            'supervisors', supervisor.toJson());
+      } else {
+        await localStorageService.updateData(
+            'supervisors', supervisor.toJson(), 'id');
+      }
     }
   }
 }
