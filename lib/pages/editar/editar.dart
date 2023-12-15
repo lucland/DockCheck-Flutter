@@ -1,6 +1,6 @@
-import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
-import 'package:cripto_qr_googlemarine/utils/formatter.dart';
-import 'package:cripto_qr_googlemarine/widgets/switcher_widget.dart';
+import 'package:dockcheck/repositories/event_repository.dart';
+import 'package:dockcheck/utils/formatter.dart';
+import 'package:dockcheck/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
