@@ -1,10 +1,10 @@
-import 'package:cripto_qr_googlemarine/pages/bluetooth/bluetooth.dart';
-import 'package:cripto_qr_googlemarine/pages/cadastrar/cadastrar.dart';
-import 'package:cripto_qr_googlemarine/pages/home/home.dart';
-import 'package:cripto_qr_googlemarine/repositories/login_repository.dart';
-import 'package:cripto_qr_googlemarine/utils/theme.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/strings.dart';
+import 'package:dockcheck/pages/bluetooth/bluetooth.dart';
+import 'package:dockcheck/pages/cadastrar/cadastrar.dart';
+import 'package:dockcheck/pages/home/home.dart';
+import 'package:dockcheck/repositories/login_repository.dart';
+import 'package:dockcheck/utils/theme.dart';
+import 'package:dockcheck/utils/ui/colors.dart';
+import 'package:dockcheck/utils/ui/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
