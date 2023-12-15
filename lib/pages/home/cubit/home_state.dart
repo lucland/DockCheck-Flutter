@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:cripto_qr_googlemarine/models/user.dart';
+import 'package:dockcheck/models/user.dart';
 
 import '../../../models/vessel.dart';
 
