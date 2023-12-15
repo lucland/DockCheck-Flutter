@@ -1,6 +1,6 @@
-import 'package:cripto_qr_googlemarine/models/user.dart';
-import 'package:cripto_qr_googlemarine/services/api_service.dart';
-import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
+import 'package:dockcheck/models/user.dart';
+import 'package:dockcheck/services/api_service.dart';
+import 'package:dockcheck/services/local_storage_service.dart';
 
 import '../models/authorization.dart';
 import '../utils/simple_logger.dart';
@@ -12,10 +12,17 @@ class UserRepository {
   UserRepository(this.apiService, this.localStorageService);
 
   Future<User> createUser(User user) async {
-    SimpleLogger.info('User: $user');
-    SimpleLogger.info('User JSON: ${user.toJson()}');
-    final data = await apiService.post('users/create', user.toJson());
-    return User.fromJson(data);
+    try {
+      final data = await apiService.post('users/create', user.toJson());
+      await localStorageService.insertOrUpdate(
+          'users', User.fromJson(data).toJson(), 'id');
+      return User.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to create user: ${e.toString()}');
+      user.status = 'pending_creation';
+      await localStorageService.insertOrUpdate('users', user.toJson(), 'id');
+      return user;
+    }
   }
 
   Future<User> getUser(String id) async {
@@ -23,10 +30,13 @@ class UserRepository {
       final data = await apiService.get('users/$id');
       return User.fromJson(data);
     } catch (e) {
-      if (e.toString().contains("jwt expired")) {
-        throw Exception("InvalidTokenError");
+      SimpleLogger.severe('Failed to get user: ${e.toString()}');
+      final localData = await localStorageService.getDataById('users', id);
+      if (localData.isNotEmpty) {
+        return User.fromJson(localData);
+      } else {
+        throw Exception('User not found locally');
       }
-      rethrow;
     }
   }
 
@@ -77,30 +87,54 @@ class UserRepository {
     return List<String>.from(data);
   }
 
-  Future<void> syncUsers() async {
-    try {
-      final localIds = await localStorageService.getIds('users');
-      final serverIds = await getUsersIdsFromServer();
+  //sync pending users
+  Future<void> syncPendingUsers() async {
+    SimpleLogger.info('Syncing users');
+    var pendingUsers =
+        await localStorageService.getPendingData('users', 'status');
 
-      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
+    for (var pending in pendingUsers) {
+      try {
+        var response;
+        if (pending['status'] == 'pending_creation') {
+          response = await apiService.post('users/create', pending);
+        } else if (pending['status'] == 'pending_update') {
+          response = await apiService.put('users/${pending['id']}', pending);
+        }
 
-      if (newIds.isNotEmpty) {
-        await fetchAndStoreNewUsers(newIds).then(
-            (value) => SimpleLogger.fine('User synchronization completed'),
-            onError: (e) => SimpleLogger.severe('User synchronization failed'));
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          pending['status'] = 'synced';
+          await localStorageService.insertOrUpdate('users', pending, 'id');
+          SimpleLogger.info('User synchronized');
+        }
+      } catch (e) {
+        SimpleLogger.severe('Failed to sync pending user: ${e.toString()}');
+        // If syncing fails, leave it as pending
       }
-    } catch (e) {
-      SimpleLogger.severe('User synchronization failed');
     }
   }
 
   Future<void> updateLocalDatabase(List<User> serverUsers) async {
-    // Clear local data
-    await localStorageService.clearTable('users');
-
-    // Insert new data into the local database
     for (var user in serverUsers) {
-      await localStorageService.insertData('users', user.toJson());
+      var localData = await localStorageService.getDataById('users', user.id);
+      if (localData.isEmpty) {
+        await localStorageService.insertData('users', user.toJson());
+      } else {
+        await localStorageService.updateData('users', user.toJson(), 'id');
+      }
+    }
+  }
+
+  Future<void> fetchAndStoreNewUsers(List<String> newIds) async {
+    for (String id in newIds) {
+      try {
+        final userData = await apiService.get('users/$id');
+        final user = User.fromJson(userData);
+        await localStorageService.insertOrUpdate('users', user.toJson(), 'id');
+      } catch (e) {
+        SimpleLogger.warning('Failed to fetch user: $id, error: $e');
+        // Continue with the next ID if one fetch fails
+      }
     }
   }
 
@@ -108,14 +142,5 @@ class UserRepository {
   Future<List<String>> getUsersIdsFromServer() async {
     final data = await apiService.get('users/ids');
     return (data as List).map((item) => item.toString()).toList();
-  }
-
-  //fetch and store new users
-  Future<void> fetchAndStoreNewUsers(List<String> newIds) async {
-    for (String id in newIds) {
-      final authData = await apiService.get('users/$id');
-      final auth = User.fromJson(authData);
-      await localStorageService.insertData('users', auth.toJson());
-    }
   }
 }
