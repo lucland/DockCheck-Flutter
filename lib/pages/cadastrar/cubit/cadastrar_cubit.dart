@@ -1,8 +1,8 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
-import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
-import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
+import 'package:dockcheck/repositories/event_repository.dart';
+import 'package:dockcheck/services/local_storage_service.dart';
+import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/event.dart';
@@ -67,6 +67,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               username: '',
               salt: '',
               hash: '',
+              status: '',
             ),
             evento: Event(
               id: '',
@@ -81,6 +82,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               justification: '',
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
+              status: '',
             ),
           ),
         );
@@ -110,7 +112,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   void updateNome(String nome) {
-    final user = state.user.copyWith(name: nome);
+    final user = state.user.copyWith(name: nome, status: 'created');
     emit(state.copyWith(user: user));
     checkCadastroHabilitado();
   }
@@ -229,6 +231,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           vesselId: vesselId,
           portalId: '0',
           direction: 0,
+          status: 'created',
         )));
     try {
       await eventRepository.createEvent(state.evento);
@@ -344,6 +347,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       username: '',
       salt: '',
       hash: '',
+      status: '',
     );
     emit(state.copyWith(
       user: user,
@@ -361,6 +365,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         justification: '',
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        status: '',
       ),
       userCreated: false,
       cadastroHabilitado: false,
