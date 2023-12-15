@@ -1,5 +1,5 @@
-import 'package:cripto_qr_googlemarine/services/api_service.dart';
-import 'package:cripto_qr_googlemarine/models/company.dart';
+import 'package:dockcheck/services/api_service.dart';
+import 'package:dockcheck/models/company.dart';
 
 import '../services/local_storage_service.dart';
 import '../utils/simple_logger.dart';
@@ -11,44 +11,112 @@ class CompanyRepository {
   CompanyRepository(this.apiService, this.localStorageService);
 
   Future<Company> createCompany(Company company) async {
-    final data = await apiService.post('companies/create', company.toJson());
-    return Company.fromJson(data);
+    await localStorageService.insertOrUpdate(
+        'companies', company.toJson(), 'id');
+
+    try {
+      final data = await apiService.post('companies/create', company.toJson());
+      await localStorageService.insertOrUpdate(
+          'companies', Company.fromJson(data).toJson(), 'id');
+      return Company.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to create company: ${e.toString()}');
+      return company;
+    }
   }
 
   Future<Company> getCompany(String id) async {
-    final data = await apiService.get('companies/$id');
-    return Company.fromJson(data);
+    try {
+      final data = await apiService.get('companies/$id');
+      return Company.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to get company: ${e.toString()}');
+      final localData = await localStorageService.getDataById('companies', id);
+      return Company.fromJson(localData);
+    }
+  }
+
+  Future<List<Company>> getAllCompanies() async {
+    try {
+      final data = await apiService.get('companies');
+      return (data as List).map((item) => Company.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe('Failed to get all companies: ${e.toString()}');
+      // Fetch from local storage as fallback
+      // Implement logic to return data from local storage or an empty list
+      return []; // Return an empty list as a fallback
+    }
   }
 
   Future<Company> updateCompany(String id, Company company) async {
-    final data = await apiService.put('companies/$id', company.toJson());
-    return Company.fromJson(data);
+    try {
+      final data = await apiService.put('companies/$id', company.toJson());
+      await localStorageService.insertOrUpdate(
+          'companies', Company.fromJson(data).toJson(), 'id');
+      return Company.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to update company: ${e.toString()}');
+      company.status = 'pending_update'; // Assuming 'status' field exists
+      await localStorageService.insertOrUpdate(
+          'companies', company.toJson(), 'id');
+      return company;
+    }
   }
 
   Future<void> deleteCompany(String id) async {
     await apiService.delete('companies/$id');
   }
 
-  Future<List<Company>> getAllCompanies() async {
-    final data = await apiService.get('companies');
-    return (data as List).map((item) => Company.fromJson(item)).toList();
+  Future<void> syncCompanies() async {
+    SimpleLogger.info('Syncing companies');
+
+    // Try to fetch new data from the server and update local storage
+    try {
+      var serverCompanies = await getCompanyIdsFromServer();
+      await fetchAndStoreNewCompanies(serverCompanies);
+    } catch (e) {
+      SimpleLogger.warning('Error fetching companies from server: $e');
+      // If fetching from server fails, use local data
+    }
+
+    // Sync any pending updates from local storage to the server
+    var pendingCompanies =
+        await localStorageService.getPendingData('companies', 'status');
+    for (var pending in pendingCompanies) {
+      try {
+        var response;
+        if (pending['status'] == 'pending_creation') {
+          response = await apiService.post('companies/create', pending);
+        } else if (pending['status'] == 'pending_update') {
+          response =
+              await apiService.put('companies/${pending['id']}', pending);
+        }
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          pending['status'] = 'synced';
+          await localStorageService.insertOrUpdate('companies', pending, 'id');
+        }
+      } catch (e) {
+        SimpleLogger.warning('Error syncing pending company: $e');
+        // If syncing fails, leave it as pending
+      }
+    }
   }
 
-  Future<void> syncCompanies() async {
-    try {
-      final localIds = await localStorageService.getIds('companies');
-      final serverIds = await getCompanyIdsFromServer();
+  // ... (existing methods) ...
 
-      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
-
-      if (newIds.isNotEmpty) {
-        await fetchAndStoreNewCompanies(newIds).then(
-            (value) => SimpleLogger.fine('Companies synchronization completed'),
-            onError: (e) =>
-                SimpleLogger.severe('Companies synchronization failed'));
+  // Add a method to update local storage with new data from the server
+  Future<void> fetchAndStoreNewCompanies(List<String> newIds) async {
+    for (String id in newIds) {
+      try {
+        final companyData = await apiService.get('companies/$id');
+        final company = Company.fromJson(companyData);
+        await localStorageService.insertOrUpdate(
+            'companies', company.toJson(), 'id');
+      } catch (e) {
+        SimpleLogger.warning('Failed to fetch company: $id, error: $e');
+        // Continue with the next ID if one fetch fails
       }
-    } catch (e) {
-      SimpleLogger.severe('Companies synchronization failed');
     }
   }
 
@@ -68,14 +136,5 @@ class CompanyRepository {
   Future<List<String>> getCompanyIdsFromServer() async {
     final data = await apiService.get('companies/ids');
     return (data as List).map((item) => item.toString()).toList();
-  }
-
-  //fetch an store new companies
-  Future<void> fetchAndStoreNewCompanies(List<String> newIds) async {
-    for (String id in newIds) {
-      final authData = await apiService.get('companies/$id');
-      final auth = Company.fromJson(authData);
-      await localStorageService.insertData('companies', auth.toJson());
-    }
   }
 }
