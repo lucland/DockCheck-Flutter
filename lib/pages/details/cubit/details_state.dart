@@ -1,4 +1,4 @@
-import 'package:cripto_qr_googlemarine/models/event.dart';
+import 'package:dockcheck/models/event.dart';
 
 abstract class DetailsState {}
 
