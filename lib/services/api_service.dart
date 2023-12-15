@@ -20,7 +20,7 @@ class ApiService {
       Uri.parse('$baseUrl/$endpoint'),
       headers: await _getHeaders(),
     );
-    return _processResponse(response);
+    return jsonDecode(response.body);
   }
 
   Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
@@ -33,14 +33,33 @@ class ApiService {
     return _processResponse(response);
   }
 
-  Future<http.Response> postLogin(
+  Future<Map<String, dynamic>> postLogin(
       String endpoint, Map<String, dynamic> data) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/$endpoint'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(data),
-    );
-    return response;
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/$endpoint'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(data),
+      );
+
+      SimpleLogger.info(
+          "postLogin response: Status Code: ${response.statusCode}, Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        // Assuming the response body is a JSON object
+        return jsonDecode(response.body);
+      } else {
+        // Handling non-200 responses
+        return {
+          'error': 'Login failed',
+          'statusCode': response.statusCode,
+          'details': response.body
+        };
+      }
+    } catch (e) {
+      SimpleLogger.severe("Error in postLogin: ${e.toString()}");
+      return {'error': 'Exception in login', 'details': e.toString()};
+    }
   }
 
   Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
@@ -76,7 +95,11 @@ class ApiService {
   dynamic _processResponse(http.Response response) {
     if (response.statusCode == 200 || response.statusCode == 201) {
       SimpleLogger.fine('Success: ${response.body}');
-      return json.decode(response.body);
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      jsonResponse['statusCode'] =
+          response.statusCode; // Add the status code to the response
+      SimpleLogger.info('Response: $jsonResponse');
+      return jsonResponse;
     } else {
       SimpleLogger.severe('Error: ${response.body}');
       throw Exception('Failed to process request: ${response.statusCode}');
