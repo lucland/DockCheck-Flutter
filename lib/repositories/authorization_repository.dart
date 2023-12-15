@@ -10,9 +10,48 @@ class AuthorizationRepository {
   AuthorizationRepository(this.apiService, this.localStorageService);
 
   Future<Authorization> createAuthorization(Authorization authorization) async {
-    final data =
-        await apiService.post('authorizations', authorization.toJson());
-    return Authorization.fromJson(data);
+    await localStorageService.insertOrUpdate(
+        'authorizations', authorization.toJson(), 'id');
+
+    try {
+      final data =
+          await apiService.post('authorizations', authorization.toJson());
+      await localStorageService.insertOrUpdate(
+          'authorizations', Authorization.fromJson(data).toJson(), 'id');
+      return Authorization.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to create authorization: ${e.toString()}');
+      return authorization;
+    }
+  }
+
+  Future<Authorization> getAuthorizationById(String id) async {
+    try {
+      final data = await apiService.get('authorizations/$id');
+      return Authorization.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to get authorization: ${e.toString()}');
+      final localData =
+          await localStorageService.getDataById('authorizations', id);
+      return Authorization.fromJson(localData);
+    }
+  }
+
+  Future<Authorization> updateAuthorization(
+      String id, Authorization authorization) async {
+    try {
+      final data =
+          await apiService.put('authorizations/$id', authorization.toJson());
+      await localStorageService.insertOrUpdate(
+          'authorizations', Authorization.fromJson(data).toJson(), 'id');
+      return Authorization.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to update authorization: ${e.toString()}');
+      authorization.status = 'pending_update'; // Assuming 'status' field exists
+      await localStorageService.insertOrUpdate(
+          'authorizations', authorization.toJson(), 'id');
+      return authorization;
+    }
   }
 
   Future<List<Authorization>> getAuthorizations(String userId) async {
@@ -24,40 +63,30 @@ class AuthorizationRepository {
     return authorizations;
   }
 
-  Future<Authorization> getAuthorizationById(String id) async {
-    final data = await apiService.get('authorizations/$id');
-    return Authorization.fromJson(data);
-  }
-
-  Future<Authorization> updateAuthorization(
-      String id, Authorization authorization) async {
-    final data =
-        await apiService.put('authorizations/$id', authorization.toJson());
-    return Authorization.fromJson(data);
-  }
-
   Future<void> deleteAuthorization(String id) async {
     await apiService.delete('authorizations/$id');
   }
 
-  Future<void> syncAuthorizations() async {
-    try {
-      final localIds = await localStorageService.getIds('authorizations');
-      final serverIds = await getAuthorizationIdsFromServer();
+  /* Future<void> syncAuthorizations() async {
+    SimpleLogger.info('Syncing authorizations');
+    var pendingAuthorizations =
+        await localStorageService.getPendingData('authorizations', 'status');
 
-      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
-
-      if (newIds.isNotEmpty) {
-        await fetchAndStoreNewAuthorizations(newIds).then(
-            (value) =>
-                SimpleLogger.fine('Authorization synchronization completed'),
-            onError: (e) =>
-                SimpleLogger.severe('Authorization synchronization failed'));
+    for (var pending in pendingAuthorizations) {
+      try {
+        var response = await apiService.post('authorizations', pending);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          pending['status'] = 'synced';
+          await localStorageService.insertOrUpdate(
+              'authorizations', pending, 'id');
+        }
+      } catch (e) {
+        // Handle API call failure
+        SimpleLogger.severe('Authorization synchronization failed');
+        throw Exception('Authorization synchronization failed');
       }
-    } catch (e) {
-      SimpleLogger.severe('Authorization synchronization failed');
     }
-  }
+  }*/
 
   Future<List<Authorization>> getAuthorizationsFromServer() async {
     final data = await apiService.get('authorizations');
@@ -86,6 +115,28 @@ class AuthorizationRepository {
       final authData = await apiService.get('authorizations/$id');
       final auth = Authorization.fromJson(authData);
       await localStorageService.insertData('authorizations', auth.toJson());
+    }
+  }
+
+  Future<void> syncPendingAuthorizations() async {
+    SimpleLogger.info('Syncing authorizations');
+    var pendingAuthorizations =
+        await localStorageService.getPendingData('authorizations', 'status');
+
+    for (var pending in pendingAuthorizations) {
+      try {
+        var response = await apiService.post('authorizations', pending);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          pending['status'] = 'synced';
+          await localStorageService.insertOrUpdate(
+              'authorizations', pending, 'id');
+          SimpleLogger.info('Authorization synchronized');
+        }
+      } catch (e) {
+        // Handle API call failure
+        SimpleLogger.severe('Authorization synchronization failed');
+        throw Exception('Authorization synchronization failed');
+      }
     }
   }
 }
