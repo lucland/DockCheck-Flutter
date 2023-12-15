@@ -1,4 +1,4 @@
-import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
+import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 
 const double _kBorderRadius = 2.0;
