@@ -1,5 +1,5 @@
-import 'package:cripto_qr_googlemarine/utils/theme.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
+import 'package:dockcheck/utils/theme.dart';
+import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
