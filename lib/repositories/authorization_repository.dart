@@ -37,6 +37,20 @@ class AuthorizationRepository {
     }
   }
 
+  Future<List<Authorization>> getAuthorizations(String userId) async {
+    try {
+      final data = await apiService.get('authorizations/$userId');
+      return (data as List)
+          .map((item) => Authorization.fromJson(item))
+          .toList();
+    } catch (e) {
+      SimpleLogger.severe('Failed to get authorizations: ${e.toString()}');
+      // Fetch from local storage as fallback
+      // Implement logic to return data from local storage or an empty list
+      return []; // Return an empty list as a fallback
+    }
+  }
+
   Future<Authorization> updateAuthorization(
       String id, Authorization authorization) async {
     try {
@@ -54,54 +68,13 @@ class AuthorizationRepository {
     }
   }
 
-  Future<List<Authorization>> getAuthorizations(String userId) async {
-    final data = await apiService.get('authorizations/$userId');
-    var authorizations =
-        (data as List).map((item) => Authorization.fromJson(item)).toList();
-
-    SimpleLogger.info('Authorizations: $authorizations');
-    return authorizations;
-  }
-
   Future<void> deleteAuthorization(String id) async {
     await apiService.delete('authorizations/$id');
   }
 
-  /* Future<void> syncAuthorizations() async {
-    SimpleLogger.info('Syncing authorizations');
-    var pendingAuthorizations =
-        await localStorageService.getPendingData('authorizations', 'status');
-
-    for (var pending in pendingAuthorizations) {
-      try {
-        var response = await apiService.post('authorizations', pending);
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate(
-              'authorizations', pending, 'id');
-        }
-      } catch (e) {
-        // Handle API call failure
-        SimpleLogger.severe('Authorization synchronization failed');
-        throw Exception('Authorization synchronization failed');
-      }
-    }
-  }*/
-
   Future<List<Authorization>> getAuthorizationsFromServer() async {
     final data = await apiService.get('authorizations');
     return (data as List).map((item) => Authorization.fromJson(item)).toList();
-  }
-
-  Future<void> updateLocalDatabase(
-      List<Authorization> serverAuthorizations) async {
-    // Clear local data or implement a more sophisticated update logic
-    await localStorageService.clearTable('authorizations');
-
-    // Insert fetched data into the local database
-    for (var auth in serverAuthorizations) {
-      await localStorageService.insertData('authorizations', auth.toJson());
-    }
   }
 
   //getAuthorizationIdsFromServer returns a list of authorization ids
@@ -118,11 +91,22 @@ class AuthorizationRepository {
     }
   }
 
-  Future<void> syncPendingAuthorizations() async {
+  Future<void> syncAuthorizations() async {
     SimpleLogger.info('Syncing authorizations');
+
+    // First, try to fetch new data from the server
+    try {
+      var serverAuthorizations = await getAuthorizationsFromServer();
+      await updateLocalDatabase(
+          serverAuthorizations); // Update local database with new data
+    } catch (e) {
+      SimpleLogger.warning('Error fetching authorizations from server: $e');
+      // If fetching from server fails, use local data
+    }
+
+    // Then, sync any pending updates from local storage to the server
     var pendingAuthorizations =
         await localStorageService.getPendingData('authorizations', 'status');
-
     for (var pending in pendingAuthorizations) {
       try {
         var response = await apiService.post('authorizations', pending);
@@ -133,9 +117,25 @@ class AuthorizationRepository {
           SimpleLogger.info('Authorization synchronized');
         }
       } catch (e) {
-        // Handle API call failure
-        SimpleLogger.severe('Authorization synchronization failed');
-        throw Exception('Authorization synchronization failed');
+        SimpleLogger.warning('Error syncing pending authorization: $e');
+        // If syncing fails, leave it as pending
+      }
+    }
+  }
+
+  // ... (other methods) ...
+
+  // Add a method to update local storage with new data from the server
+  Future<void> updateLocalDatabase(
+      List<Authorization> serverAuthorizations) async {
+    for (var auth in serverAuthorizations) {
+      var localData =
+          await localStorageService.getDataById('authorizations', auth.id);
+      if (localData.isEmpty) {
+        await localStorageService.insertData('authorizations', auth.toJson());
+      } else {
+        await localStorageService.updateData(
+            'authorizations', auth.toJson(), 'id');
       }
     }
   }
