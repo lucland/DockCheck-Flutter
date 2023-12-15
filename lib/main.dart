@@ -11,10 +11,12 @@ import 'package:dockcheck/services/local_storage_service.dart';
 import 'blocs/user/user_cubit.dart';
 import 'pages/init.dart';
 import 'pages/login/cubit/login_cubit.dart';
+import 'repositories/beacon_repository.dart';
 import 'repositories/company_repository.dart';
 import 'repositories/docking_repository.dart';
 import 'repositories/event_repository.dart';
 import 'repositories/portal_repository.dart';
+import 'repositories/receptor_repository.dart';
 import 'repositories/supervisor_repository.dart';
 import 'repositories/user_repository.dart';
 import 'repositories/vessel_repository.dart';
@@ -51,6 +53,8 @@ void main() async {
       SupervisorRepository(apiService, localStorageService);
   var userRepository = UserRepository(apiService, localStorageService);
   var vesselRepository = VesselRepository(apiService, localStorageService);
+  var beaconRepository = BeaconRepository(apiService, localStorageService);
+  var receptorRepository = ReceptorRepository(apiService, localStorageService);
 
   var loginCubit =
       LoginCubit(loginRepository, userRepository, localStorageService);
@@ -83,6 +87,8 @@ void main() async {
         BlocProvider<UserCubit>(create: (_) => userCubit),
         BlocProvider<CadastrarCubit>(create: (_) => cadastrarCubit),
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
+        Provider<BeaconRepository>(create: (_) => beaconRepository),
+        Provider<ReceptorRepository>(create: (_) => receptorRepository),
       ],
       child: MaterialApp(
         theme: CQTheme.theme,
