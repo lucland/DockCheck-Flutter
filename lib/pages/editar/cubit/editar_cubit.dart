@@ -1,5 +1,5 @@
-import 'package:cripto_qr_googlemarine/models/event.dart';
-import 'package:cripto_qr_googlemarine/repositories/event_repository.dart';
+import 'package:dockcheck/models/event.dart';
+import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/user.dart';
@@ -59,6 +59,7 @@ class EditarCubit extends Cubit<EditarState> {
               username: '',
               salt: '',
               hash: '',
+              status: '',
             ),
             evento: Event(
               id: '',
@@ -73,6 +74,7 @@ class EditarCubit extends Cubit<EditarState> {
               justification: '',
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
+              status: '',
             ),
           ),
         );
@@ -279,6 +281,7 @@ class EditarCubit extends Cubit<EditarState> {
       username: '',
       salt: '',
       hash: '',
+      status: '',
     );
     emit(state.copyWith(
       user: user,
@@ -296,6 +299,7 @@ class EditarCubit extends Cubit<EditarState> {
         justification: '',
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        status: '',
       ),
       userCreated: false,
       cadastroHabilitado: false,
