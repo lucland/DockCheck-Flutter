@@ -1,6 +1,6 @@
-import 'package:cripto_qr_googlemarine/utils/formatter.dart';
-import 'package:cripto_qr_googlemarine/utils/theme.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/ui.dart';
+import 'package:dockcheck/utils/formatter.dart';
+import 'package:dockcheck/utils/theme.dart';
+import 'package:dockcheck/utils/ui/ui.dart';
 import 'package:flutter/material.dart';
 
 class CalendarPickerWidget extends StatelessWidget {
