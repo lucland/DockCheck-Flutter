@@ -1,6 +1,6 @@
-import 'package:cripto_qr_googlemarine/models/portal.dart';
-import 'package:cripto_qr_googlemarine/services/api_service.dart';
-import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
+import 'package:dockcheck/models/portal.dart';
+import 'package:dockcheck/services/api_service.dart';
+import 'package:dockcheck/services/local_storage_service.dart';
 
 import '../utils/simple_logger.dart';
 
@@ -11,18 +11,43 @@ class PortalRepository {
   PortalRepository(this.apiService, this.localStorageService);
 
   Future<Portal> createPortal(Portal portal) async {
-    final data = await apiService.post('portals/create', portal.toJson());
-    return Portal.fromJson(data);
+    await localStorageService.insertOrUpdate('portals', portal.toJson(), 'id');
+
+    try {
+      final data = await apiService.post('portals/create', portal.toJson());
+      await localStorageService.insertOrUpdate(
+          'portals', Portal.fromJson(data).toJson(), 'id');
+      return Portal.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to create portal: ${e.toString()}');
+      return portal;
+    }
   }
 
   Future<Portal> getPortal(String id) async {
-    final data = await apiService.get('portals/$id');
-    return Portal.fromJson(data);
+    try {
+      final data = await apiService.get('portals/$id');
+      return Portal.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to get portal: ${e.toString()}');
+      final localData = await localStorageService.getDataById('portals', id);
+      return Portal.fromJson(localData);
+    }
   }
 
   Future<Portal> updatePortal(String id, Portal portal) async {
-    final data = await apiService.put('portals/$id', portal.toJson());
-    return Portal.fromJson(data);
+    try {
+      final data = await apiService.put('portals/$id', portal.toJson());
+      await localStorageService.insertOrUpdate(
+          'portals', Portal.fromJson(data).toJson(), 'id');
+      return Portal.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to update portal: ${e.toString()}');
+      portal.status = 'pending_update'; // Assuming 'status' field exists
+      await localStorageService.insertOrUpdate(
+          'portals', portal.toJson(), 'id');
+      return portal;
+    }
   }
 
   Future<void> deletePortal(String id) async {
@@ -39,31 +64,46 @@ class PortalRepository {
     return (data as List).map((item) => Portal.fromJson(item)).toList();
   }
 
+  // Modified syncPortals Method
   Future<void> syncPortals() async {
+    SimpleLogger.info('Syncing portals');
+
+    // First, try to fetch new data from the server
     try {
-      final localIds = await localStorageService.getIds('portals');
-      final serverIds = await getPortalIdsFromServer();
-
-      final newIds = serverIds.where((id) => !localIds.contains(id)).toList();
-
-      if (newIds.isNotEmpty) {
-        await fetchAndStoreNewPortals(newIds).then(
-            (value) => SimpleLogger.fine('Portal synchronization completed'),
-            onError: (e) =>
-                SimpleLogger.severe('Portal synchronization failed'));
-      }
+      var serverPortals = await apiService.get('portals');
+      await updateLocalDatabase(
+          serverPortals); // Update local database with new data
     } catch (e) {
-      SimpleLogger.severe('Portal synchronization failed');
+      SimpleLogger.warning('Error fetching portals from server: $e');
+      // If fetching from server fails, use local data
+    }
+
+    // Then, sync any pending updates from local storage to the server
+    var pendingPortals =
+        await localStorageService.getPendingData('portals', 'status');
+    for (var pending in pendingPortals) {
+      try {
+        var response = await apiService.post('portals/create', pending);
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          pending['status'] = 'synced';
+          await localStorageService.insertOrUpdate('portals', pending, 'id');
+        }
+      } catch (e) {
+        SimpleLogger.warning('Error syncing pending portal: $e');
+        // If syncing fails, leave it as pending
+      }
     }
   }
 
   Future<void> updateLocalDatabase(List<Portal> serverPortals) async {
-    // Clear local data
-    await localStorageService.clearTable('portals');
-
-    // Insert new data into the local database
     for (var portal in serverPortals) {
-      await localStorageService.insertData('portals', portal.toJson());
+      var localData =
+          await localStorageService.getDataById('portals', portal.id);
+      if (localData.isEmpty) {
+        await localStorageService.insertData('portals', portal.toJson());
+      } else {
+        await localStorageService.updateData('portals', portal.toJson(), 'id');
+      }
     }
   }
 
