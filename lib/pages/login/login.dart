@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
-import 'package:cripto_qr_googlemarine/pages/root/root.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/colors.dart';
-import 'package:cripto_qr_googlemarine/utils/theme.dart';
-import 'package:cripto_qr_googlemarine/utils/ui/strings.dart';
-import 'package:cripto_qr_googlemarine/widgets/text_input_widget.dart';
+import 'package:dockcheck/pages/root/root.dart';
+import 'package:dockcheck/utils/ui/colors.dart';
+import 'package:dockcheck/utils/theme.dart';
+import 'package:dockcheck/utils/ui/strings.dart';
+import 'package:dockcheck/widgets/text_input_widget.dart';
 
 import 'cubit/login_cubit.dart';
 import 'cubit/login_state.dart';
