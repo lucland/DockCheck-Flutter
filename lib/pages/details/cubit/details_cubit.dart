@@ -1,6 +1,6 @@
-import 'package:cripto_qr_googlemarine/models/event.dart';
-import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
-import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
+import 'package:dockcheck/models/event.dart';
+import 'package:dockcheck/services/local_storage_service.dart';
+import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../repositories/authorization_repository.dart';
@@ -54,18 +54,20 @@ class DetailsCubit extends Cubit<DetailsState> {
 
       String UUID = DateTime.now().millisecondsSinceEpoch.toString();
       Event event = Event(
-          id: UUID,
-          portalId: '0',
-          userId: userId,
-          timestamp: DateTime.now(),
-          direction: 1,
-          vesselId: vessel.id,
-          picture: '',
-          action: 1,
-          manual: true,
-          justification: justification,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now());
+        id: UUID,
+        portalId: '0',
+        userId: userId,
+        timestamp: DateTime.now(),
+        direction: 1,
+        vesselId: vessel.id,
+        picture: '',
+        action: 1,
+        manual: true,
+        justification: justification,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        status: '',
+      );
 
       await eventRepository.createEvent(event);
 
