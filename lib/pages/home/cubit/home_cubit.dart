@@ -1,8 +1,8 @@
-import 'package:cripto_qr_googlemarine/models/authorization.dart';
-import 'package:cripto_qr_googlemarine/models/vessel.dart';
-import 'package:cripto_qr_googlemarine/repositories/user_repository.dart';
-import 'package:cripto_qr_googlemarine/services/local_storage_service.dart';
-import 'package:cripto_qr_googlemarine/utils/simple_logger.dart';
+import 'package:dockcheck/models/authorization.dart';
+import 'package:dockcheck/models/vessel.dart';
+import 'package:dockcheck/repositories/user_repository.dart';
+import 'package:dockcheck/services/local_storage_service.dart';
+import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/user.dart';
