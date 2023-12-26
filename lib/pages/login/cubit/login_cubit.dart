@@ -16,7 +16,7 @@ class LoginCubit extends Cubit<LoginState> {
       : super(LoginInitial());
 
   Future<void> logIn(String username, String password) async {
-    SimpleLogger.info('Login attempt for user: $username');
+    SimpleLogger.info('Login attempt for user: $username, $password');
     emit(LoginLoading());
     try {
       final response =

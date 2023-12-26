@@ -1,14 +1,16 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:dockcheck/pages/bluetooth/widgets/streams.dart';
+import 'package:bluetooth_classic/bluetooth_classic_platform_interface.dart';
+import 'package:bluetooth_classic/models/device.dart';
+import 'package:bluetooth_classic/bluetooth_classic.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:dockcheck/pages/bluetooth/bluetooth_connected.dart';
+import 'package:dockcheck/utils/theme.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'device_screen.dart'; // Make sure to import the DeviceScreen
-import '../../utils/simple_logger.dart';
-import 'widgets/scan_result_title.dart';
-import 'widgets/system_device_title.dart'; // Import your utilities
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({Key? key}) : super(key: key);
@@ -18,137 +20,253 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
-  List<BluetoothDevice> _systemDevices = [];
-  List<ScanResult> _scanResults = [];
-  bool _isScanning = false;
-  late StreamSubscription<List<ScanResult>> _scanResultsSubscription;
-  late StreamSubscription<bool> _isScanningSubscription;
+  final _bluetoothClassicPlugin = BluetoothClassic();
+  List<Device> _devices = [];
+  Device? _connectedDevice;
+  List<Device> _discoveredDevices = [];
+  bool _scanning = false;
+  bool _connecting = false;
+  int _deviceStatus = Device.disconnected;
+  Uint8List _data = Uint8List(0);
+
+  late StreamController<int> _deviceStatusController;
+  late StreamController<Uint8List> _dataReceivedController;
+  late StreamController<Device> _deviceDiscoveredController;
+
+  late StreamSubscription<int> _deviceStatusSubscription;
+  late StreamSubscription<Uint8List> _dataReceivedSubscription;
+  late StreamSubscription<Device> _deviceDiscoveredSubscription;
 
   @override
   void initState() {
     super.initState();
+    initPlatformState();
 
-    _scanResultsSubscription = FlutterBluePlus.scanResults.listen((results) {
+    _deviceStatusController = StreamController<int>.broadcast();
+    _dataReceivedController = StreamController<Uint8List>.broadcast();
+    _deviceDiscoveredController = StreamController<Device>.broadcast();
+
+    _deviceStatusSubscription = _deviceStatusController.stream.listen((event) {
       setState(() {
-        _scanResults = results;
+        _deviceStatus = event;
+      });
+
+      if (_deviceStatus == Device.connected) {
+        _connecting = false;
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      }
+    });
+
+    _dataReceivedSubscription = _dataReceivedController.stream.listen((event) {
+      setState(() {
+        _data = Uint8List.fromList([..._data, ...event]);
       });
     });
 
-    _isScanningSubscription = FlutterBluePlus.isScanning.listen((state) {
+    _deviceDiscoveredSubscription =
+        _deviceDiscoveredController.stream.listen((event) {
       setState(() {
-        _isScanning = state;
+        _discoveredDevices = [..._discoveredDevices, event];
       });
+    });
+
+    // Use asBroadcastStream() only once for each stream
+    var deviceStatusStream =
+        _bluetoothClassicPlugin.onDeviceStatusChanged().asBroadcastStream();
+    var dataReceivedStream =
+        _bluetoothClassicPlugin.onDeviceDataReceived().asBroadcastStream();
+    var deviceDiscoveredStream =
+        _bluetoothClassicPlugin.onDeviceDiscovered().asBroadcastStream();
+
+    _deviceStatusSubscription = deviceStatusStream.listen((event) {
+      _deviceStatusController.add(event);
+    });
+
+    _dataReceivedSubscription = dataReceivedStream.listen((event) {
+      _dataReceivedController.add(event);
+    });
+
+    _deviceDiscoveredSubscription = deviceDiscoveredStream.listen((event) {
+      _deviceDiscoveredController.add(event);
     });
   }
 
   @override
   void dispose() {
-    _scanResultsSubscription.cancel();
-    _isScanningSubscription.cancel();
+    _deviceStatusSubscription.cancel();
+    _dataReceivedSubscription.cancel();
+    _deviceDiscoveredSubscription.cancel();
+
+    _deviceStatusController.close();
+    _dataReceivedController.close();
+    _deviceDiscoveredController.close();
+
+    _bluetoothClassicPlugin.disconnect;
     super.dispose();
   }
 
-  Future onScanPressed() async {
+  Future<void> initPlatformState() async {
+    String platformVersion;
     try {
-      _systemDevices = await FlutterBluePlus.systemDevices;
-    } catch (e) {
-      SimpleLogger.warning('Error during systemDevices: $e');
+      platformVersion = await _bluetoothClassicPlugin.getPlatformVersion() ??
+          'Unknown platform version';
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
     }
 
-    try {
-      // android is slow when asking for all advertisments,
-      // so instead we only ask for 1/8 of them
-      int divisor = Platform.isAndroid ? 8 : 1;
-      await FlutterBluePlus.startScan(
-          timeout: const Duration(seconds: 15),
-          continuousUpdates: true,
-          continuousDivisor: divisor);
-    } catch (e) {
-      SimpleLogger.warning('Error during startScan: $e');
+    if (!mounted) return;
+  }
+
+  Future<void> _getDevices() async {
+    var res = await _bluetoothClassicPlugin.getPairedDevices();
+    setState(() {
+      _devices = res;
+    });
+  }
+
+  Future<void> _scan() async {
+    if (_connecting) {
+      return;
     }
-    setState(() {}); // force refresh of systemDevices
-  }
 
-  Future onStopPressed() async {
-    try {
-      FlutterBluePlus.stopScan();
-    } catch (e) {
-      SimpleLogger.warning('Error during stopScan: $e');
-    }
-  }
-
-  void onConnectPressed(BluetoothDevice device) {
-    device.connectAndUpdateStream().catchError((e) {});
-    MaterialPageRoute route = MaterialPageRoute(
-        builder: (context) => DeviceScreen(device: device),
-        settings: const RouteSettings(name: '/DeviceScreen'));
-    Navigator.of(context).push(route);
-  }
-
-  Future onRefresh() {
-    if (_isScanning == false) {
-      FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
-    }
-    setState(() {});
-    return Future.delayed(const Duration(milliseconds: 500));
-  }
-
-  Widget buildScanButton(BuildContext context) {
-    if (FlutterBluePlus.isScanningNow) {
-      return FloatingActionButton(
-        onPressed: onStopPressed,
-        backgroundColor: CQColors.danger100,
-        child: const Icon(Icons.stop),
-      );
+    if (_scanning) {
+      await _bluetoothClassicPlugin.stopScan();
+      setState(() {
+        _scanning = false;
+      });
     } else {
-      return FloatingActionButton(
-          backgroundColor: CQColors.iron100,
-          onPressed: onScanPressed,
-          child: Icon(Icons.sensors_rounded, size: 30, color: CQColors.white));
+      await _bluetoothClassicPlugin.startScan();
+      setState(() {
+        _discoveredDevices = [];
+        _scanning = true;
+      });
     }
-  }
-
-  List<Widget> _buildSystemDeviceTiles(BuildContext context) {
-    return _systemDevices
-        .map(
-          (d) => SystemDeviceTile(
-            device: d,
-            onOpen: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DeviceScreen(device: d),
-                settings: const RouteSettings(name: '/DeviceScreen'),
-              ),
-            ),
-            onConnect: () => onConnectPressed(d),
-          ),
-        )
-        .toList();
-  }
-
-  List<Widget> _buildScanResultTiles(BuildContext context) {
-    return _scanResults
-        .map(
-          (r) => ScanResultTile(
-            result: r,
-            onTap: () => onConnectPressed(r.device),
-          ),
-        )
-        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: onRefresh,
-        child: ListView(
-          children: <Widget>[
-            ..._buildSystemDeviceTiles(context),
-            ..._buildScanResultTiles(context),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: Column(
+            children: [
+              ..._discoveredDevices
+                  .map(
+                    (device) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            device.name ?? device.address,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          InkWell(
+                            onTap: () async {
+                              setState(() {
+                                _connecting = true;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: CQColors.success90,
+                                  content: Container(
+                                    height: 50,
+                                    child: Row(
+                                      children: [
+                                        CircularProgressIndicator(
+                                          color: CQColors.white,
+                                        ),
+                                        SizedBox(width: 16),
+                                        Padding(
+                                          padding: EdgeInsets.only(top: 4),
+                                          child: Text(
+                                            'Conectando-se ao dispositivo',
+                                            style: TextStyle(
+                                              color: CQColors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  duration: Duration(seconds: 10),
+                                ),
+                              );
+
+                              await _bluetoothClassicPlugin.connect(
+                                device.address,
+                                "00001101-0000-1000-8000-00805f9b34fb",
+                              );
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      BluetoothConnectedScreen(
+                                    connectedDevice: device,
+                                  ),
+                                ),
+                              );
+                              setState(() {
+                                _connectedDevice = device;
+                                _discoveredDevices = [];
+                                _devices = [];
+                              });
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: CQColors.iron100,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                "Conectar",
+                                style: CQTheme.body
+                                    .copyWith(color: CQColors.iron100),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
+              SizedBox(height: 16),
+              Text(
+                " ${String.fromCharCodes(_data)}",
+                style: CQTheme.h1.copyWith(),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: buildScanButton(context),
     );
+  }
+
+  Widget buildScanButton(BuildContext context) {
+    if (_scanning) {
+      return FloatingActionButton(
+        onPressed: () {
+          _bluetoothClassicPlugin.disconnect;
+          _scan();
+        },
+        backgroundColor: CQColors.danger100,
+        child: const Icon(Icons.stop, color: CQColors.iron100),
+      );
+    } else {
+      return FloatingActionButton(
+        backgroundColor: CQColors.iron100,
+        onPressed: () {
+          _scan();
+        },
+        child: Icon(Icons.sensors_rounded, size: 30, color: CQColors.white),
+      );
+    }
   }
 }

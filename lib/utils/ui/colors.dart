@@ -35,6 +35,7 @@ class CQColors {
   static const Color sand120 = Color(0xFF7C736A);
   static const Color sand20 = Color(0xFFF8F5F4);
   static const Color success20 = Color(0xFFE4F0EA);
+  static const Color success90 = Color.fromARGB(255, 91, 187, 89);
   static const Color success100 = Color(0xFF378B63);
   static const Color success110 = Color(0xFF26703B);
   static const Color success120 = Color(0xFF1B6F47);
