@@ -1,262 +1,205 @@
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:bluetooth_classic/bluetooth_classic_platform_interface.dart';
+import 'package:bluetooth_classic/models/device.dart';
 import 'package:dockcheck/pages/bluetooth/widgets/streams.dart';
+import 'package:bluetooth_classic/bluetooth_classic.dart';
+import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-
+import 'package:flutter/services.dart';
+import 'device_screen.dart'; // Certifique-se de importar o DeviceScreen
 import '../../utils/simple_logger.dart';
-import 'widgets/characteristic_tile.dart';
-import 'widgets/descriptor_tile.dart';
-import 'widgets/service_tile.dart';
+import 'widgets/scan_result_title.dart';
+import 'widgets/system_device_title.dart'; // Importe seus utilitários
 
-class DeviceScreen extends StatefulWidget {
-  final BluetoothDevice device;
-
-  const DeviceScreen({Key? key, required this.device}) : super(key: key);
+class ScanScreen extends StatefulWidget {
+  const ScanScreen({Key? key}) : super(key: key);
 
   @override
-  State<DeviceScreen> createState() => _DeviceScreenState();
+  State<ScanScreen> createState() => _ScanScreenState();
 }
 
-class _DeviceScreenState extends State<DeviceScreen> {
-  int? _rssi;
-  int? _mtuSize;
-  BluetoothConnectionState _connectionState =
-      BluetoothConnectionState.disconnected;
-  List<BluetoothService> _services = [];
-  bool _isDiscoveringServices = false;
-  bool _isConnecting = false;
-  bool _isDisconnecting = false;
-
-  late StreamSubscription<BluetoothConnectionState>
-      _connectionStateSubscription;
-  late StreamSubscription<bool> _isConnectingSubscription;
-  late StreamSubscription<bool> _isDisconnectingSubscription;
-  late StreamSubscription<int> _mtuSubscription;
+class _ScanScreenState extends State<ScanScreen> {
+  String _platformVersion = 'Unknown';
+  final _bluetoothClassicPlugin = BluetoothClassic();
+  bool _scanning = false;
+  bool _isConnected = false;
+  Uint8List _data = Uint8List(0);
+  late StreamSubscription<bool> _scanningSubscription;
+  late StreamSubscription<Device> _deviceDiscoveredSubscription;
+  int _deviceStatus = Device.disconnected;
+  List<Device> _discoveredDevices = [];
+  List<Device> _devices = [];
 
   @override
   void initState() {
     super.initState();
-
-    _connectionStateSubscription =
-        widget.device.connectionState.listen((state) async {
-      _connectionState = state;
-      if (state == BluetoothConnectionState.connected) {
-        _services = []; // must rediscover services
-      }
-      if (state == BluetoothConnectionState.connected && _rssi == null) {
-        _rssi = await widget.device.readRssi();
-      }
-      setState(() {});
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+    initPlatformState();
+    _bluetoothClassicPlugin.onDeviceStatusChanged().listen((event) {
+      setState(() {
+        _deviceStatus = event;
+        _isConnected = _deviceStatus == Device.connected;
+      });
     });
-
-    _mtuSubscription = widget.device.mtu.listen((value) {
-      _mtuSize = value;
-      setState(() {});
+    _bluetoothClassicPlugin.onDeviceDataReceived().listen((event) {
+      setState(() {
+        _data = Uint8List.fromList([..._data, ...event]);
+      });
     });
+  }
 
-    _isConnectingSubscription = widget.device.isConnecting.listen((value) {
-      _isConnecting = value;
-      setState(() {});
-    });
+  Future<void> initPlatformState() async {
+    String platformVersion;
+    try {
+      platformVersion = await _bluetoothClassicPlugin.getPlatformVersion() ??
+          'Unknown platform version';
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
 
-    _isDisconnectingSubscription =
-        widget.device.isDisconnecting.listen((value) {
-      _isDisconnecting = value;
-      setState(() {});
+    if (!mounted) return;
+
+    setState(() {
+      _platformVersion = platformVersion;
     });
+  }
+
+  Future<void> _getDevices() async {
+    var res = await _bluetoothClassicPlugin.getPairedDevices();
+    setState(() {
+      _devices = res;
+    });
+  }
+
+  Future<void> _scan() async {
+    if (_scanning) {
+      await _bluetoothClassicPlugin.stopScan();
+      setState(() {
+        _scanning = false;
+      });
+    } else {
+      await _bluetoothClassicPlugin.startScan();
+      _deviceDiscoveredSubscription =
+          _bluetoothClassicPlugin.onDeviceDiscovered().listen(
+        (event) {
+          setState(() {
+            _discoveredDevices = [..._discoveredDevices, event];
+          });
+        },
+      );
+      setState(() {
+        _scanning = true;
+      });
+    }
   }
 
   @override
   void dispose() {
-    _connectionStateSubscription.cancel();
-    _mtuSubscription.cancel();
-    _isConnectingSubscription.cancel();
-    _isDisconnectingSubscription.cancel();
+    _scanningSubscription.cancel();
+    _deviceDiscoveredSubscription.cancel();
     super.dispose();
   }
 
-  bool get isConnected {
-    return _connectionState == BluetoothConnectionState.connected;
-  }
-
-  Future onConnectPressed() async {
+  Future<void> onScanPressed() async {
     try {
-      await widget.device.connectAndUpdateStream();
+      if (!_scanning) {
+        print("Iniciando escaneamento...");
+        await _bluetoothClassicPlugin.startScan();
+        setState(() {
+          _scanning = true;
+        });
+      } else {
+        print("Parando escaneamento...");
+        await _bluetoothClassicPlugin.stopScan();
+        _deviceDiscoveredSubscription.cancel();
+        setState(() {
+          _scanning = false;
+        });
+      }
     } catch (e) {
-      if (e is FlutterBluePlusException &&
-          e.code == FbpErrorCode.connectionCanceled.index) {
-        // ignore connections canceled by the user
-      } else {}
+      SimpleLogger.warning('Error during scan operation: $e');
     }
   }
 
-  Future onCancelPressed() async {
+  Future<void> onStopPressed() async {
     try {
-      await widget.device.disconnectAndUpdateStream(queue: false);
+      await BluetoothClassicPlatform.instance.stopScan();
+      _deviceDiscoveredSubscription.cancel();
+      setState(() {
+        _scanning = false;
+      });
     } catch (e) {
-      SimpleLogger.warning('Error during disconnectAndUpdateStream: $e');
+      SimpleLogger.warning('Error during stopScan: $e');
     }
   }
 
-  Future onDisconnectPressed() async {
-    try {
-      await widget.device.disconnectAndUpdateStream();
-    } catch (e) {
-      SimpleLogger.warning('Error during disconnectAndUpdateStream: $e');
+  Future<void> onRefresh() async {
+    if (_scanning == false) {
+      await BluetoothClassicPlatform.instance.startScan();
+    }
+    setState(() {});
+    return Future.delayed(const Duration(milliseconds: 500));
+  }
+
+  Widget buildScanButton(BuildContext context) {
+    if (_scanning) {
+      return FloatingActionButton(
+        onPressed: onStopPressed,
+        backgroundColor: CQColors.danger100,
+        child: const Icon(Icons.stop),
+      );
+    } else {
+      return FloatingActionButton(
+        backgroundColor: CQColors.iron100,
+        onPressed: onScanPressed,
+        child: Icon(Icons.sensors_rounded, size: 30, color: CQColors.white),
+      );
     }
   }
 
-  Future onDiscoverServicesPressed() async {
-    setState(() {
-      _isDiscoveringServices = true;
-    });
-    try {
-      _services = await widget.device.discoverServices();
-    } catch (e) {
-      SimpleLogger.warning('Error during discoverServices: $e');
-    }
-    setState(() {
-      _isDiscoveringServices = false;
-    });
-  }
-
-  Future onRequestMtuPressed() async {
-    try {
-      await widget.device.requestMtu(223, predelay: 0);
-    } catch (e) {
-      SimpleLogger.warning('Error during requestMtu: $e');
-    }
-  }
-
-  List<Widget> _buildServiceTiles(BuildContext context, BluetoothDevice d) {
-    return _services
-        .map(
-          (s) => ServiceTile(
-            service: s,
-            characteristicTiles: s.characteristics
-                .map((c) => _buildCharacteristicTile(c))
-                .toList(),
-          ),
-        )
-        .toList();
-  }
-
-  CharacteristicTile _buildCharacteristicTile(BluetoothCharacteristic c) {
-    return CharacteristicTile(
-      characteristic: c,
-      descriptorTiles:
-          c.descriptors.map((d) => DescriptorTile(descriptor: d)).toList(),
-    );
-  }
-
-  Widget buildSpinner(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(14.0),
-      child: AspectRatio(
-        aspectRatio: 1.0,
-        child: CircularProgressIndicator(
-          backgroundColor: Colors.black12,
-          color: Colors.black26,
-        ),
-      ),
-    );
-  }
-
-  Widget buildRemoteId(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text('${widget.device.remoteId}'),
-    );
-  }
-
-  Widget buildRssiTile(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        isConnected
-            ? const Icon(Icons.bluetooth_connected)
-            : const Icon(Icons.bluetooth_disabled),
-        Text(((isConnected && _rssi != null) ? '${_rssi!} dBm' : ''),
-            style: Theme.of(context).textTheme.bodySmall)
-      ],
-    );
-  }
-
-  Widget buildGetServices(BuildContext context) {
-    return IndexedStack(
-      index: (_isDiscoveringServices) ? 1 : 0,
-      children: <Widget>[
-        TextButton(
-          onPressed: onDiscoverServicesPressed,
-          child: const Text("Get Services"),
-        ),
-        const IconButton(
-          icon: SizedBox(
-            width: 18.0,
-            height: 18.0,
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(Colors.grey),
+  Widget buildDeviceList() {
+    if (_scanning) {
+      return const Text("Procurando dispositivos...");
+    } else if (_discoveredDevices.isEmpty) {
+      return const Text("Nenhum dispositivo encontrado.");
+    } else {
+      return Column(
+        children: [
+          Text("Dispositivos disponíveis:"),
+          for (var device in _discoveredDevices)
+            ListTile(
+              title: Text(device.name ?? device.address),
+              subtitle: Text(device.address),
+              onTap: () async {
+                await _bluetoothClassicPlugin.connect(
+                  device.address,
+                  "00001101-0000-1000-8000-00805f9b34fb",
+                );
+                setState(() {
+                  _discoveredDevices = [];
+                  _devices = [];
+                });
+              },
             ),
-          ),
-          onPressed: null,
-        )
-      ],
-    );
-  }
-
-  Widget buildMtuTile(BuildContext context) {
-    return ListTile(
-        title: const Text('MTU Size'),
-        subtitle: Text('$_mtuSize bytes'),
-        trailing: IconButton(
-          icon: const Icon(Icons.edit),
-          onPressed: onRequestMtuPressed,
-        ));
-  }
-
-  Widget buildConnectButton(BuildContext context) {
-    return Row(children: [
-      if (_isConnecting || _isDisconnecting) buildSpinner(context),
-      TextButton(
-          onPressed: _isConnecting
-              ? onCancelPressed
-              : (isConnected ? onDisconnectPressed : onConnectPressed),
-          child: Text(
-            _isConnecting ? "CANCEL" : (isConnected ? "DISCONNECT" : "CONNECT"),
-            style: Theme.of(context)
-                .primaryTextTheme
-                .labelLarge
-                ?.copyWith(color: Colors.white),
-          ))
-    ]);
+        ],
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.device.platformName),
-          actions: [buildConnectButton(context)],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              buildConnectButton(context),
-              buildRemoteId(context),
-              ListTile(
-                leading: buildRssiTile(context),
-                title: Text(
-                    'Device is ${_connectionState.toString().split('.')[1]}.'),
-                trailing: buildGetServices(context),
-              ),
-              buildMtuTile(context),
-              ..._buildServiceTiles(context, widget.device),
-            ],
-          ),
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: onRefresh,
+        child: ListView(
+          children: <Widget>[
+            buildDeviceList(),
+          ],
         ),
       ),
+      floatingActionButton: buildScanButton(context),
     );
   }
 }

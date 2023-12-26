@@ -1,6 +1,7 @@
 import 'package:dockcheck/pages/bluetooth/bluetooth.dart';
 import 'package:dockcheck/pages/cadastrar/cadastrar.dart';
 import 'package:dockcheck/pages/home/home.dart';
+import 'package:dockcheck/pages/manual/manual.dart';
 import 'package:dockcheck/repositories/login_repository.dart';
 import 'package:dockcheck/utils/theme.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
@@ -47,7 +48,7 @@ class _RootState extends State<Root> {
           _pageController.jumpToPage(0);
         },
       ),
-      const BluetoothRoot(),
+      IntegratedBluetoothScreen(),
     ];
   }
 
@@ -106,6 +107,24 @@ class _RootState extends State<Root> {
 
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ManualPage()));
+            },
+            child: Container(
+                child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Center(
+                  child: const Icon(
+                Icons.add,
+                size: 32,
+                color: CQColors.iron100,
+              )),
+            )),
+          ),
+        ],
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [

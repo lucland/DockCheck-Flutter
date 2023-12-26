@@ -40,6 +40,10 @@ dependencies:
   sqflite: ^2.3.0
   flutter_blue_plus: ^1.30.3
   http: ^1.1.2
+  bluetooth_classic: ^0.0.1
+  file_picker: ^6.1.1
+  image_picker: ^1.0.5
+  flutter_bluetooth_serial: ^0.4.0
   
 dev_dependencies:
   flutter_test:

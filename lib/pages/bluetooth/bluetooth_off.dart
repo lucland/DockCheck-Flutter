@@ -23,19 +23,22 @@ class BluetoothOffScreen extends StatelessWidget {
   Widget buildTitle(BuildContext context) {
     String? state = adapterState?.toString().split(".").last;
 
-    return Text(
-      'Adaptador Bluetooth está ${state ?? 'indisponível'}',
-      style: CQTheme.body.copyWith(color: CQColors.iron100),
+    return Column(
+      children: [
+        Text(
+          'Adaptador Bluetooth está desligado',
+          style: CQTheme.body.copyWith(color: CQColors.iron100),
+        ),
+        Text('é necessário ligar-lo')
+      ],
     );
   }
 
   Widget buildTurnOnButton(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: ElevatedButton(
-        child: const Text('LIGAR',
-            style: TextStyle(color: Colors.white, fontSize: 16)),
-        onPressed: () async {
+      child: GestureDetector(
+        onTap: () async {
           try {
             if (Platform.isAndroid) {
               await FlutterBluePlus.turnOn();
@@ -44,6 +47,25 @@ class BluetoothOffScreen extends StatelessWidget {
             SimpleLogger.warning('Error during turnOn: $e');
           }
         },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: 30,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                color: CQColors.iron100,
+              ),
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 7),
+                  child: const Text('Ligar Bluetooth',
+                      style: TextStyle(color: CQColors.white, fontSize: 16)),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

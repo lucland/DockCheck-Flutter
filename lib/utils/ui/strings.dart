@@ -21,6 +21,8 @@ class CQStrings {
   static const String email = 'Email';
   static const String identidade = 'Identidade';
   static const String funcao = 'Função';
+  static const String enviar = 'ENVIAR';
+  static const String foto = 'Alterar foto de perfil';
   static const String empresaTrip = 'Empresa/Trip';
   static const String embarcacao = 'Embarcação';
   static const String area = 'Área';
@@ -57,6 +59,7 @@ class CQStrings {
   static const String todos = 'Todos';
   static const String aBordo = 'À bordo';
   static const String checkIn = 'CHECK-IN';
+  static const String usuario = 'Usuário';
   static const String senha = 'Senha';
   static const String salvar = 'SALVAR';
   static const String usuarioEditado = 'USUÁRIO EDITADO.';

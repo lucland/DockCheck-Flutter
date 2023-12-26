@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
 import 'package:dockcheck/utils/formatter.dart';
+import 'package:dockcheck/widgets/dropdown_widget.dart';
 import 'package:dockcheck/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../repositories/user_repository.dart';
@@ -37,10 +41,242 @@ class Cadastrar extends StatelessWidget {
   }
 }
 
-class CadastrarView extends StatelessWidget {
+class CadastrarView extends StatefulWidget {
   final VoidCallback onCadastrar;
   const CadastrarView({super.key, required this.onCadastrar});
 
+  @override
+  State<CadastrarView> createState() => _CadastrarViewState();
+}
+
+class _CadastrarViewState extends State<CadastrarView> {
+  XFile? _pickedImage;
+  bool _hasImage = false;
+
+// ----- nnnnnndesacoplar -------
+  Future<void> _escolherImagemDaGaleria() async {
+    final picker = ImagePicker();
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _hasImage = true;
+        _pickedImage = pickedFile;
+        Navigator.pop(context);
+        mostrarPopupFoto(context);
+      });
+    }
+  }
+
+  Future<void> _tirarFoto() async {
+    final picker = ImagePicker();
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      setState(() {
+        _hasImage = true;
+        _pickedImage = pickedFile;
+        Navigator.pop(context);
+        mostrarPopupFoto(context);
+      });
+    }
+  }
+
+  void _removerFoto() {
+    setState(() {
+      _hasImage = false;
+      _pickedImage = null;
+      Navigator.pop(context);
+      mostrarPopupFoto(context);
+    });
+  }
+
+  void mostrarPopupFoto(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: CQColors.white, // cor do fundo
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+          ),
+          content: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  color: Colors.grey[200], // fundo da foto
+                  child: _pickedImage != null
+                      ? Image.file(
+                          File(_pickedImage!.path),
+                          fit: BoxFit.cover,
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 64,
+                            color: Colors.grey, // iconde do fundo da foto
+                          ),
+                        ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        CQStrings.foto,
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          await _tirarFoto();
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(color: CQColors.iron100),
+                              color: Colors.transparent,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Tirar uma foto',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: CQColors.iron100),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          await _escolherImagemDaGaleria();
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(color: CQColors.iron100),
+                              color: Colors.transparent,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Escolher na galeria',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: CQColors.iron100),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          _removerFoto();
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              border: Border.all(color: CQColors.iron100),
+                              color: Colors.transparent,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Limpar',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: CQColors.iron100),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          child: Container(
+                            height: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.0),
+                              color: CQColors.iron40,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'SALVAR',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w800,
+                                    color: CQColors.iron20),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ------------ yyyyy desacoplar
   @override
   Widget build(BuildContext context) {
     final TextEditingController identidadeController = TextEditingController();
@@ -48,6 +284,7 @@ class CadastrarView extends StatelessWidget {
     final TextEditingController funcaoController = TextEditingController();
     final TextEditingController empresaController = TextEditingController();
     final TextEditingController emailController = TextEditingController();
+    final TextEditingController usuarioController = TextEditingController();
     final TextEditingController senhaController = TextEditingController();
     final TextEditingController asoController = TextEditingController();
     final TextEditingController nr34Controller = TextEditingController();
@@ -95,7 +332,7 @@ class CadastrarView extends StatelessWidget {
           ),
         );
         context.read<CadastrarCubit>().clearFields();
-        onCadastrar();
+        widget.onCadastrar();
       }
     }, builder: (context, state) {
       final cubit = context.read<CadastrarCubit>();
@@ -114,36 +351,133 @@ class CadastrarView extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('N° ${state.user.number}', style: CQTheme.h1),
-                        const Divider(),
-                        TextInputWidget(
-                          title: CQStrings.nome,
-                          isRequired: true,
-                          controller: nomeController,
-                          onChanged: (text) => cubit.updateNome(text),
-                        ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Flexible(
-                              flex: 1,
-                              child: TextInputWidget(
-                                title: CQStrings.email,
-                                controller: emailController,
-                                onChanged: (text) => cubit.updateEmail(text),
-                              ),
-                            ),
-                            Flexible(
-                              flex: 1,
-                              child: TextInputWidget(
-                                title: CQStrings.identidade,
-                                keyboardType: TextInputType.number,
-                                controller: identidadeController,
-                                onChanged: (text) => cubit.updateIdentidade(
-                                  text.replaceAll('.', '').replaceAll('-', ''),
+                            Text('N° ${state.user.number}', style: CQTheme.h1),
+                            Row(
+                              children: [
+                                if (_hasImage)
+                                  GestureDetector(
+                                    onTap: () {
+                                      mostrarPopupFoto(context);
+                                    },
+                                    child: Text(
+                                      'Foto Anexada',
+                                      style: CQTheme.body
+                                          .copyWith(color: CQColors.success100),
+                                    ),
+                                  ),
+                                if (!_hasImage)
+                                  GestureDetector(
+                                    onTap: () {
+                                      mostrarPopupFoto(context);
+                                    },
+                                    child: Text(
+                                      'Foto Necessária',
+                                      style: CQTheme.body
+                                          .copyWith(color: CQColors.danger100),
+                                    ),
+                                  ),
+                                GestureDetector(
+                                  onTap: () {
+                                    mostrarPopupFoto(context);
+                                  },
+                                  child: Container(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 18.0),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.camera_alt,
+                                          color: _hasImage
+                                              ? Colors.green
+                                              : CQColors.danger100,
+                                          size: 30,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                isRequired: true,
-                                isID: true,
-                              ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Divider(),
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                Flexible(
+                                  flex: 7,
+                                  child: Column(
+                                    children: [
+                                      TextInputWidget(
+                                        title: CQStrings.nome,
+                                        isRequired: true,
+                                        controller: nomeController,
+                                        onChanged: (text) =>
+                                            cubit.updateNome(text),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            flex: 1,
+                                            child: TextInputWidget(
+                                              title: CQStrings.email,
+                                              controller: emailController,
+                                              onChanged: (text) =>
+                                                  cubit.updateEmail(text),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            flex: 1,
+                                            child: TextInputWidget(
+                                              title: CQStrings.identidade,
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              controller: identidadeController,
+                                              onChanged: (text) =>
+                                                  cubit.updateIdentidade(
+                                                text
+                                                    .replaceAll('.', '')
+                                                    .replaceAll('-', ''),
+                                              ),
+                                              isRequired: true,
+                                              isID: true,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 3,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      mostrarPopupFoto(context);
+                                    },
+                                    child: Container(
+                                      width: double.infinity,
+                                      child: _pickedImage != null
+                                          ? Image.file(
+                                              File(_pickedImage!.path),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Center(
+                                              child: Icon(
+                                                Icons.camera_alt,
+                                                color: Colors.white,
+                                                size: 45,
+                                              ),
+                                            ),
+                                      height: 200,
+                                      color: Colors.grey[400],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -388,19 +722,28 @@ class CadastrarView extends StatelessWidget {
                             ),
                           ],
                         ),
-                        if (state.user.isAdmin)
+                        if (state.user.isAdmin) ...[
                           TextInputWidget(
+                            title: CQStrings.usuario,
+                            isRequired: true,
+                            controller: usuarioController,
+                            onChanged: (text) => cubit.updateUserAdmin(text),
+                          ),
+                          TextInputWidget(
+                            isPassword: true,
                             title: CQStrings.senha,
                             isRequired: true,
                             controller: senhaController,
                             onChanged: (text) => cubit.updatePassword(text),
                           ),
+                        ],
                         const Divider(),
                         Row(
                           children: [
                             Flexible(
                               flex: 1,
                               child: CalendarPickerWidget(
+                                showAttachmentIcon: false,
                                 title: CQStrings.dataInicial,
                                 isRequired: true,
                                 controller: dataInicialController,
@@ -411,6 +754,7 @@ class CadastrarView extends StatelessWidget {
                             Flexible(
                               flex: 1,
                               child: CalendarPickerWidget(
+                                showAttachmentIcon: false,
                                 title: CQStrings.dataLimite,
                                 isRequired: true,
                                 controller: dataFinalController,
@@ -488,6 +832,13 @@ class CadastrarView extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                CQStrings.embarcacao,
+                style: CQTheme.h2,
               ),
             ),
           ],

@@ -48,53 +48,54 @@ class LoginPage extends StatelessWidget {
             ),
             Expanded(
               flex: 6,
-              child: Container(
-                color: CQColors.background,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          TextInputWidget(
-                            title: 'Usuário',
-                            keyboardType: TextInputType.emailAddress,
-                            controller: _usernameController,
-                          ),
-                          TextInputWidget(
-                            title: 'Senha',
-                            keyboardType: TextInputType.text,
-                            controller: _passwordController,
-                            isPassword: true,
-                          ),
-                        ],
-                      ),
-                      InkWell(
-                        onTap: () {
-                          BlocProvider.of<LoginCubit>(context).logIn(
-                            _usernameController.text,
-                            _passwordController.text,
-                          );
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(0.0),
-                            color: CQColors.iron100,
-                          ),
-                          padding: const EdgeInsets.all(24.0),
-                          child: Text(
-                            CQStrings.login,
-                            overflow: TextOverflow.ellipsis,
-                            style: CQTheme.headLine
-                                .copyWith(color: CQColors.white),
-                          ),
+              child: SingleChildScrollView(
+                child: Container(
+                  color: CQColors.background,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextInputWidget(
+                              title: 'Usuário',
+                              keyboardType: TextInputType.emailAddress,
+                              controller: _usernameController,
+                            ),
+                            TextInputWidget(
+                              title: 'Senha',
+                              keyboardType: TextInputType.text,
+                              controller: _passwordController,
+                              isPassword: true,
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                BlocProvider.of<LoginCubit>(context).logIn(
+                  _usernameController.text,
+                  _passwordController.text,
+                );
+              },
+              child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(0.0),
+                  color: CQColors.iron100,
+                ),
+                padding: const EdgeInsets.all(24.0),
+                child: Text(
+                  CQStrings.login,
+                  overflow: TextOverflow.ellipsis,
+                  style: CQTheme.headLine.copyWith(color: CQColors.white),
                 ),
               ),
             ),

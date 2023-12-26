@@ -1,9 +1,13 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
 import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../models/event.dart';
 import '../../../models/user.dart';
@@ -117,6 +121,13 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     checkCadastroHabilitado();
   }
 
+  void updatePicture(XFile picture) async {
+    Uint8List bytes = await picture.readAsBytes();
+    String base64String = base64Encode(bytes);
+    final user = state.user.copyWith(picture: base64String);
+    emit(state.copyWith(user: user));
+  }
+
   void updateFuncao(String funcao) {
     final user = state.user.copyWith(role: funcao);
     emit(state.copyWith(user: user));
@@ -154,6 +165,11 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   void updatePassword(String password) {
     final user = state.user.copyWith(salt: password, hash: '');
+    emit(state.copyWith(user: user));
+  }
+
+  void updateUserAdmin(String usuario) {
+    final user = state.user.copyWith(username: usuario);
     emit(state.copyWith(user: user));
   }
 
