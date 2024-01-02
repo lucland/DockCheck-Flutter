@@ -143,4 +143,19 @@ class UserRepository {
     final data = await apiService.get('users/ids');
     return (data as List).map((item) => item.toString()).toList();
   }
+
+  Future<User> getUserByBeacon(String id) async {
+    try {
+      final data = await apiService.get('users/user/rfid/$id');
+      return User.fromJson(data);
+    } catch (e) {
+      SimpleLogger.severe('Failed to get user: ${e.toString()}');
+      final localData = await localStorageService.getDataById('users', id);
+      if (localData.isNotEmpty) {
+        return User.fromJson(localData);
+      } else {
+        throw Exception('User not found locally');
+      }
+    }
+  }
 }

@@ -764,6 +764,7 @@ class _CadastrarViewState extends State<CadastrarView> {
                             ),
                           ],
                         ),
+                        DropDown(),
                       ],
                     ),
                   ),
