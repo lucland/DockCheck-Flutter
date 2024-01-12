@@ -43,7 +43,7 @@ class EditarView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController identidadeController =
-        TextEditingController(text: Formatter.identidade(user.identidade));
+        TextEditingController(text: Formatter.identidade(user.bloodType));
     final TextEditingController nomeController =
         TextEditingController(text: user.name);
     final TextEditingController funcaoController =
@@ -152,17 +152,61 @@ class EditarView extends StatelessWidget {
                               ),
                               Flexible(
                                 flex: 1,
-                                child: TextInputWidget(
-                                  title: CQStrings.identidade,
-                                  keyboardType: TextInputType.number,
-                                  controller: identidadeController,
-                                  onChanged: (text) => cubit.updateIdentidade(
-                                    text
-                                        .replaceAll('.', '')
-                                        .replaceAll('-', ''),
-                                  ),
-                                  isRequired: true,
-                                  isID: true,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Tipo sanguíneo', style: CQTheme.h2),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 8, right: 16, bottom: 8),
+                                      child: DropdownButtonFormField<String>(
+                                        decoration: InputDecoration(
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 16,
+                                                  vertical: 11.5),
+                                          hintText: 'Tipo Sanguíneo',
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                              color: CQColors.slate100,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            borderSide: const BorderSide(
+                                              color: CQColors.slate100,
+                                              width: 1,
+                                            ),
+                                          ),
+                                        ),
+                                        value: cubit.selectedBloodType,
+                                        onChanged: (String? newValue) {
+                                          cubit.updateBloodType(newValue ?? '');
+                                        },
+                                        items: [
+                                          '',
+                                          'A+',
+                                          'A-',
+                                          'B+',
+                                          'B-',
+                                          'AB+',
+                                          'AB-',
+                                          'O+',
+                                          'O-',
+                                        ].map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -181,7 +225,7 @@ class EditarView extends StatelessWidget {
                               Flexible(
                                 flex: 1,
                                 child: TextInputWidget(
-                                  title: CQStrings.empresaTrip,
+                                  title: CQStrings.empresa,
                                   keyboardType: TextInputType.text,
                                   controller: empresaController,
                                   onChanged: (text) =>

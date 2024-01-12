@@ -1,5 +1,4 @@
 import 'package:dockcheck/pages/bluetooth/cubit/bluetooth_connected_cubit.dart';
-import 'package:dockcheck/pages/bluetooth/cubit/bluetooth_cubit.dart';
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
 import 'package:dockcheck/pages/details/cubit/details_cubit.dart';
 import 'package:flutter/material.dart';
@@ -83,7 +82,7 @@ void main() async {
       CadastrarCubit(userRepository, eventRepository, localStorageService);
   var detailsCubit = DetailsCubit(userRepository, eventRepository,
       localStorageService, authorizationRepository, vesselRepository);
-  var bluetoothCubit = BluetoothCubit(userRepository);
+  //var bluetoothCubit = BluetoothCubit(userRepository);
   var bluetoothConnectedCubit = BluetoothConnectedCubit(userRepository);
 
   BackgroundService();
@@ -113,9 +112,9 @@ void main() async {
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
         Provider<BeaconRepository>(create: (_) => beaconRepository),
         Provider<ReceptorRepository>(create: (_) => receptorRepository),
-        BlocProvider<BluetoothCubit>(
+        /*BlocProvider<BluetoothCubit>(
           create: (_) => bluetoothCubit,
-        ),
+        ),*/
       ],
       child: MaterialApp(
         theme: CQTheme.theme,

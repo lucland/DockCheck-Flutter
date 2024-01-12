@@ -90,8 +90,9 @@ class HomeView extends StatelessWidget {
                         // --- essa é a parte que não rola ---
                         Padding(
                           padding: EdgeInsets.all(16),
-                          child: blockedTicket(
-                              users: users, vessel: state.vessels[0]),
+                          child: BlockedTicket(
+                              users: state.blockedUsers,
+                              vessel: state.vessels[0]),
                         ),
                         const Divider(),
                         Padding(

@@ -6,7 +6,7 @@ class User {
   String role;
   String project;
   int number;
-  String identidade;
+  String bloodType;
   String cpf;
   DateTime aso;
   String asoDocument;
@@ -27,15 +27,13 @@ class User {
   String area;
   bool isAdmin;
   bool isVisitor;
-  bool isGuardian;
+  bool isPortalo;
+  bool isCrew;
   bool isOnboarded;
   bool isBlocked;
   String blockReason;
-  String rfid;
+  String iTag;
   String picture;
-  DateTime createdAt;
-  DateTime updatedAt;
-  List<String> events;
   String typeJob;
   DateTime startJob;
   DateTime endJob;
@@ -52,7 +50,7 @@ class User {
     required this.role,
     required this.project,
     required this.number,
-    required this.identidade,
+    required this.bloodType,
     required this.cpf,
     required this.aso,
     required this.asoDocument,
@@ -73,15 +71,13 @@ class User {
     required this.area,
     required this.isAdmin,
     required this.isVisitor,
-    required this.isGuardian,
+    required this.isPortalo,
+    required this.isCrew,
     required this.isOnboarded,
     required this.isBlocked,
     required this.blockReason,
-    required this.rfid,
+    required this.iTag,
     required this.picture,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.events,
     required this.typeJob,
     required this.startJob,
     required this.endJob,
@@ -100,7 +96,7 @@ class User {
       role: json['role'],
       project: json['project'],
       number: json['number'],
-      identidade: json['identidade'],
+      bloodType: json['blood_type'],
       cpf: json['cpf'],
       aso: DateTime.parse(json['aso']),
       asoDocument: json['aso_document'],
@@ -121,15 +117,13 @@ class User {
       area: json['area'],
       isAdmin: json['is_admin'],
       isVisitor: json['is_visitor'],
-      isGuardian: json['is_guardian'],
+      isPortalo: json['is_portalo'],
+      isCrew: json['is_crew'],
       isOnboarded: json['is_onboarded'],
       isBlocked: json['is_blocked'],
       blockReason: json['block_reason'],
-      rfid: json['rfid'],
+      iTag: json['itag'],
       picture: json['picture'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      events: List<String>.from(json['events']),
       typeJob: json['type_job'],
       startJob: DateTime.parse(json['start_job']),
       endJob: DateTime.parse(json['end_job']),
@@ -149,7 +143,7 @@ class User {
       'role': role,
       'project': project,
       'number': number,
-      'identidade': identidade,
+      'blood_type': bloodType,
       'cpf': cpf,
       'aso': aso.toIso8601String(),
       'aso_document': asoDocument,
@@ -170,15 +164,13 @@ class User {
       'area': area,
       'is_admin': isAdmin,
       'is_visitor': isVisitor,
-      'is_guardian': isGuardian,
+      'is_portalo': isPortalo,
+      'is_crew': isCrew,
       'is_onboarded': isOnboarded,
       'is_blocked': isBlocked,
       'block_reason': blockReason,
-      'rfid': rfid,
+      'itag': iTag,
       'picture': picture,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
-      'events': events,
       'type_job': typeJob,
       'start_job': startJob.toIso8601String(),
       'end_job': endJob.toIso8601String(),
@@ -197,7 +189,7 @@ class User {
     String? role,
     String? project,
     int? number,
-    String? identidade,
+    String? bloodType,
     String? cpf,
     DateTime? aso,
     String? asoDocument,
@@ -218,11 +210,12 @@ class User {
     String? area,
     bool? isAdmin,
     bool? isVisitor,
-    bool? isGuardian,
+    bool? isPortalo,
+    bool? isCrew,
     bool? isOnboarded,
     bool? isBlocked,
     String? blockReason,
-    String? rfid,
+    String? iTag,
     String? picture,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -243,7 +236,7 @@ class User {
       role: role ?? this.role,
       project: project ?? this.project,
       number: number ?? this.number,
-      identidade: identidade ?? this.identidade,
+      bloodType: bloodType ?? this.bloodType,
       cpf: cpf ?? this.cpf,
       aso: aso ?? this.aso,
       asoDocument: asoDocument ?? this.asoDocument,
@@ -264,15 +257,13 @@ class User {
       area: area ?? this.area,
       isAdmin: isAdmin ?? this.isAdmin,
       isVisitor: isVisitor ?? this.isVisitor,
-      isGuardian: isGuardian ?? this.isGuardian,
+      isPortalo: isPortalo ?? this.isPortalo,
+      isCrew: isCrew ?? this.isCrew,
       isOnboarded: isOnboarded ?? this.isOnboarded,
       isBlocked: isBlocked ?? this.isBlocked,
       blockReason: blockReason ?? this.blockReason,
-      rfid: rfid ?? this.rfid,
+      iTag: iTag ?? this.iTag,
       picture: picture ?? this.picture,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      events: events ?? this.events,
       typeJob: typeJob ?? this.typeJob,
       startJob: startJob ?? this.startJob,
       endJob: endJob ?? this.endJob,

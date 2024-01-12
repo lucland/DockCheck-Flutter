@@ -10,6 +10,9 @@ class CadastrarState {
   final Event evento;
   final bool userCreated;
   final bool cadastroHabilitado;
+  final String selectedITagDevice;
+  final String isiTagValid;
+  final String lastDeviceId;
 
   CadastrarState({
     this.numero = 0,
@@ -19,6 +22,9 @@ class CadastrarState {
     required this.evento,
     this.userCreated = false,
     this.cadastroHabilitado = false,
+    this.selectedITagDevice = '',
+    this.isiTagValid = '',
+    this.lastDeviceId = '',
   });
 
   CadastrarState copyWith({
@@ -29,6 +35,9 @@ class CadastrarState {
     Event? evento,
     bool? userCreated,
     bool? cadastroHabilitado,
+    String? selectedITagDevice,
+    String? isiTagValid,
+    String? lastDeviceId,
   }) {
     return CadastrarState(
       numero: numero ?? this.numero,
@@ -38,6 +47,9 @@ class CadastrarState {
       evento: evento ?? this.evento,
       userCreated: userCreated ?? this.userCreated,
       cadastroHabilitado: cadastroHabilitado ?? this.cadastroHabilitado,
+      selectedITagDevice: selectedITagDevice ?? this.selectedITagDevice,
+      isiTagValid: isiTagValid ?? this.isiTagValid,
+      lastDeviceId: lastDeviceId ?? this.lastDeviceId,
     );
   }
 }

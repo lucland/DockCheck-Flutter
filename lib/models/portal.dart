@@ -2,24 +2,18 @@ class Portal {
   String name;
   String id;
   String vesselId;
-  int cameraStatus;
-  String cameraIp;
-  int rfidStatus;
-  String rfidIp;
-  DateTime createdAt;
-  DateTime updatedAt;
+  int onBoardCount;
+  String userId;
+  DateTime lastEvent;
   String status;
 
   Portal({
     required this.name,
     required this.id,
     required this.vesselId,
-    required this.cameraStatus,
-    required this.cameraIp,
-    required this.rfidStatus,
-    required this.rfidIp,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.onBoardCount,
+    required this.userId,
+    required this.lastEvent,
     required this.status,
   });
 
@@ -28,12 +22,9 @@ class Portal {
       name: json['name'],
       id: json['id'],
       vesselId: json['vessel_id'],
-      cameraStatus: json['camera_status'],
-      cameraIp: json['camera_ip'],
-      rfidStatus: json['rfid_status'],
-      rfidIp: json['rfid_ip'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      onBoardCount: json['onboard_count'],
+      userId: json['user_id'],
+      lastEvent: DateTime.parse(json['last_event']),
       status: json['status'],
     );
   }
@@ -43,12 +34,9 @@ class Portal {
       'name': name,
       'id': id,
       'vessel_id': vesselId,
-      'camera_status': cameraStatus,
-      'camera_ip': cameraIp,
-      'rfid_status': rfidStatus,
-      'rfid_ip': rfidIp,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
+      'onboard_count': onBoardCount,
+      'user_id': userId,
+      'last_event': lastEvent.toIso8601String(),
       'status': status,
     };
   }

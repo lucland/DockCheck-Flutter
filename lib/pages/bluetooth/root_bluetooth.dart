@@ -1,5 +1,6 @@
-import 'package:dockcheck/pages/bluetooth/blue.dart';
+import 'package:dockcheck/pages/bluetooth/bluetooth_scan.dart';
 import 'package:dockcheck/pages/bluetooth/state.dart';
+import 'package:dockcheck/pages/bluetooth/tasks/bluetooth_off_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -57,8 +58,8 @@ class _IntegratedBluetoothScreenState extends State<IntegratedBluetoothScreen> {
   @override
   Widget build(BuildContext context) {
     if (_bState == BluetoothState.STATE_ON) {
-      return const FindDevicesScreen();
+      return blueScan();
     }
-    return const BluetoothOffScreen();
+    return bluetoohOffScreen();
   }
 }

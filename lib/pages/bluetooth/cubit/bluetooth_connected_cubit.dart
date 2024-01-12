@@ -9,26 +9,43 @@ import '../../../repositories/user_repository.dart';
 
 class BluetoothConnectedCubit extends Cubit<BluetoothConnectedState> {
   final UserRepository userRepository;
+  final List<blue.ScanResult> detectedDevices = [];
 
   BluetoothConnectedCubit(this.userRepository)
       : super(BluetoothConnectedLoadingState());
 
   Future<void> getUsers(
-      List<blue.ScanResult> list, serial.BluetoothDevice device) async {
+      List<blue.ScanResult> lista, serial.BluetoothDevice dispositivo) async {
     try {
-      List<User> users = [];
+      List<User> usuarios = [];
 
-      for (var device in list) {
-        User user = await userRepository.getUserByBeacon(device.device.advName);
-        users.add(user);
+      // Remove dispositivos que não estão mais visíveis
+      detectedDevices.removeWhere(
+          (device) => !lista.any((scanResult) => scanResult.device == device));
+
+      for (var dispositivoScan in lista) {
+        try {
+          if (dispositivoScan.device.advName != "" ||
+              dispositivoScan.device.advName.isNotEmpty) {
+            // Verifique se o usuário já está na lista
+            if (!usuarios.any(
+                (user) => user.iTag == dispositivoScan.device.remoteId.str)) {
+              User usuario = await userRepository
+                  .getUserByBeacon(dispositivoScan.device.remoteId.str);
+              usuarios.add(usuario);
+            }
+          }
+        } catch (e) {
+          //não interrompa o loop
+          print('Erro ao obter usuário para o dispositivo: $e');
+        }
       }
 
-      emit(BluetoothSuccessState(users, device));
+      emit(BluetoothSuccessState(usuarios, dispositivo));
     } catch (e) {
-      // Handle the error, you might want to emit an error state here
-      print('Error in getUsers: $e');
-      emit(BluetoothConnectedErrorState(e
-          .toString())); // Rethrow the exception to maintain the error stack trace
+      // outros erros inesperados
+      print('Erro em getUsers');
+      emit(BluetoothConnectedErrorState(e.toString()));
     }
   }
 

@@ -21,6 +21,8 @@ class BluetoothSuccessState extends BluetoothConnectedState {
   final serial.BluetoothDevice device;
 
   BluetoothSuccessState(this.usuarios, this.device);
+
+  get users => null;
 }
 
 class BluetoothConnectedErrorState extends BluetoothConnectedState {

@@ -10,6 +10,7 @@ class EditarCubit extends Cubit<EditarState> {
   final UserRepository userRepository;
   final EventRepository eventRepository;
   final User originalUser;
+  String selectedBloodType = '';
 
   EditarCubit(this.userRepository, this.originalUser, this.eventRepository)
       : super(
@@ -23,7 +24,7 @@ class EditarCubit extends Cubit<EditarState> {
               role: '',
               project: '',
               number: 0,
-              identidade: '',
+              bloodType: '',
               cpf: '',
               aso: DateTime.now(), // Current timestamp or a placeholder date
               asoDocument: '',
@@ -44,15 +45,12 @@ class EditarCubit extends Cubit<EditarState> {
               area: '', // Provide a default area or keep it empty
               isAdmin: false,
               isVisitor: false,
-              isGuardian: false,
+              isPortalo: false,
               isOnboarded: false,
               isBlocked: false,
               blockReason: '',
-              rfid: '',
+              iTag: '',
               picture: '',
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-              events: [],
               typeJob: '',
               startJob: DateTime.now(),
               endJob: DateTime.now(),
@@ -60,21 +58,18 @@ class EditarCubit extends Cubit<EditarState> {
               salt: '',
               hash: '',
               status: '',
+              isCrew: false,
             ),
             evento: Event(
               id: '',
               portalId: '',
               userId: '',
               timestamp: DateTime.now(),
-              direction: 0,
-              picture: '',
               vesselId: '',
               action: 0,
-              manual: false,
               justification: '',
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
               status: '',
+              beaconId: '',
             ),
           ),
         );
@@ -84,10 +79,13 @@ class EditarCubit extends Cubit<EditarState> {
     emit(state.copyWith(user: userr, isLoading: false, numero: userr.number));
   }
 
-  void updateIdentidade(String identidade) {
-    final user = state.user.copyWith(identidade: identidade);
-    checkCadastroHabilitado();
-    emit(state.copyWith(user: user));
+  void updateBloodType(String bloodType) {
+    selectedBloodType = bloodType;
+    final user = state.user.copyWith(bloodType: bloodType);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
   }
 
   void updateNome(String nome) {
@@ -219,7 +217,7 @@ class EditarCubit extends Cubit<EditarState> {
 
     bool commonChecksPassed = state.user.name.isNotEmpty &&
         state.user.role.isNotEmpty &&
-        state.user.identidade.isNotEmpty &&
+        state.user.bloodType.isNotEmpty &&
         state.user.company.isNotEmpty &&
         state.user.endJob.isAfter(state.user.startJob) &&
         state.user.endJob.isAfter(today);
@@ -245,7 +243,7 @@ class EditarCubit extends Cubit<EditarState> {
       role: '',
       project: '',
       number: 0,
-      identidade: '',
+      bloodType: '',
       cpf: '',
       aso: DateTime.now(), // Current timestamp or a placeholder date
       asoDocument: '',
@@ -266,11 +264,11 @@ class EditarCubit extends Cubit<EditarState> {
       area: '', // Provide a default area or keep it empty
       isAdmin: false,
       isVisitor: false,
-      isGuardian: false,
+      isPortalo: false,
       isOnboarded: false,
       isBlocked: false,
       blockReason: '',
-      rfid: '',
+      iTag: '',
       picture: '',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -291,15 +289,11 @@ class EditarCubit extends Cubit<EditarState> {
         portalId: '',
         userId: '',
         timestamp: DateTime.now(),
-        direction: 0,
-        picture: '',
         vesselId: '',
         action: 0,
-        manual: false,
         justification: '',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
         status: '',
+        beaconId: '',
       ),
       userCreated: false,
       cadastroHabilitado: false,

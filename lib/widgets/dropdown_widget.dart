@@ -1,89 +1,126 @@
-import 'dart:io';
-
-import 'package:dockcheck/models/my_device.dart';
-import 'package:dockcheck/utils/theme.dart';
+import 'dart:async';
 import 'package:dockcheck/utils/ui/colors.dart';
-import 'package:dockcheck/utils/ui/strings.dart';
+import 'package:dockcheck/widgets/dbloc.dart';
 import 'package:flutter/material.dart';
-import 'package:dockcheck/utils/theme.dart';
-import 'package:dockcheck/utils/ui/colors.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue;
 
-class DropDown extends StatelessWidget {
-  final Device? connectedDevice;
+class DropDown extends StatefulWidget {
+  final TextEditingController controller;
+  final Function(String)? onChanged;
 
-  const DropDown({Key? key, this.connectedDevice}) : super(key: key);
+  const DropDown({Key? key, required this.controller, this.onChanged})
+      : super(key: key);
+
+  @override
+  _DropDownState createState() => _DropDownState();
+}
+
+class _DropDownState extends State<DropDown> {
+  String? selectedDevice;
+  late StreamSubscription<List<blue.ScanResult>> scanSubscription;
+  List<blue.ScanResult> scanResults = [];
+  int maxDistance = -50;
+  late Timer scanTimer;
+  late DeviceCubit deviceCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    deviceCubit = DeviceCubit();
+    startScan();
+
+    scanTimer = Timer.periodic(Duration(seconds: 10), (Timer timer) {
+      stopScan();
+      startScan();
+      Timer(Duration(seconds: 5), () {
+        stopScan();
+      });
+    });
+  }
+
+  void startScan() {
+    scanSubscription = blue.FlutterBluePlus.scanResults.listen(
+      (List<blue.ScanResult> results) {
+        setState(() {
+          results = results
+              .where((result) =>
+                  result.device.name?.toLowerCase().startsWith('itag') ==
+                      true &&
+                  result.rssi > maxDistance)
+              .toList();
+
+          results.sort((a, b) => b.rssi.compareTo(a.rssi));
+          scanResults = results.take(1).toList();
+
+          if (scanResults.isNotEmpty) {
+            widget.controller.text = scanResults[0].device.id.toString();
+            widget.onChanged?.call(widget.controller.text);
+
+            // Atualizar o estado do Cubit
+            deviceCubit.updateDeviceId(widget.controller.text);
+          }
+        });
+      },
+    );
+
+    blue.FlutterBluePlus.startScan();
+  }
+
+  void stopScan() {
+    blue.FlutterBluePlus.stopScan();
+    scanSubscription.cancel();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 0, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16.0, 0, 16, 4),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.0),
           border: Border.all(
-            color: CQColors.iron100,
+            color: CQColors.iron10,
             width: 1.0,
           ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: DropdownButton<String>(
-            value: 'SKANDI AMAZONAS',
-            isExpanded: true,
-            icon: const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: CQColors.iron100,
-            ),
-            iconSize: 32,
-            alignment: Alignment.centerRight,
-            elevation: 2,
-            style: CQTheme.h2.copyWith(
-              color: CQColors.iron100,
-            ),
-            selectedItemBuilder: (BuildContext context) {
-              return <String>[
-                'SKANDI AMAZONAS',
-                'SKANDI IGUAÇU',
-                'SKANDI FLUMINENSE',
-                'SKANDI URCA'
-              ].map<Widget>((String value) {
-                return Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    value,
-                    style: CQTheme.h2.copyWith(
-                      color: CQColors.iron100,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                );
-              }).toList();
-            },
-            onChanged: (String? newValue) {},
-            underline: Container(
-              height: 0,
-              color: CQColors.iron100,
-            ),
-            items: <String>[
-              'SKANDI AMAZONAS',
-              'SKANDI IGUAÇU',
-              'SKANDI FLUMINENSE',
-              'SKANDI URCA'
-            ].map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(
-                  value,
-                  overflow: TextOverflow.ellipsis,
+          child: Column(
+            children: [
+              Container(
+                height: 60,
+                child: ListView.builder(
+                  itemCount: scanResults.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(scanResults[index].device.name ??
+                          'dispositivo desconhecido'),
+                      subtitle: Text(scanResults[index].device.id.toString()),
+                      onTap: () {
+                        setState(() {
+                          selectedDevice =
+                              scanResults[index].device.id.toString();
+                          widget.controller.text = selectedDevice!;
+                          widget.onChanged?.call(widget.controller.text);
+
+                          deviceCubit.updateDeviceId(selectedDevice!);
+                        });
+                      },
+                    );
+                  },
                 ),
-              );
-            }).toList(),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    deviceCubit.close();
+    scanTimer.cancel();
+    super.dispose();
   }
 }

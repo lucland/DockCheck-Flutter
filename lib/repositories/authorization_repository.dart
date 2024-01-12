@@ -40,6 +40,7 @@ class AuthorizationRepository {
   Future<List<Authorization>> getAuthorizations(String userId) async {
     try {
       final data = await apiService.get('authorizations/user/$userId');
+      SimpleLogger.info(data.toString());
       return (data as List)
           .map((item) => Authorization.fromJson(item))
           .toList();
