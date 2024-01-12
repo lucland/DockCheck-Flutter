@@ -8,13 +8,14 @@ import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
 import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue;
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../models/event.dart';
 import '../../../models/user.dart';
 import '../../../repositories/user_repository.dart';
+import '../../../utils/enums/beacon_button_enum.dart';
 import 'cadastrar_state.dart';
 
 class CadastrarCubit extends Cubit<CadastrarState> {
@@ -25,6 +26,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   @override
   bool isClosed = false;
   String selectedBloodType = '';
+  late StreamSubscription<List<blue.ScanResult>> scanSubscription;
 
   CadastrarCubit(
       this.userRepository, this.eventRepository, this.localStorageService)
@@ -107,6 +109,94 @@ class CadastrarCubit extends Cubit<CadastrarState> {
           ));
         }
       }
+    }
+  }
+
+  void startScan() {
+    scanSubscription = blue.FlutterBluePlus.scanResults.listen(
+      (List<blue.ScanResult> results) {
+        // Logic to process results and update state
+        var processedResults = _processScanResults(results);
+        emit(state.copyWith(scanResults: processedResults));
+      },
+    );
+
+    blue.FlutterBluePlus.startScan();
+    emit(state.copyWith(beaconButtonState: BeaconButtonState.Searching));
+  }
+
+  void resetBeacon() {
+    emit(state.copyWith(
+        selectedITagDevice: '',
+        beaconButtonState: BeaconButtonState.Searching));
+    startScan();
+  }
+
+  void stopScan() {
+    blue.FlutterBluePlus.stopScan();
+    scanSubscription.cancel();
+    emit(state.copyWith(scanResults: [])); // Clear scan results in state
+  }
+
+  void processScanResults(List<blue.ScanResult> results) {
+    var processedResults = _processScanResults(results);
+    var beaconButtonState = BeaconButtonState.Searching;
+
+    if (processedResults.isNotEmpty) {
+      // Assuming getValidITag returns a Future<bool>
+      userRepository
+          .getValidITag(processedResults.first.device.advName)
+          .then((isValid) {
+        if (isValid) {
+          beaconButtonState = BeaconButtonState.Register;
+        } else {
+          beaconButtonState = BeaconButtonState.Invalid;
+        }
+        emit(state.copyWith(
+            scanResults: processedResults,
+            beaconButtonState: beaconButtonState));
+      });
+    } else {
+      emit(state.copyWith(
+          scanResults: processedResults, beaconButtonState: beaconButtonState));
+    }
+  }
+
+  List<blue.ScanResult> _processScanResults(List<blue.ScanResult> results) {
+    // Remove duplicates
+    results = results.toSet().toList();
+    //only add results which starts with "iTag"
+    results = results
+        .where((element) => element.device.advName.startsWith('iTag'))
+        .toList();
+    // Sort by RSSI
+    results.sort((a, b) => b.rssi.compareTo(a.rssi));
+    return results;
+  }
+
+  void updateLiberadoPor(String liberadoPor) {
+    final user = state.user.copyWith(blockReason: liberadoPor);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void pickImage() async {
+    // Logic to pick an image, e.g., using ImagePicker package
+    // Update the state with the new image
+    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (image != null) {
+      updatePicture(image);
+    }
+  }
+
+  void removeImage() {
+    // Logic to remove the image
+    // Update the state with the new image
+    final user = state.user.copyWith(picture: '');
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
     }
   }
 
@@ -342,36 +432,30 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     if (state.user.isVisitor) {
       if (commonChecksPassed()) {
         if (!isClosed) {
-          if (!isClosed) {}
           emit(state.copyWith(cadastroHabilitado: true));
         }
       } else {
         if (!isClosed) {
-          if (!isClosed) {}
           emit(state.copyWith(cadastroHabilitado: false));
         }
       }
     } else if (!state.user.isAdmin) {
       if (commonChecksPassed()) {
         if (!isClosed) {
-          if (!isClosed) {}
           emit(state.copyWith(cadastroHabilitado: true));
         }
       } else {
         if (!isClosed) {
-          if (!isClosed) {}
           emit(state.copyWith(cadastroHabilitado: false));
         }
       }
     } else {
       if (adminCheckPassed()) {
         if (!isClosed) {
-          if (!isClosed) {}
           emit(state.copyWith(cadastroHabilitado: true));
         }
       } else {
         if (!isClosed) {
-          if (!isClosed) {}
           emit(state.copyWith(cadastroHabilitado: false));
         }
       }
@@ -382,6 +466,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     return state.user.name.isNotEmpty &&
         state.user.role.isNotEmpty &&
         state.user.company.isNotEmpty &&
+        state.user.iTag.isNotEmpty &&
+        state.user.picture.isNotEmpty &&
         state.user.endJob.isAfter(state.user.startJob);
   }
 
