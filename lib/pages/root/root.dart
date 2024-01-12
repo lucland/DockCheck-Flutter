@@ -43,20 +43,6 @@ class _RootState extends State<Root> {
   void initState() {
     super.initState();
     _loadAppVersion();
-
-    _widgetOptions = [
-      const Home(),
-      const Pesquisar(),
-      Cadastrar(
-        userRepository: Provider.of<UserRepository>(context),
-        eventRepository: Provider.of<EventRepository>(context),
-        localStorageService: Provider.of<LocalStorageService>(context),
-        onCadastrar: () {
-          _pageController.jumpToPage(0);
-        },
-      ),
-      bluetoothSearch(),
-    ];
   }
 
   Future<void> _loadAppVersion() async {
@@ -110,8 +96,24 @@ class _RootState extends State<Root> {
 
   @override
   Widget build(BuildContext context) {
+    final userRepository = Provider.of<UserRepository>(context);
+    final eventRepository = Provider.of<EventRepository>(context);
+    final localStorageService = Provider.of<LocalStorageService>(context);
     final LoginRepository loginRepository = context.read<LoginRepository>();
 
+    _widgetOptions = [
+      const Home(),
+      const Pesquisar(),
+      Cadastrar(
+        userRepository: userRepository,
+        eventRepository: eventRepository,
+        localStorageService: localStorageService,
+        onCadastrar: () {
+          _pageController.jumpToPage(0);
+        },
+      ),
+      const bluetoothSearch(),
+    ];
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -120,16 +122,15 @@ class _RootState extends State<Root> {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ManualPage()));
             },
-            child: Container(
-                child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 32.0),
               child: Center(
-                  child: const Icon(
+                  child: Icon(
                 Icons.add,
                 size: 32,
                 color: CQColors.iron100,
               )),
-            )),
+            ),
           ),
         ],
         title: Row(
