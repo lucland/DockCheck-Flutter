@@ -140,25 +140,26 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   void processScanResults(List<blue.ScanResult> results) {
     var processedResults = _processScanResults(results);
-    var beaconButtonState = BeaconButtonState.Searching;
 
     if (processedResults.isNotEmpty) {
-      // Assuming getValidITag returns a Future<bool>
-      userRepository
-          .getValidITag(processedResults.first.device.advName)
-          .then((isValid) {
-        if (isValid) {
-          beaconButtonState = BeaconButtonState.Register;
-        } else {
-          beaconButtonState = BeaconButtonState.Invalid;
-        }
-        emit(state.copyWith(
-            scanResults: processedResults,
-            beaconButtonState: beaconButtonState));
-      });
+      var firstDeviceName = processedResults.first.device.advName;
+      // Check if the first device name has changed to avoid redundant checks
+      if (state.scanResults.isEmpty ||
+          state.scanResults.first.device.advName != firstDeviceName) {
+        userRepository.getValidITag(firstDeviceName).then((isValid) {
+          var beaconButtonState =
+              isValid ? BeaconButtonState.Register : BeaconButtonState.Invalid;
+          emit(state.copyWith(
+              scanResults: processedResults,
+              beaconButtonState: beaconButtonState));
+        });
+      } else {
+        emit(state.copyWith(scanResults: processedResults));
+      }
     } else {
       emit(state.copyWith(
-          scanResults: processedResults, beaconButtonState: beaconButtonState));
+          scanResults: processedResults,
+          beaconButtonState: BeaconButtonState.Searching));
     }
   }
 
@@ -167,7 +168,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     results = results.toSet().toList();
     //only add results which starts with "iTag"
     results = results
-        .where((element) => element.device.advName.startsWith('iTag'))
+        .where((element) => element.device.advName.startsWith('iTAG'))
         .toList();
     // Sort by RSSI
     results.sort((a, b) => b.rssi.compareTo(a.rssi));
@@ -544,15 +545,9 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   @override
-  Future<void> close() async {
-    if (!isClosed) {
-      isClosed = true;
-
-      // Dispose of any resources, cancel subscriptions, etc.
-      // For example, if you have streams, make sure to close them.
-
-      // Let the superclass handle the rest of the closing process.
-      await super.close();
-    }
+  Future<void> close() {
+    // Cancel the stream subscription when the cubit is closed
+    scanSubscription.cancel();
+    return super.close();
   }
 }
