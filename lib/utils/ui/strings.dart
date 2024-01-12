@@ -17,13 +17,14 @@ class CQStrings {
   static const String usuarioEditadoComSucesso = 'Usuário editado com sucesso!';
   static const String bluetooth = 'Bluetooth';
   static const String conectar = 'Conectar';
-  static const String nome = "Nome";
+  static const String nome = "Nome do usuário";
+  static const String nomedovisitante = "Nome do visitante";
+  static const String cpf = 'CPF';
   static const String email = 'Email';
-  static const String identidade = 'Identidade';
+  static const String blood = 'Tipo sanguíneo';
   static const String funcao = 'Função';
   static const String enviar = 'ENVIAR';
   static const String foto = 'Alterar foto de perfil';
-  static const String empresaTrip = 'Empresa/Trip';
   static const String embarcacao = 'Embarcação';
   static const String area = 'Área';
   static const String aso = 'ASO';
@@ -63,4 +64,5 @@ class CQStrings {
   static const String senha = 'Senha';
   static const String salvar = 'SALVAR';
   static const String usuarioEditado = 'USUÁRIO EDITADO.';
+  static const String liberadoPor = 'Liberado por';
 }

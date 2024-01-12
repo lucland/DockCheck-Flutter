@@ -1,4 +1,4 @@
-import 'package:dockcheck/pages/bluetooth/bluetooth.dart';
+import 'package:dockcheck/pages/bluetooth/root_bluetooth.dart';
 import 'package:dockcheck/pages/cadastrar/cadastrar.dart';
 import 'package:dockcheck/pages/home/home.dart';
 import 'package:dockcheck/pages/manual/manual.dart';
@@ -48,7 +48,7 @@ class _RootState extends State<Root> {
           _pageController.jumpToPage(0);
         },
       ),
-      IntegratedBluetoothScreen(),
+      bluetoothSearch(),
     ];
   }
 

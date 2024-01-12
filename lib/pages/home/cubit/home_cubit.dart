@@ -27,10 +27,15 @@ class HomeCubit extends Cubit<HomeState> {
   User? _loggedUser;
   List<Vessel>? _vessels;
   List<User>? _onboardUsers;
+  List<User>? _blocked;
+  @override
+  bool isClosed = false;
 
   //fetch last added user
   void fetchLoggedUser() async {
-    emit(HomeState(isLoading: true));
+    if (!isClosed && state.isLoading == false) {
+      emit(HomeState(isLoading: true));
+    }
     try {
       String? userNumber = await localStorageService.getUserId();
       User user = await userRepository.getUser(userNumber ?? "");
@@ -39,13 +44,17 @@ class HomeCubit extends Cubit<HomeState> {
     } catch (e) {
       if (e is Exception && e.toString() == "Exception: InvalidTokenError") {
         // Handle the specific 'jwt expired' error
-        emit(HomeState(
-            isLoading: false,
-            error: 'Session expired. Please login again.',
-            invalidToken: true));
+        if (!isClosed) {
+          emit(HomeState(
+              isLoading: false,
+              error: 'Session expired. Please login again.',
+              invalidToken: true));
+        }
       } else {
         // Handle other errors
-        emit(HomeState(isLoading: false, error: 'An error occurred.'));
+        if (!isClosed) {
+          emit(HomeState(isLoading: false, error: 'An error occurred.'));
+        }
       }
     }
   }
@@ -53,7 +62,9 @@ class HomeCubit extends Cubit<HomeState> {
   //fetch list of vessels from logged user based on user.authorization and the authorization.vesselId from vessel repository and set it to state, if any
   void fetchVessels() async {
     try {
-      emit(HomeState(isLoading: true));
+      if (!isClosed) {
+        emit(HomeState(isLoading: true));
+      }
       //retrieve user_id from local storage
       String? userNumber = await localStorageService.getUserId();
       //fetch logged user
@@ -62,6 +73,7 @@ class HomeCubit extends Cubit<HomeState> {
       List<Authorization> authorizations =
           await authorizationRepository.getAuthorizations(user.id);
       SimpleLogger.info('authorizations: $authorizations');
+      SimpleLogger.info('authorizations: ${user.id}');
       //fetch each vessel from authorizations with getVesselById from vessel repository and set it to vessels list
       List<Vessel> vessels = [];
       for (var authorization in authorizations) {
@@ -71,6 +83,17 @@ class HomeCubit extends Cubit<HomeState> {
         localStorageService.saveVesselId(vessel.id);
       }
       SimpleLogger.info('vessels cubit: $vessels');
+
+      List<User> allUsers = await userRepository.getAllUsers();
+      SimpleLogger.info('allUsers: $allUsers');
+      //fetch the ids of the users from vessel repository
+      List<User> blockedUsers = [];
+      for (var user in allUsers) {
+        if (user.isBlocked) {
+          blockedUsers.add(user);
+        }
+      }
+      _blocked = blockedUsers;
       //for each vessel, fetch the onboard users
       for (var vessel in vessels) {
         fetchOnboardUsers(vessel.id);
@@ -78,14 +101,18 @@ class HomeCubit extends Cubit<HomeState> {
 
       _vessels = vessels;
     } catch (e) {
-      emit(HomeState(resultMessage: e.toString(), isLoading: false));
+      if (!isClosed) {
+        emit(HomeState(resultMessage: e.toString(), isLoading: false));
+      }
     }
   }
 
   //fetch onboard users from a vessel and set it to state onboardUsers list, fetch the ids of the users from vessel repository and then fetch the users from user repository
   void fetchOnboardUsers(String vesselId) async {
     try {
-      emit(HomeState(isLoading: true));
+      if (!isClosed && state.isLoading == false) {
+        emit(HomeState(isLoading: true));
+      }
       //fetch onboard users from vessel repository
       List<String> onboardUsers =
           await vesselRepository.getOnboardedUsers(vesselId);
@@ -110,23 +137,43 @@ class HomeCubit extends Cubit<HomeState> {
         setLoggedUserAndVessels();
       }
     } catch (e) {
-      emit(HomeState(resultMessage: e.toString(), isLoading: false));
+      if (!isClosed) {
+        emit(HomeState(resultMessage: e.toString(), isLoading: false));
+      }
     }
   }
 
   void setLoggedUserAndVessels() {
-    emit(HomeState(
-      loggedUser: _loggedUser,
-      vessels: _vessels!,
-      onboardUsers: _onboardUsers!,
-      isLoading: false,
-    ));
+    if (!isClosed) {
+      emit(HomeState(
+        loggedUser: _loggedUser,
+        vessels: _vessels!,
+        onboardUsers: _onboardUsers!,
+        isLoading: false,
+        blockedUsers: _blocked!,
+      ));
+      // fetchBlockedUsers();
+    }
   }
 
   //função para recarregar a página
   void reloadPage() {
+    if (!isClosed) {}
     emit(HomeState(isLoading: true));
     fetchLoggedUser();
+  }
+
+  @override
+  Future<void> close() async {
+    if (!isClosed) {
+      isClosed = true;
+
+      // Dispose of any resources, cancel subscriptions, etc.
+      // For example, if you have streams, make sure to close them.
+
+      // Let the superclass handle the rest of the closing process.
+      await super.close();
+    }
   }
 }
 

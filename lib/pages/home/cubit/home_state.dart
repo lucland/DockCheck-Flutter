@@ -11,6 +11,7 @@ class HomeState {
   final bool isLoading;
   List<Vessel> vessels;
   List<User> onboardUsers = [];
+  List<User> blockedUsers = [];
   final String? error;
 
   final bool invalidToken;
@@ -22,6 +23,7 @@ class HomeState {
     this.isLoading = true,
     this.vessels = const [],
     this.onboardUsers = const [],
+    this.blockedUsers = const [],
     this.error,
     this.invalidToken = false,
   });

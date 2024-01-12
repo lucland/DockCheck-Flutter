@@ -15,6 +15,8 @@ class DetailsCubit extends Cubit<DetailsState> {
   final AuthorizationRepository authorizationRepository;
   final VesselRepository vesselRepository;
   final LocalStorageService localStorageService;
+  @override
+  bool isClosed = false;
 
   DetailsCubit(
       this.userRepository,
@@ -26,24 +28,34 @@ class DetailsCubit extends Cubit<DetailsState> {
 
   fetchEvents(String userId) async {
     try {
-      emit(DetailsLoading());
+      if (!isClosed) {
+        emit(DetailsLoading());
+      }
       var eventos = await eventRepository.getEventsByUser(userId);
       List<Event> eventosMapped = eventos;
-      emit(DetailsLoaded(eventosMapped));
+      if (!isClosed) {
+        emit(DetailsLoaded(eventosMapped));
+      }
     } catch (e) {
       SimpleLogger.warning('Error during details_cubit fetchEvents: $e');
-      emit(DetailsError("Failed to fetch events."));
+      if (!isClosed) {
+        emit(DetailsError("Failed to fetch events."));
+      }
     }
   }
 
   createCheckoutEvento(String userId, String justification) async {
     try {
-      emit(DetailsLoading());
+      if (!isClosed) {
+        emit(DetailsLoading());
+      }
 
       var user = await localStorageService.getUser();
       if (user == null) {
         SimpleLogger.warning('No logged-in user found.');
-        emit(DetailsError("No logged-in user found."));
+        if (!isClosed) {
+          emit(DetailsError("No logged-in user found."));
+        }
         return;
       }
 
@@ -58,25 +70,38 @@ class DetailsCubit extends Cubit<DetailsState> {
         portalId: '0',
         userId: userId,
         timestamp: DateTime.now(),
-        direction: 1,
         vesselId: vessel.id,
-        picture: '',
         action: 1,
-        manual: true,
         justification: justification,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
         status: '',
+        beaconId: '',
       );
 
       await eventRepository.createEvent(event);
 
       fetchEvents(userId);
-      emit(DetailsLoaded([]));
+      if (!isClosed) {
+        emit(DetailsLoaded([]));
+      }
     } catch (e) {
       SimpleLogger.warning(
           'Error during details_cubit createCheckoutEvento: $e');
-      emit(DetailsError("Failed to create event."));
+      if (!isClosed) {
+        emit(DetailsError("Failed to create event."));
+      }
+    }
+  }
+
+  @override
+  Future<void> close() async {
+    if (!isClosed) {
+      isClosed = true;
+
+      // Dispose of any resources, cancel subscriptions, etc.
+      // For example, if you have streams, make sure to close them.
+
+      // Let the superclass handle the rest of the closing process.
+      await super.close();
     }
   }
 }

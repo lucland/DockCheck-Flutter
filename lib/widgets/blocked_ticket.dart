@@ -8,12 +8,12 @@ import 'package:dockcheck/widgets/semi_circle_painter.dart';
 import 'package:dockcheck/widgets/title_value_widget.dart';
 import 'package:flutter/material.dart';
 
-class blockedTicket extends StatelessWidget {
-  const blockedTicket({
-    super.key,
+class BlockedTicket extends StatelessWidget {
+  const BlockedTicket({
+    Key? key,
     required this.users,
     required this.vessel,
-  });
+  }) : super(key: key);
 
   final List<User> users;
   final Vessel vessel;
@@ -23,8 +23,8 @@ class blockedTicket extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0.0),
       child: Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(
             Radius.circular(10.0),
           ),
         ),
@@ -33,10 +33,7 @@ class blockedTicket extends StatelessWidget {
             Column(
               children: [
                 TicketHeader(vessel: vessel),
-                TicketBody(
-                  users: users,
-                  vessel: vessel,
-                ),
+                TicketBody(users: users, vessel: vessel),
               ],
             ),
             Positioned(
@@ -92,10 +89,10 @@ class blockedTicket extends StatelessWidget {
 
 class TicketBody extends StatelessWidget {
   const TicketBody({
-    super.key,
+    Key? key,
     required this.users,
     required this.vessel,
-  });
+  }) : super(key: key);
 
   final List<User> users;
   final Vessel vessel;
@@ -103,8 +100,8 @@ class TicketBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(10.0),
           bottomRight: Radius.circular(10.0),
         ),
@@ -115,7 +112,6 @@ class TicketBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //text saying Total: ${users.length}
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -135,29 +131,34 @@ class TicketBody extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
               return Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TitleValueWidget(
-                                title: "Nome", value: users[index].name),
-                          ],
-                        ),
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TitleValueWidget(
+                            title: "Nome",
+                            value: users[index].name,
+                          ),
+                        ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(users[index].number.toString(),
-                          style: CQTheme.h1
-                              .copyWith(fontSize: 14, color: Colors.black)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      users[index].number.toString(),
+                      style: CQTheme.h1
+                          .copyWith(fontSize: 14, color: Colors.black),
                     ),
-                  ]);
+                  ),
+                ],
+              );
             },
           ),
           const Divider(),
@@ -170,17 +171,17 @@ class TicketBody extends StatelessWidget {
 
 class TicketHeader extends StatelessWidget {
   const TicketHeader({
-    super.key,
+    Key? key,
     required this.vessel,
-  });
+  }) : super(key: key);
 
   final Vessel vessel;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10.0),
           topRight: Radius.circular(10.0),
         ),
@@ -207,17 +208,17 @@ class TicketHeader extends StatelessWidget {
 
 class TicketFooter extends StatelessWidget {
   const TicketFooter({
-    super.key,
+    Key? key,
     required this.updatedAt,
-  });
+  }) : super(key: key);
 
   final DateTime updatedAt;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(10.0),
           bottomRight: Radius.circular(10.0),
         ),
@@ -247,9 +248,9 @@ class TicketFooter extends StatelessWidget {
 
 class EstadiaWidget extends StatelessWidget {
   const EstadiaWidget({
-    super.key,
+    Key? key,
     required this.user,
-  });
+  }) : super(key: key);
 
   final User user;
 
@@ -259,8 +260,10 @@ class EstadiaWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Center(
-          child: Text(user.number.toString(),
-              style: CQTheme.h1.copyWith(fontSize: 38, color: Colors.black)),
+          child: Text(
+            user.number.toString(),
+            style: CQTheme.h1.copyWith(fontSize: 38, color: Colors.black),
+          ),
         ),
       ],
     );

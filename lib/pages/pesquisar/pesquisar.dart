@@ -12,15 +12,13 @@ import '../../repositories/user_repository.dart';
 import '../../utils/ui/strings.dart';
 
 class Pesquisar extends StatelessWidget {
-  const Pesquisar({super.key});
+  const Pesquisar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Get UserRepository from Provider
     final userRepository = Provider.of<UserRepository>(context, listen: false);
 
     return BlocProvider(
-      // Use the provided UserRepository
       create: (context) => UserCubit(userRepository),
       child: DefaultTabController(
         length: 2,
@@ -34,7 +32,7 @@ class Pesquisar extends StatelessWidget {
 }
 
 class UserListView extends StatelessWidget {
-  const UserListView({super.key});
+  const UserListView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +45,15 @@ class UserListView extends StatelessWidget {
         } else if (state is UserError) {
           return Center(child: Text('Error: ${state.message}'));
         } else if (state is UserLoaded) {
+          List<User> displayedUsers = state.users;
+
+          if (context.read<UserCubit>().isSearching) {
+            displayedUsers = displayedUsers
+                .where((user) => user.name.toLowerCase().contains(
+                    context.read<UserCubit>().searchQuery.toLowerCase()))
+                .toList();
+          }
+
           return Column(
             children: [
               Padding(
@@ -78,8 +85,9 @@ class UserListView extends StatelessWidget {
                       ),
                     ),
                     suffixIcon: GestureDetector(
-                        onTap: () => context.read<UserCubit>().fetchUsers(),
-                        child: const Icon(Icons.search_rounded)),
+                      onTap: () => context.read<UserCubit>().fetchUsers(),
+                      child: const Icon(Icons.search_rounded),
+                    ),
                   ),
                   onSubmitted: (value) {
                     context.read<UserCubit>().searchUsers(value);
@@ -95,21 +103,23 @@ class UserListView extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
+                    // Lista para a guia "Todos"
                     ListView.builder(
-                      itemCount: state.users.length,
+                      itemCount: displayedUsers.length,
                       itemBuilder: (context, index) {
-                        User user = state.users[index];
+                        User user = displayedUsers[index];
                         return _buildUserListTile(context, user);
                       },
                     ),
+                    // Lista para a guia "A Bordo"
                     ListView.builder(
-                      itemCount: state.users.length,
+                      itemCount: displayedUsers.length,
                       itemBuilder: (context, index) {
-                        User user = state.users[index];
+                        User user = displayedUsers[index];
                         if (user.isOnboarded) {
                           return _buildUserListTile(context, user);
                         } else {
-                          return Container(); // Return an empty container if isOnboarded is false
+                          return Container();
                         }
                       },
                     ),
@@ -143,18 +153,8 @@ class UserListView extends StatelessWidget {
         dense: true,
         visualDensity: VisualDensity.compact,
         horizontalTitleGap: 0,
-        leading: user.isOnboarded
-            ? const Icon(
-                Icons.circle,
-                color: CQColors.success100,
-                size: 10,
-              )
-            : const Icon(
-                Icons.circle,
-                color: CQColors.danger100,
-                size: 10,
-              ),
-        subtitle: Text(user.identidade),
+        leading: _buildLeadingIcon(user),
+        subtitle: Text(user.cpf.toString()),
         onTap: () {
           Navigator.push(
             context,
@@ -165,5 +165,30 @@ class UserListView extends StatelessWidget {
         },
       ),
     );
+  }
+
+  Widget _buildLeadingIcon(User user) {
+    if (user.isBlocked) {
+      // Ícone vermelho para usuários bloqueados
+      return const Icon(
+        Icons.circle,
+        color: CQColors.danger100,
+        size: 10,
+      );
+    } else if (user.isOnboarded) {
+      // Ícone verde para usuários a bordo
+      return const Icon(
+        Icons.circle,
+        color: CQColors.success100,
+        size: 10,
+      );
+    } else {
+      // Ícone verde para usuários cadastrados (independentemente de estarem a bordo)
+      return const Icon(
+        Icons.circle,
+        color: CQColors.success100,
+        size: 10,
+      );
+    }
   }
 }

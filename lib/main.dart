@@ -1,8 +1,11 @@
+import 'package:dockcheck/pages/bluetooth/cubit/bluetooth_connected_cubit.dart';
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
 import 'package:dockcheck/pages/details/cubit/details_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:dockcheck/repositories/login_repository.dart';
 import 'package:dockcheck/repositories/authorization_repository.dart';
@@ -27,6 +30,22 @@ import 'utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //--- permitir apenas posicao vertical
+  /*SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);*/
+
+  // Request Bluetooth permissions
+  var status = await [
+    Permission.bluetooth,
+    Permission.bluetoothScan,
+    Permission.bluetoothConnect
+  ].request();
+  if (status[Permission.bluetooth] != PermissionStatus.granted ||
+      status[Permission.bluetoothScan] != PermissionStatus.granted ||
+      status[Permission.bluetoothConnect] != PermissionStatus.granted) {
+    // Handle permission denied
+    return;
+  }
 
   var localStorageService = LocalStorageService();
   await localStorageService.initDB();
@@ -63,6 +82,8 @@ void main() async {
       CadastrarCubit(userRepository, eventRepository, localStorageService);
   var detailsCubit = DetailsCubit(userRepository, eventRepository,
       localStorageService, authorizationRepository, vesselRepository);
+  //var bluetoothCubit = BluetoothCubit(userRepository);
+  var bluetoothConnectedCubit = BluetoothConnectedCubit(userRepository);
 
   BackgroundService();
 
@@ -85,10 +106,15 @@ void main() async {
         Provider<LocalStorageService>(create: (_) => localStorageService),
         BlocProvider<LoginCubit>(create: (_) => loginCubit),
         BlocProvider<UserCubit>(create: (_) => userCubit),
+        BlocProvider<BluetoothConnectedCubit>(
+            create: (_) => bluetoothConnectedCubit),
         BlocProvider<CadastrarCubit>(create: (_) => cadastrarCubit),
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
         Provider<BeaconRepository>(create: (_) => beaconRepository),
         Provider<ReceptorRepository>(create: (_) => receptorRepository),
+        /*BlocProvider<BluetoothCubit>(
+          create: (_) => bluetoothCubit,
+        ),*/
       ],
       child: MaterialApp(
         theme: CQTheme.theme,

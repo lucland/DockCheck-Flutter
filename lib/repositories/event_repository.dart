@@ -15,8 +15,8 @@ class EventRepository {
 
     try {
       final data = await apiService.post('events/create', event.toJson());
-      await localStorageService.insertOrUpdate(
-          'events', Event.fromJson(data).toJson(), 'id');
+      // await localStorageService.insertOrUpdate(
+      //    'events', Event.fromJson(data).toJson(), 'id');
       return Event.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create event: ${e.toString()}');

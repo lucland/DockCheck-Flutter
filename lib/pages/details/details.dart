@@ -152,37 +152,37 @@ class DetailsView extends StatelessWidget {
                           ),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16),
+                              vertical: 8.0, horizontal: 8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 8),
+                              TitleValueWidget(
+                                title: CQStrings.cpf,
+                                value: user.cpf,
+                                color: CQColors.iron100,
+                              ),
+                              TitleValueWidget(
+                                title: CQStrings.blood,
+                                value: user.bloodType, // tipo sanguineo
+                                color: CQColors.iron100,
+                              ),
                               TitleValueWidget(
                                 title: CQStrings.funcao,
                                 value: user.role,
                                 color: CQColors.iron100,
                               ),
-                              const SizedBox(height: 12),
                               TitleValueWidget(
-                                title: CQStrings.empresaTrip,
+                                title: CQStrings.empresa,
                                 value: user.company,
                                 color: CQColors.iron100,
                               ),
-                              const SizedBox(height: 12),
-                              TitleValueWidget(
-                                title: CQStrings.identidade,
-                                value: Formatter.identidade(user.identidade),
-                                color: CQColors.iron100,
-                              ),
                               if (user.email != '') ...[
-                                const SizedBox(height: 12),
                                 TitleValueWidget(
                                   title: CQStrings.email,
                                   value: user.email,
                                   color: CQColors.iron100,
                                 ),
                               ],
-                              const SizedBox(height: 12),
                               TitleValueWidget(
                                 title: CQStrings.area,
                                 value: user.area,
@@ -435,6 +435,7 @@ class DetailsView extends StatelessWidget {
                         context.read<DetailsCubit>().fetchEvents(user.id);
                       },
                     ),
+                    /*
                     CheckOutButtonWidget(
                       onPressed: () {
                         String justification = '';
@@ -476,7 +477,7 @@ class DetailsView extends StatelessWidget {
                       },
                       isDisabled: !(state.eventos[0].action == 1 ||
                           user.isOnboarded == true),
-                    ),
+                    ),*/
                   ],
                 ),
               ],

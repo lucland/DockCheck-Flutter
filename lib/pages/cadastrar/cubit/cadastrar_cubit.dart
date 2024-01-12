@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -7,7 +8,9 @@ import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
 import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../models/event.dart';
 import '../../../models/user.dart';
@@ -21,12 +24,14 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   @override
   bool isClosed = false;
+  String selectedBloodType = '';
 
   CadastrarCubit(
       this.userRepository, this.eventRepository, this.localStorageService)
       : super(
           CadastrarState(
             numero: 0,
+            isiTagValid: 'BUSCANDO BEACON...',
             user: User(
               id: '',
               authorizationsId: [""],
@@ -35,7 +40,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               role: '',
               project: '',
               number: 0,
-              identidade: '',
+              bloodType: '',
               cpf: '',
               aso: DateTime.now(),
               asoDocument: '',
@@ -53,18 +58,16 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               nr10Document: '',
               hasNr10: false,
               email: '',
-              area: '',
+              area: 'Praça de Máquinas',
               isAdmin: false,
               isVisitor: false,
-              isGuardian: false,
+              isPortalo: false,
+              isCrew: false,
               isOnboarded: false,
               isBlocked: false,
               blockReason: '',
-              rfid: '',
+              iTag: '',
               picture: '',
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
-              events: [""],
               typeJob: '',
               startJob: DateTime.now(),
               endJob: DateTime.now(),
@@ -78,14 +81,10 @@ class CadastrarCubit extends Cubit<CadastrarState> {
               portalId: '',
               userId: '',
               timestamp: DateTime.now(),
-              direction: 0,
-              picture: '',
+              beaconId: '',
               vesselId: '',
               action: 0,
-              manual: false,
               justification: '',
-              createdAt: DateTime.now(),
-              updatedAt: DateTime.now(),
               status: '',
             ),
           ),
@@ -96,9 +95,221 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       try {
         var numero = await userRepository.getLastUserNumber();
         final user = state.user.copyWith(number: numero);
-        emit(state.copyWith(user: user, isLoading: false, numero: numero));
+        if (!isClosed) {
+          emit(state.copyWith(user: user, isLoading: false, numero: numero));
+        }
       } catch (e) {
         SimpleLogger.warning('Error during data synchronization: $e');
+        if (!isClosed) {
+          emit(state.copyWith(
+            isLoading: false,
+            errorMessage: e.toString(),
+          ));
+        }
+      }
+    }
+  }
+
+  void updateBloodType(String bloodType) {
+    selectedBloodType = bloodType;
+    final user = state.user.copyWith(bloodType: bloodType);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updateNome(String nome) {
+    final user = state.user.copyWith(name: nome, status: 'created');
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updatePicture(XFile picture) async {
+    Uint8List bytes = await picture.readAsBytes();
+    String base64String = base64Encode(bytes);
+    final user = state.user.copyWith(picture: base64String);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+    }
+  }
+
+  void updateFuncao(String funcao) {
+    final user = state.user.copyWith(role: funcao);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updateEmail(String email) {
+    final user = state.user.copyWith(email: email);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updateEmpresa(String empresa) {
+    final user = state.user.copyWith(company: empresa);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void checkiTag(String itag) async {
+    final itag2 = itag.toLowerCase();
+    final isValid = await userRepository.getValidITag(itag2);
+    if (isValid) {
+      emit(state.copyWith(
+          isiTagValid: 'REGISTRAR O BEACON', lastDeviceId: itag));
+    } else {
+      emit(state.copyWith(
+          isiTagValid: 'BEACON JÁ POSSUI USUÁRIO VINCULADO',
+          lastDeviceId: itag));
+    }
+  }
+
+  void updateiTag(String itag) {
+    final itagLowercase = itag.toLowerCase();
+
+    final user = state.user.copyWith(iTag: itagLowercase);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+      print("ITAG DO USUARIO: $itagLowercase");
+    }
+  }
+
+  void resetBeaconScan() async {
+    await Future.delayed(const Duration(seconds: 3));
+    emit(state.copyWith(isiTagValid: 'BUSCANDO BEACON...'));
+  }
+
+  void selectITagDevice(String deviceId) {
+    emit(state.copyWith(selectedITagDevice: deviceId));
+  }
+
+  void updatePassword(String password) {
+    final user = state.user.copyWith(salt: password, hash: '');
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+    }
+  }
+
+  void updateUserVisitor(String usuario) {
+    final user = state.user.copyWith(username: usuario);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+    }
+  }
+
+  void updateUserAdmin(String usuario) {
+    final user = state.user.copyWith(username: usuario);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+    }
+  }
+
+  void updateDataInicial(DateTime dataInicial) {
+    final user = state.user.copyWith(startJob: dataInicial);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updateDataLimite(DateTime dataLimite) {
+    final user = state.user.copyWith(endJob: dataLimite);
+    checkCadastroHabilitado();
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updateIsVisitante(bool isVisitante) {
+    final user = state.user.copyWith(isVisitor: isVisitante);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void updateIsAdmin(bool isAdmin) {
+    final user = state.user.copyWith(isAdmin: isAdmin);
+    if (!isClosed) {}
+    emit(state.copyWith(user: user));
+  }
+
+  void updateEventos(List<String> eventos) {
+    final user = state.user.copyWith(events: eventos);
+    if (!isClosed) {}
+    emit(state.copyWith(user: user));
+  }
+
+  void updateCreatedAt(DateTime createdAt) {
+    final user = state.user.copyWith(createdAt: createdAt);
+    if (!isClosed) {}
+    emit(state.copyWith(user: user));
+  }
+
+  void updateUpdatedAt(DateTime updatedAt) {
+    final user = state.user.copyWith(updatedAt: updatedAt);
+    if (!isClosed) {
+      if (!isClosed) {}
+      emit(state.copyWith(user: user));
+    }
+  }
+
+  void updateIsBlocked(bool isBlocked) {
+    final user = state.user.copyWith(isBlocked: isBlocked);
+    if (!isClosed) {
+      if (!isClosed) {}
+      emit(state.copyWith(user: user));
+    }
+  }
+
+  void updateArea(String area) {
+    final user = state.user.copyWith(area: area);
+    if (!isClosed) {
+      if (!isClosed) {}
+      emit(state.copyWith(user: user));
+      checkCadastroHabilitado();
+    }
+  }
+
+  void createEvent() async {
+    //event vessel_id is the same as local storage vessel_id
+    String vesselId = await localStorageService.getVesselId() ?? '';
+
+    if (!isClosed) {
+      if (!isClosed) {}
+      emit(state.copyWith(
+          isLoading: true,
+          evento: state.evento.copyWith(
+            timestamp: DateTime.now(),
+            action: 3,
+            vesselId: vesselId,
+            portalId: '0',
+            beaconId: '',
+            status: 'created',
+          )));
+    }
+    try {
+      await eventRepository.createEvent(state.evento);
+      clearFields();
+      if (!isClosed) {
+        if (!isClosed) {}
+        emit(state.copyWith(isLoading: false, userCreated: true));
+      }
+    } catch (e) {
+      SimpleLogger.warning('Error during cadastrar_cubit createEvent: $e');
+      if (!isClosed) {
+        if (!isClosed) {}
         emit(state.copyWith(
           isLoading: false,
           errorMessage: e.toString(),
@@ -107,193 +318,62 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
   }
 
-  void updateIdentidade(String userId) {
-    String UUID = DateTime.now().millisecondsSinceEpoch.toString();
-    final user = state.user.copyWith(identidade: userId, id: UUID);
-    final evento = state.evento.copyWith(userId: userId, id: UUID);
-    emit(state.copyWith(user: user, evento: evento));
-    checkCadastroHabilitado();
-  }
-
-  void updateNome(String nome) {
-    final user = state.user.copyWith(name: nome, status: 'created');
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updatePicture(XFile picture) async {
-    Uint8List bytes = await picture.readAsBytes();
-    String base64String = base64Encode(bytes);
-    final user = state.user.copyWith(picture: base64String);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateFuncao(String funcao) {
-    final user = state.user.copyWith(role: funcao);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateEmail(String email) {
-    final user = state.user.copyWith(email: email);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateEmpresa(String empresa) {
-    final user = state.user.copyWith(company: empresa);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateASO(DateTime ASO) {
-    final user = state.user.copyWith(aso: ASO);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateNR34(DateTime NR34) {
-    final user = state.user.copyWith(nr34: NR34);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateNR10(DateTime NR10) {
-    final user = state.user.copyWith(nr10: NR10);
-    emit(state.copyWith(user: user));
-  }
-
-  void updatePassword(String password) {
-    final user = state.user.copyWith(salt: password, hash: '');
-    emit(state.copyWith(user: user));
-  }
-
-  void updateUserAdmin(String usuario) {
-    final user = state.user.copyWith(username: usuario);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateNR33(DateTime NR33) {
-    final user = state.user.copyWith(nr33: NR33);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateNR35(DateTime NR35) {
-    final user = state.user.copyWith(nr35: NR35);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateDataInicial(DateTime dataInicial) {
-    final user = state.user.copyWith(startJob: dataInicial);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateDataLimite(DateTime dataLimite) {
-    final user = state.user.copyWith(endJob: dataLimite);
-    checkCadastroHabilitado();
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateIsVisitante(bool isVisitante) {
-    final user = state.user.copyWith(isVisitor: isVisitante);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void updateIsAdmin(bool isAdmin) {
-    final user = state.user.copyWith(isAdmin: isAdmin);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateEventos(List<String> eventos) {
-    final user = state.user.copyWith(events: eventos);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateCreatedAt(DateTime createdAt) {
-    final user = state.user.copyWith(createdAt: createdAt);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateUpdatedAt(DateTime updatedAt) {
-    final user = state.user.copyWith(updatedAt: updatedAt);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateIsBlocked(bool isBlocked) {
-    final user = state.user.copyWith(isBlocked: isBlocked);
-    emit(state.copyWith(user: user));
-  }
-
-  void updateArea(String area) {
-    final user = state.user.copyWith(area: area);
-    emit(state.copyWith(user: user));
-    checkCadastroHabilitado();
-  }
-
-  void createEvent() async {
-    //event vessel_id is the same as local storage vessel_id
-    String vesselId = await localStorageService.getVesselId() ?? '';
-
-    emit(state.copyWith(
-        isLoading: true,
-        evento: state.evento.copyWith(
-          timestamp: DateTime.now(),
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          action: 3,
-          vesselId: vesselId,
-          portalId: '0',
-          direction: 0,
-          status: 'created',
-        )));
-    try {
-      await eventRepository.createEvent(state.evento);
-      clearFields();
-      emit(state.copyWith(isLoading: false, userCreated: true));
-    } catch (e) {
-      SimpleLogger.warning('Error during cadastrar_cubit createEvent: $e');
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      ));
-    }
-  }
-
   void createUser() async {
+    if (!isClosed) {}
     emit(state.copyWith(isLoading: true));
+    final user = state.user.copyWith(id: Uuid().v1());
+    emit(state.copyWith(user: user));
     try {
       await userRepository.createUser(state.user);
       createEvent();
     } catch (e) {
       SimpleLogger.warning('Error cadastrar_cubit createUser: $e');
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      ));
+      if (!isClosed) {
+        if (!isClosed) {}
+        emit(state.copyWith(
+          isLoading: false,
+          errorMessage: e.toString(),
+        ));
+      }
     }
   }
 
   void checkCadastroHabilitado() {
     if (state.user.isVisitor) {
       if (commonChecksPassed()) {
-        emit(state.copyWith(cadastroHabilitado: true));
+        if (!isClosed) {
+          if (!isClosed) {}
+          emit(state.copyWith(cadastroHabilitado: true));
+        }
       } else {
-        emit(state.copyWith(cadastroHabilitado: false));
+        if (!isClosed) {
+          if (!isClosed) {}
+          emit(state.copyWith(cadastroHabilitado: false));
+        }
       }
     } else if (!state.user.isAdmin) {
-      if (commonChecksPassed() && datesCheckPassed()) {
-        emit(state.copyWith(cadastroHabilitado: true));
+      if (commonChecksPassed()) {
+        if (!isClosed) {
+          if (!isClosed) {}
+          emit(state.copyWith(cadastroHabilitado: true));
+        }
       } else {
-        emit(state.copyWith(cadastroHabilitado: false));
+        if (!isClosed) {
+          if (!isClosed) {}
+          emit(state.copyWith(cadastroHabilitado: false));
+        }
       }
     } else {
       if (adminCheckPassed()) {
-        emit(state.copyWith(cadastroHabilitado: true));
+        if (!isClosed) {
+          if (!isClosed) {}
+          emit(state.copyWith(cadastroHabilitado: true));
+        }
       } else {
-        emit(state.copyWith(cadastroHabilitado: false));
+        if (!isClosed) {
+          if (!isClosed) {}
+          emit(state.copyWith(cadastroHabilitado: false));
+        }
       }
     }
   }
@@ -301,16 +381,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   bool commonChecksPassed() {
     return state.user.name.isNotEmpty &&
         state.user.role.isNotEmpty &&
-        state.user.identidade.isNotEmpty &&
         state.user.company.isNotEmpty &&
         state.user.endJob.isAfter(state.user.startJob);
-  }
-
-  bool datesCheckPassed() {
-    DateTime now = DateTime.now();
-    DateTime today = DateTime(now.year, now.month, now.day);
-
-    return state.user.aso.isAfter(today) && state.user.nr34.isAfter(today);
   }
 
   bool adminCheckPassed() {
@@ -327,7 +399,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       role: '-',
       project: '-',
       number: 0,
-      identidade: '-',
+      bloodType: '-',
       cpf: '-',
       aso: DateTime.now(),
       asoDocument: '-',
@@ -344,15 +416,15 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       nr10: DateTime.now(),
       nr10Document: '-',
       hasNr10: false,
-      email: '-',
+      email: '',
       area: '-',
       isAdmin: false,
       isVisitor: false,
-      isGuardian: false,
+      isPortalo: false,
       isOnboarded: false,
       isBlocked: false,
       blockReason: '-',
-      rfid: '-',
+      iTag: '-',
       picture: '-',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -365,6 +437,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
       hash: '',
       status: '',
     );
+    if (!isClosed) {}
     emit(state.copyWith(
       user: user,
       isLoading: false,
@@ -373,15 +446,11 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         portalId: '',
         userId: '',
         timestamp: DateTime.now(),
-        direction: 0,
-        picture: '',
         vesselId: '',
         action: 0,
-        manual: false,
         justification: '',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
         status: '',
+        beaconId: '',
       ),
       userCreated: false,
       cadastroHabilitado: false,
@@ -389,8 +458,15 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   @override
-  Future<void> close() {
-    isClosed = true;
-    return super.close();
+  Future<void> close() async {
+    if (!isClosed) {
+      isClosed = true;
+
+      // Dispose of any resources, cancel subscriptions, etc.
+      // For example, if you have streams, make sure to close them.
+
+      // Let the superclass handle the rest of the closing process.
+      await super.close();
+    }
   }
 }

@@ -28,8 +28,19 @@ class _InitPageState extends State<InitPage> {
   @override
   void initState() {
     super.initState();
+    // _storeUserData();
     _initialize();
   }
+
+  /*Future<void> _storeUserData() async {
+    await context.read<LocalStorageService>().saveToken(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imx1Y2FzdmNhcm5laXJvIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjk5MzAwMTYxLCJleHAiOjE2OTk0NzI5NjF9.QytPS1faAJDDHVb9VuMRLeHXzBzb9ME_HGNThSpe1Lc");
+    await context
+        .read<LocalStorageService>()
+        .saveUserId("eccf32d9-2c91-46ab-b6c5-16aaa391e4d1");
+    _initialize();
+    // Store other user data as needed
+  }*/
 
   Future<void> _initialize() async {
     final loginCubit = context.read<LoginCubit>();
