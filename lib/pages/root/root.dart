@@ -10,7 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 
+import '../../repositories/event_repository.dart';
+import '../../repositories/user_repository.dart';
+import '../../services/local_storage_service.dart';
 import '../login/login.dart';
 import '../pesquisar/pesquisar.dart';
 
@@ -44,6 +48,9 @@ class _RootState extends State<Root> {
       const Home(),
       const Pesquisar(),
       Cadastrar(
+        userRepository: Provider.of<UserRepository>(context),
+        eventRepository: Provider.of<EventRepository>(context),
+        localStorageService: Provider.of<LocalStorageService>(context),
         onCadastrar: () {
           _pageController.jumpToPage(0);
         },
