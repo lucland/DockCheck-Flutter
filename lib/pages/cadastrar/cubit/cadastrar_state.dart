@@ -1,6 +1,8 @@
 import 'package:dockcheck/models/event.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 import '../../../models/user.dart';
+import '../../../utils/enums/beacon_button_enum.dart';
 
 class CadastrarState {
   final int numero;
@@ -13,6 +15,8 @@ class CadastrarState {
   final String selectedITagDevice;
   final String isiTagValid;
   final String lastDeviceId;
+  final List<ScanResult> scanResults;
+  final BeaconButtonState beaconButtonState;
 
   CadastrarState({
     this.numero = 0,
@@ -25,6 +29,8 @@ class CadastrarState {
     this.selectedITagDevice = '',
     this.isiTagValid = '',
     this.lastDeviceId = '',
+    this.scanResults = const [],
+    this.beaconButtonState = BeaconButtonState.Searching,
   });
 
   CadastrarState copyWith({
@@ -38,6 +44,8 @@ class CadastrarState {
     String? selectedITagDevice,
     String? isiTagValid,
     String? lastDeviceId,
+    List<ScanResult>? scanResults,
+    BeaconButtonState? beaconButtonState,
   }) {
     return CadastrarState(
       numero: numero ?? this.numero,
@@ -50,6 +58,8 @@ class CadastrarState {
       selectedITagDevice: selectedITagDevice ?? this.selectedITagDevice,
       isiTagValid: isiTagValid ?? this.isiTagValid,
       lastDeviceId: lastDeviceId ?? this.lastDeviceId,
+      scanResults: scanResults ?? this.scanResults,
+      beaconButtonState: beaconButtonState ?? this.beaconButtonState,
     );
   }
 }
