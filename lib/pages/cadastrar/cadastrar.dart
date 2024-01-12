@@ -79,11 +79,10 @@ class _CadastrarViewState extends State<CadastrarView> {
     final CadastrarCubit cubit = context.read<CadastrarCubit>();
 
     return BlocConsumer<CadastrarCubit, CadastrarState>(
-      listener: (context, state) {
-        // Listener logic remains
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         if (state.isLoading) {
+          cubit.fetchNumero();
           return const Center(child: CircularProgressIndicator());
         } else {
           return _buildForm(context, state, cubit);
@@ -95,12 +94,20 @@ class _CadastrarViewState extends State<CadastrarView> {
   Widget _buildForm(
       BuildContext context, CadastrarState state, CadastrarCubit cubit) {
     // Extracted form building logic goes here
-    return Column(
-      children: [
-        _buildHeader(state, cubit),
-        _buildFields(state, cubit, context, state.user.isVisitor),
-        _buildFooter(state, cubit),
-      ],
+    return Scaffold(
+      backgroundColor: CQColors.white,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              _buildHeader(state, cubit),
+              _buildFields(state, cubit, context, state.user.isVisitor),
+              _buildFooter(state, cubit),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
