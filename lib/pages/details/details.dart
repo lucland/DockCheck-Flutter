@@ -14,7 +14,7 @@ import '../../models/user.dart';
 import '../../repositories/authorization_repository.dart';
 import '../../repositories/user_repository.dart';
 import '../../repositories/vessel_repository.dart';
-import '../../utils/action_enum.dart';
+import '../../utils/enums/action_enum.dart';
 import '../../utils/theme.dart';
 import 'cubit/details_cubit.dart';
 import 'cubit/details_state.dart';
