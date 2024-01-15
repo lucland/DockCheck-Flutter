@@ -1,1 +1,1 @@
-enum BeaconButtonState { Searching, Register, Invalid, Unlink }
+enum BeaconButtonState { Searching, Register, Invalid, Unlink, Scanning }

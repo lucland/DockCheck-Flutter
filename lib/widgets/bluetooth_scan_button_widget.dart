@@ -16,57 +16,76 @@ class BluetoothScanButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
-        switch (state.beaconButtonState) {
-          case BeaconButtonState.Searching:
-            return _buildButton(context, "Buscando Beacon", CQColors.iron100,
-                Colors.white, CQColors.iron100, false);
-          case BeaconButtonState.Register:
-            return _buildButton(context, "Registrar Beacon", Colors.white,
-                CQColors.iron100, CQColors.iron100, true, () {
-              context
-                  .read<CadastrarCubit>()
-                  .updateiTag(state.selectedITagDevice);
-            });
-          case BeaconButtonState.Invalid:
-            return _buildButton(context, "Beacon Inválido", Colors.white,
-                CQColors.danger100, CQColors.danger100, false);
-          case BeaconButtonState.Unlink:
-            return _buildButton(context, "Desvincular Beacon",
-                CQColors.danger100, Colors.white, CQColors.danger100, true, () {
-              context.read<CadastrarCubit>().resetBeacon();
-            });
-          default:
-            return Container(); // Fallback for unhandled states
-        }
+        return _buildButton(context, state);
       },
     );
   }
 
-  Widget _buildButton(BuildContext context, String text, Color textColor,
-      Color backgroundColor, Color borderColor, bool isEnabled,
-      [VoidCallback? onPressed]) {
+  Widget _buildButton(BuildContext context, CadastrarState state) {
+    String buttonText = '';
+    Color buttonTextColor = Colors.black;
+    Color buttonBackgroundColor = Colors.grey;
+    Color buttonBorderColor = Colors.grey;
+    VoidCallback? onPressed;
+
+    switch (state.beaconButtonState) {
+      case BeaconButtonState.Searching:
+        buttonText = "Buscando Beacon";
+        buttonTextColor = CQColors.iron100;
+        buttonBackgroundColor = Colors.white;
+        buttonBorderColor = CQColors.iron100;
+        break;
+      case BeaconButtonState.Register:
+        buttonText = "Registrar Beacon";
+        buttonTextColor = Colors.white;
+        buttonBackgroundColor = CQColors.iron100;
+        buttonBorderColor = CQColors.iron100;
+        onPressed = () {
+          context.read<CadastrarCubit>().updateiTag(state.selectedITagDevice);
+        };
+        break;
+      case BeaconButtonState.Invalid:
+        buttonText = "Beacon Inválido";
+        buttonTextColor = Colors.white;
+        buttonBackgroundColor = CQColors.danger100;
+        buttonBorderColor = CQColors.danger100;
+        break;
+      case BeaconButtonState.Unlink:
+        buttonText = "Desvincular Beacon";
+        buttonTextColor = Colors.white;
+        buttonBackgroundColor = CQColors.danger100;
+        buttonBorderColor = CQColors.danger100;
+        onPressed = () {
+          context.read<CadastrarCubit>().resetBeaconScan();
+        };
+        break;
+      default:
+        return Container(); // Fallback for unhandled states
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
       child: InkWell(
-        onTap: isEnabled ? onPressed : null,
+        onTap: onPressed,
         child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            border: Border.all(color: borderColor),
+            border: Border.all(color: buttonBorderColor),
             borderRadius: BorderRadius.circular(8.0),
-            color: backgroundColor,
+            color: buttonBackgroundColor,
           ),
           padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(text.toUpperCase(),
-                  overflow: TextOverflow.ellipsis, style: CQTheme.h3),
-              if (text == "Buscando Beacon")
+              Text(buttonText.toUpperCase(),
+                  overflow: TextOverflow.ellipsis,
+                  style: CQTheme.h3.copyWith(color: buttonTextColor)),
+              if (buttonText == "Buscando Beacon")
                 const SizedBox(
                   width: 8,
                 ),
-              if (text == "Buscando Beacon")
+              if (buttonText == "Buscando Beacon")
                 const SizedBox(
                   width: 8,
                   height: 8,

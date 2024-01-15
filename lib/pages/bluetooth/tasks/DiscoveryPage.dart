@@ -28,6 +28,8 @@ class _DiscoveryPage extends State<DiscoveryPage> {
     super.initState();
 
     isDiscovering = widget.start;
+    print('guilherme');
+    print(isDiscovering);
     if (isDiscovering) {
       _startDiscovery();
     }
@@ -45,6 +47,8 @@ class _DiscoveryPage extends State<DiscoveryPage> {
   void _startDiscovery() {
     _streamSubscription =
         FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
+      print(
+          'dispot discovered: ${r.device.name}, RSSI: ${r.rssi}, Address: ${r.device.address}');
       setState(() {
         final existingIndex = results.indexWhere(
             (element) => element.device.address == r.device.address);
@@ -56,6 +60,7 @@ class _DiscoveryPage extends State<DiscoveryPage> {
     });
 
     _streamSubscription!.onDone(() {
+      print('descoberta completed');
       setState(() {
         isDiscovering = false;
       });

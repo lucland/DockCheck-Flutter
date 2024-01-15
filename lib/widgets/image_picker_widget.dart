@@ -19,18 +19,18 @@ class ImagePickerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
+        bool _hasImage = state.user.picture.isNotEmpty;
         return GestureDetector(
           onTap: () => _showImagePickerDialog(context, state),
           child: Padding(
             padding: const EdgeInsets.only(right: 16, bottom: 8),
-            child: _buildImageContainer(base64ToFile(state.user.picture)),
+            child: _buildImageContainer(_hasImage, state.user.picture),
           ),
         );
       },
     );
   }
 
-  //function to convert base64 string to XFile
   XFile? base64ToFile(String base64String) {
     try {
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -43,12 +43,10 @@ class ImagePickerWidget extends StatelessWidget {
     return null;
   }
 
-  Widget _buildImageContainer(XFile? pickedImage) {
-    bool hasImage = pickedImage != null;
-
+  Widget _buildImageContainer(bool hasImage, String? imagePath) {
     return Container(
       width: double.infinity,
-      height: 200,
+      height: 300,
       decoration: BoxDecoration(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(8.0),
@@ -59,7 +57,7 @@ class ImagePickerWidget extends StatelessWidget {
       ),
       child: hasImage
           ? Image.file(
-              File(pickedImage.path),
+              File(imagePath ?? ''),
               fit: BoxFit.cover,
             )
           : const Center(
@@ -73,6 +71,8 @@ class ImagePickerWidget extends StatelessWidget {
   }
 
   void _showImagePickerDialog(BuildContext context, CadastrarState state) {
+    bool _hasImage = state.user.picture.isNotEmpty;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -81,20 +81,62 @@ class ImagePickerWidget extends StatelessWidget {
               const EdgeInsets.symmetric(horizontal: 120, vertical: 20),
           backgroundColor: CQColors.white,
           shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12.0))),
-          content: _buildDialogContents(context, state),
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+          ),
+          content: _buildDialogContents(context, state, _hasImage),
         );
       },
     );
   }
 
-  Widget _buildDialogContents(BuildContext context, CadastrarState state) {
-    bool hasImage = state.user.picture.isNotEmpty;
-
+  Widget _buildDialogContents(
+      BuildContext context, CadastrarState state, bool hasImage) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ... other dialog contents
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Identidade',
+              style: CQTheme.h2,
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Adicione o seu documento aqui',
+              style: CQTheme.body2,
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Container(
+            height: 300,
+            color: Colors.transparent,
+            child: state.user.picture.isNotEmpty
+                ? Image.file(
+                    File(state.user.picture),
+                    fit: BoxFit.cover,
+                  )
+                : GestureDetector(
+                    onTap: () {
+                      cubit.pickImage();
+                    },
+                    child: Center(
+                      child: Image.asset(
+                        'assets/imgs/rg2.2.png',
+                        fit: BoxFit.cover,
+                        height: 400,
+                        width: 400,
+                      ),
+                    ),
+                  ),
+          ),
+        ),
         GestureDetector(
           onTap: () async {
             if (!hasImage) {
@@ -113,10 +155,13 @@ class ImagePickerWidget extends StatelessWidget {
                 color: CQColors.iron100,
               ),
               child: Center(
-                child: Text(
-                  hasImage ? 'Remover credencial' : 'Adicionar credencial',
-                  style: CQTheme.h3.copyWith(
-                    color: CQColors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text(
+                    hasImage ? 'Remover credencial' : 'Adicionar credencial',
+                    style: CQTheme.body.copyWith(
+                      color: CQColors.white,
+                    ),
                   ),
                 ),
               ),
@@ -139,7 +184,7 @@ class ImagePickerWidget extends StatelessWidget {
               child: const Center(
                 child: Text(
                   'Salvar',
-                  style: CQTheme.h3,
+                  style: CQTheme.headLine,
                 ),
               ),
             ),

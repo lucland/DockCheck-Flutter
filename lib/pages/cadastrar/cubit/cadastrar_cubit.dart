@@ -27,6 +27,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   bool isClosed = false;
   String selectedBloodType = '';
   late StreamSubscription<List<blue.ScanResult>> scanSubscription;
+  late Timer _scanTimer;
 
   CadastrarCubit(
       this.userRepository, this.eventRepository, this.localStorageService)
@@ -113,66 +114,121 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   void startScan() {
-    scanSubscription = blue.FlutterBluePlus.scanResults.listen(
-      (List<blue.ScanResult> results) {
-        // Logic to process results and update state
-        var processedResults = _processScanResults(results);
-        emit(state.copyWith(scanResults: processedResults));
-      },
-    );
+    const int searchDurationSeconds = 10;
+    const int intervalBetweenScansSeconds = 5;
 
-    blue.FlutterBluePlus.startScan();
-    emit(state.copyWith(beaconButtonState: BeaconButtonState.Searching));
+    Timer searchTimer;
+
+    void scanDevices() {
+      try {
+        scanSubscription = blue.FlutterBluePlus.scanResults.listen(
+          (List<blue.ScanResult> results) {
+            try {
+              var processedResults = _processScanResults(results);
+              emit(state.copyWith(scanResults: processedResults));
+
+              for (var result in results) {
+                print(
+                    'Device name: ${result.device.name}, ID: ${result.device.id}, RSSI: ${result.rssi}');
+              }
+            } catch (e) {
+              print("Error processing scan results: $e");
+            }
+          },
+        );
+
+        blue.FlutterBluePlus.startScan();
+        emit(state.copyWith(beaconButtonState: BeaconButtonState.Searching));
+
+        searchTimer = Timer(Duration(seconds: searchDurationSeconds), () {
+          stopScan();
+          Timer(Duration(seconds: intervalBetweenScansSeconds), () {
+            scanDevices();
+          });
+        });
+      } catch (e) {
+        print("Error starting scan: $e");
+      }
+    }
+
+    scanDevices();
   }
 
   void resetBeacon() {
-    emit(state.copyWith(
-        selectedITagDevice: '',
-        beaconButtonState: BeaconButtonState.Searching));
-    startScan();
+    try {
+      emit(state.copyWith(
+          selectedITagDevice: '',
+          beaconButtonState: BeaconButtonState.Searching));
+      startScan();
+    } catch (e) {
+      print("Error resetting beacon: $e");
+    }
   }
 
   void stopScan() {
-    blue.FlutterBluePlus.stopScan();
-    scanSubscription.cancel();
-    emit(state.copyWith(scanResults: [])); // Clear scan results in state
+    try {
+      blue.FlutterBluePlus.stopScan();
+      scanSubscription.cancel();
+      emit(state.copyWith(scanResults: []));
+    } catch (e) {
+      print("Error stopping scan: $e");
+    }
   }
 
   void processScanResults(List<blue.ScanResult> results) {
-    var processedResults = _processScanResults(results);
+    try {
+      var processedResults = _processScanResults(results);
 
-    if (processedResults.isNotEmpty) {
-      var firstDeviceName = processedResults.first.device.advName;
-      // Check if the first device name has changed to avoid redundant checks
-      if (state.scanResults.isEmpty ||
-          state.scanResults.first.device.advName != firstDeviceName) {
-        userRepository.getValidITag(firstDeviceName).then((isValid) {
-          var beaconButtonState =
-              isValid ? BeaconButtonState.Register : BeaconButtonState.Invalid;
-          emit(state.copyWith(
-              scanResults: processedResults,
-              beaconButtonState: beaconButtonState));
-        });
+      if (processedResults.isNotEmpty) {
+        var firstDeviceName = processedResults.first.device.advName;
+        if (state.scanResults.isEmpty ||
+            state.scanResults.first.device.advName != firstDeviceName) {
+          userRepository.getValidITag(firstDeviceName).then((isValid) {
+            var beaconButtonState = isValid
+                ? BeaconButtonState.Register
+                : BeaconButtonState.Invalid;
+            emit(state.copyWith(
+                scanResults: processedResults,
+                beaconButtonState: beaconButtonState));
+          });
+        } else {
+          emit(state.copyWith(scanResults: processedResults));
+        }
       } else {
-        emit(state.copyWith(scanResults: processedResults));
+        emit(state.copyWith(
+            scanResults: processedResults,
+            beaconButtonState: BeaconButtonState.Searching));
       }
-    } else {
-      emit(state.copyWith(
-          scanResults: processedResults,
-          beaconButtonState: BeaconButtonState.Searching));
+    } catch (e) {
+      print("Error processing scan results: $e");
+    }
+  }
+
+  void updateiTag(String itag) {
+    try {
+      final itagLowercase = itag.toLowerCase();
+      final user = state.user.copyWith(iTag: itagLowercase);
+
+      if (!isClosed) {
+        emit(state.copyWith(user: user));
+        checkCadastroHabilitado();
+        print("ITAG DO USUÁRIO: $itagLowercase");
+      }
+    } catch (e) {
+      print("Error updating iTag: $e");
     }
   }
 
   List<blue.ScanResult> _processScanResults(List<blue.ScanResult> results) {
-    // Remove duplicates
-    results = results.toSet().toList();
-    //only add results which starts with "iTag"
-    results = results
-        .where((element) => element.device.advName.startsWith('iTAG'))
-        .toList();
-    // Sort by RSSI
-    results.sort((a, b) => b.rssi.compareTo(a.rssi));
-    return results;
+    try {
+      results = results.toSet().toList();
+      results.sort((a, b) => b.rssi.compareTo(a.rssi));
+
+      return results;
+    } catch (e) {
+      print("Error processing scan results: $e");
+      return [];
+    }
   }
 
   void updateLiberadoPor(String liberadoPor) {
@@ -184,22 +240,44 @@ class CadastrarCubit extends Cubit<CadastrarState> {
   }
 
   void pickImage() async {
-    // Logic to pick an image, e.g., using ImagePicker package
-    // Update the state with the new image
     final image = await ImagePicker().pickImage(source: ImageSource.camera);
     if (image != null) {
-      updatePicture(image);
+      final imagePath = image.path;
+      updatePicture(imagePath);
+    }
+  }
+
+  void updatePicture(String imagePath) {
+    final user = state.user.copyWith(picture: imagePath);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
     }
   }
 
   void removeImage() {
+    final user = state.user.copyWith(picture: '');
+    emit(state.copyWith(user: user));
+  }
+
+  /*void updatePicture(Uint8List bytes) {
+    // Convertendo bytes para string em base64
+    String base64String = base64Encode(bytes);
+
+    // Atualizando o estado com a nova imagem em base64
+    final user = state.user.copyWith(picture: base64String);
+    if (!isClosed) {
+      emit(state.copyWith(user: user));
+    }
+  }*/
+
+  /*(void removeImage() {
     // Logic to remove the image
     // Update the state with the new image
     final user = state.user.copyWith(picture: '');
     if (!isClosed) {
       emit(state.copyWith(user: user));
     }
-  }
+  }*/
 
   void updateBloodType(String bloodType) {
     selectedBloodType = bloodType;
@@ -215,15 +293,6 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     if (!isClosed) {
       emit(state.copyWith(user: user));
       checkCadastroHabilitado();
-    }
-  }
-
-  void updatePicture(XFile picture) async {
-    Uint8List bytes = await picture.readAsBytes();
-    String base64String = base64Encode(bytes);
-    final user = state.user.copyWith(picture: base64String);
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
     }
   }
 
@@ -248,30 +317,6 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     if (!isClosed) {
       emit(state.copyWith(user: user));
       checkCadastroHabilitado();
-    }
-  }
-
-  void checkiTag(String itag) async {
-    final itag2 = itag.toLowerCase();
-    final isValid = await userRepository.getValidITag(itag2);
-    if (isValid) {
-      emit(state.copyWith(
-          isiTagValid: 'REGISTRAR O BEACON', lastDeviceId: itag));
-    } else {
-      emit(state.copyWith(
-          isiTagValid: 'BEACON JÁ POSSUI USUÁRIO VINCULADO',
-          lastDeviceId: itag));
-    }
-  }
-
-  void updateiTag(String itag) {
-    final itagLowercase = itag.toLowerCase();
-
-    final user = state.user.copyWith(iTag: itagLowercase);
-    if (!isClosed) {
-      emit(state.copyWith(user: user));
-      checkCadastroHabilitado();
-      print("ITAG DO USUARIO: $itagLowercase");
     }
   }
 
