@@ -1,5 +1,8 @@
+import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
+import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_state.dart';
 import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:dockcheck/utils/formatter.dart';
+import 'package:dockcheck/widgets/bluetooth_scan_button_widget.dart';
 import 'package:dockcheck/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,24 +18,45 @@ import '../../widgets/text_input_widget.dart';
 import 'cubit/editar_cubit.dart';
 import 'cubit/editar_state.dart';
 
-class Editar extends StatelessWidget {
+class Editar extends StatefulWidget {
   final VoidCallback onSalvar;
   final User user;
   const Editar({super.key, required this.onSalvar, required this.user});
+
+  @override
+  State<Editar> createState() => _EditarState();
+}
+
+class _EditarState extends State<Editar> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<CadastrarCubit>().startScan();
+  }
 
   @override
   Widget build(BuildContext context) {
     final UserRepository userRepository = Provider.of<UserRepository>(context);
     final EventRepository eventRepository =
         Provider.of<EventRepository>(context);
+
     return BlocProvider(
-      create: (context) => EditarCubit(userRepository, user, eventRepository),
+      create: (context) =>
+          EditarCubit(userRepository, widget.user, eventRepository),
       child: EditarView(
-        onSalvar: onSalvar,
-        user: user,
+        onSalvar: widget.onSalvar,
+        user: widget.user,
       ),
     );
   }
+}
+
+Widget _buildBluetoothScanSection(BuildContext context, CadastrarState state) {
+  final CadastrarCubit cubit = context.read<CadastrarCubit>();
+
+  return BluetoothScanButton(
+    cubit: cubit,
+  );
 }
 
 class EditarView extends StatelessWidget {
@@ -134,6 +158,7 @@ class EditarView extends StatelessWidget {
                         children: [
                           Text('N° ${state.user.number}', style: CQTheme.h1),
                           const Divider(),
+                          BluetoothScanButton(cubit: context.read()),
                           TextInputWidget(
                             title: CQStrings.nome,
                             isRequired: true,

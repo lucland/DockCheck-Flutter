@@ -11,13 +11,13 @@ class DockingRepository {
   DockingRepository(this.apiService, this.localStorageService);
 
   Future<Docking> createDocking(Docking docking) async {
-    await localStorageService.insertOrUpdate(
-        'dockings', docking.toJson(), 'id');
+    //  await localStorageService.insertOrUpdate(
+    //    'dockings', docking.toJson(), 'id');
 
     try {
       final data = await apiService.post('dockings/create', docking.toJson());
-      await localStorageService.insertOrUpdate(
-          'dockings', Docking.fromJson(data).toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      //    'dockings', Docking.fromJson(data).toJson(), 'id');
       return Docking.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create docking: ${e.toString()}');
@@ -55,14 +55,14 @@ class DockingRepository {
   Future<Docking> updateDocking(String id, Docking docking) async {
     try {
       final data = await apiService.put('dockings/$id', docking.toJson());
-      await localStorageService.insertOrUpdate(
-          'dockings', Docking.fromJson(data).toJson(), 'id');
+      // await localStorageService.insertOrUpdate(
+      //   'dockings', Docking.fromJson(data).toJson(), 'id');
       return Docking.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update docking: ${e.toString()}');
       docking.status = 'pending_update'; // Assuming 'status' field exists
-      await localStorageService.insertOrUpdate(
-          'dockings', docking.toJson(), 'id');
+      // await localStorageService.insertOrUpdate(
+      //    'dockings', docking.toJson(), 'id');
       return docking;
     }
   }
@@ -97,7 +97,7 @@ class DockingRepository {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate('dockings', pending, 'id');
+          //   await localStorageService.insertOrUpdate('dockings', pending, 'id');
         }
       } catch (e) {
         SimpleLogger.warning('Error syncing pending docking: $e');
@@ -114,8 +114,8 @@ class DockingRepository {
       try {
         final dockingData = await apiService.get('dockings/$id');
         final docking = Docking.fromJson(dockingData);
-        await localStorageService.insertOrUpdate(
-            'dockings', docking.toJson(), 'id');
+        //  await localStorageService.insertOrUpdate(
+        //     'dockings', docking.toJson(), 'id');
       } catch (e) {
         SimpleLogger.warning('Failed to fetch docking: $id, error: $e');
         // Continue with the next ID if one fetch fails

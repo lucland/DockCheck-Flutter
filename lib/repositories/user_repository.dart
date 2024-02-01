@@ -19,6 +19,7 @@ class UserRepository {
       final data = await apiService.post('users/create', user.toJson());
       //await localStorageService.insertOrUpdate(
       //  'users', User.fromJson(data).toJson(), 'id');
+      SimpleLogger.info(user.toJson());
       return User.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create user: ${e.toString()}');
@@ -45,6 +46,7 @@ class UserRepository {
 
   Future<bool> getValidITag(String itag) async {
     try {
+      print(itag);
       await apiService.get('users/itag/$itag');
       return true;
     } catch (e) {
@@ -62,7 +64,7 @@ class UserRepository {
     await apiService.delete('users/$id');
   }
 
-  Future<List<User>> getAllUsers({int limit = 99, int offset = 0}) async {
+  Future<List<User>> getAllUsers({int limit = 10000, int offset = 0}) async {
     final data = await apiService.get('users?limit=$limit&offset=$offset');
     print(data.toString());
     List<User> usuarios =
@@ -143,7 +145,7 @@ class UserRepository {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate('users', pending, 'id');
+          //   await localStorageService.insertOrUpdate('users', pending, 'id');
           SimpleLogger.info('User synchronized');
         }
       } catch (e) {
@@ -169,7 +171,7 @@ class UserRepository {
       try {
         final userData = await apiService.get('users/$id');
         final user = User.fromJson(userData);
-        await localStorageService.insertOrUpdate('users', user.toJson(), 'id');
+        //     await localStorageService.insertOrUpdate('users', user.toJson(), 'id');
       } catch (e) {
         SimpleLogger.warning('Failed to fetch user: $id, error: $e');
         // Continue with the next ID if one fetch fails

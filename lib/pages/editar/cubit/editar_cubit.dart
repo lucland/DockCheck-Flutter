@@ -1,6 +1,7 @@
 import 'package:dockcheck/models/event.dart';
 import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../models/user.dart';
 import '../../../repositories/user_repository.dart';
@@ -17,8 +18,8 @@ class EditarCubit extends Cubit<EditarState> {
           EditarState(
             numero: 0,
             user: User(
-              id: '', // Provide an initial value or keep it empty if appropriate
-              authorizationsId: [], // An empty list as an initial value
+              id: '',
+              authorizationsId: [""],
               name: '',
               company: '',
               role: '',
@@ -26,26 +27,27 @@ class EditarCubit extends Cubit<EditarState> {
               number: 0,
               bloodType: '',
               cpf: '',
-              aso: DateTime.now(), // Current timestamp or a placeholder date
+              aso: DateTime.now(),
               asoDocument: '',
               hasAso: false,
-              nr34: DateTime.now(), // Similar to aso
+              nr34: DateTime.now(),
               nr34Document: '',
               hasNr34: false,
-              nr35: DateTime.now(), // Similar to aso
+              nr35: DateTime.now(),
               nr35Document: '',
               hasNr35: false,
-              nr33: DateTime.now(), // Similar to aso
+              nr33: DateTime.now(),
               nr33Document: '',
               hasNr33: false,
-              nr10: DateTime.now(), // Similar to aso
+              nr10: DateTime.now(),
               nr10Document: '',
               hasNr10: false,
               email: '',
-              area: '', // Provide a default area or keep it empty
+              area: 'Praça de Máquinas',
               isAdmin: false,
               isVisitor: false,
               isPortalo: false,
+              isCrew: false,
               isOnboarded: false,
               isBlocked: false,
               blockReason: '',
@@ -58,18 +60,17 @@ class EditarCubit extends Cubit<EditarState> {
               salt: '',
               hash: '',
               status: '',
-              isCrew: false,
             ),
             evento: Event(
-              id: '',
+              id: Uuid().v4(),
               portalId: '',
               userId: '',
               timestamp: DateTime.now(),
+              beaconId: '',
               vesselId: '',
               action: 0,
               justification: '',
               status: '',
-              beaconId: '',
             ),
           ),
         );
@@ -200,7 +201,7 @@ class EditarCubit extends Cubit<EditarState> {
   void createUser() async {
     emit(state.copyWith(isLoading: true));
     try {
-      await userRepository.createUser(state.user);
+      await userRepository.updateUser(state.user.id, state.user);
       clearFields();
       emit(state.copyWith(isLoading: false, userCreated: true));
     } catch (e) {

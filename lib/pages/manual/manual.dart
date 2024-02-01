@@ -1,4 +1,4 @@
-import 'package:dockcheck/utils/ui/colors.dart';
+/*import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:dockcheck/utils/ui/strings.dart';
 import 'package:dockcheck/widgets/manual_switcher.dart';
 import 'package:dockcheck/widgets/text_input_widget.dart';
@@ -155,3 +155,4 @@ class _ManualPageState extends State<ManualPage> {
     );
   }
 }
+*/

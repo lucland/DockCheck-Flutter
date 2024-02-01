@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -40,7 +42,7 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  Future<void> searchUsers(String query) async {
+  Future<void> searchUsers(String query, {bool filterByNumber = false}) async {
     try {
       if (!isClosed) {
         emit(UserLoading());
@@ -54,10 +56,13 @@ class UserCubit extends Cubit<UserState> {
         allUsers = await userRepository.getAllUsers();
       }
 
-      filteredUsers = allUsers
-          .where(
-              (user) => user.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
+      filteredUsers = allUsers.where((user) {
+        final nameMatches =
+            user.name.toLowerCase().contains(query.toLowerCase());
+        final numberMatches = filterByNumber &&
+            user.number.toString().contains(query.toLowerCase());
+        return nameMatches || numberMatches;
+      }).toList();
 
       if (!isClosed) {
         emit(UserLoaded(filteredUsers));
@@ -65,15 +70,17 @@ class UserCubit extends Cubit<UserState> {
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
       if (!isClosed) {
-        emit(UserError("Failed to fetch users2. $e"));
+        emit(UserError("Failed to fetch users. $e"));
       }
     }
   }
 
-  void _applySearchFilter() {
+  void _applySearchFilter({bool filterByNumber = false}) {
     filteredUsers = allUsers
         .where((user) =>
-            user.name.toLowerCase().contains(searchQuery.toLowerCase()))
+            user.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
+            (filterByNumber &&
+                user.number.toString().contains(searchQuery.toLowerCase())))
         .toList();
 
     emit(UserLoaded(filteredUsers));

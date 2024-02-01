@@ -19,60 +19,52 @@ class ImagePickerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
+        bool _hasImage = state.user.picture.isNotEmpty;
         return GestureDetector(
           onTap: () => _showImagePickerDialog(context, state),
           child: Padding(
             padding: const EdgeInsets.only(right: 16, bottom: 8),
-            child: _buildImageContainer(base64ToFile(state.user.picture)),
+            child: _buildImageContainer(_hasImage, state),
           ),
         );
       },
     );
   }
 
-  //function to convert base64 string to XFile
-  XFile? base64ToFile(String base64String) {
-    try {
-      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      var file = File(fileName);
-      file.writeAsBytesSync(base64Decode(base64String));
-      return XFile(file.path);
-    } catch (e) {
-      print(e);
-    }
-    return null;
-  }
-
-  Widget _buildImageContainer(XFile? pickedImage) {
-    bool hasImage = pickedImage != null;
-
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          color: hasImage ? Colors.transparent : CQColors.iron80,
-          width: 1.0,
-        ),
-      ),
-      child: hasImage
-          ? Image.file(
-              File(pickedImage.path),
-              fit: BoxFit.cover,
-            )
-          : const Center(
-              child: Icon(
-                Icons.document_scanner_outlined,
-                color: CQColors.iron80,
-                size: 45,
-              ),
+  Widget _buildImageContainer(bool hasImage, CadastrarState state) {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          height: 300,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(8.0),
+            border: Border.all(
+              color: hasImage ? Colors.transparent : CQColors.iron80,
+              width: 1.0,
             ),
+          ),
+          child: (hasImage && state.user.picture.isNotEmpty)
+              ? Image.memory(
+                  base64Decode(state.user.picture),
+                  fit: BoxFit.cover,
+                )
+              : const Center(
+                  child: Icon(
+                    Icons.document_scanner_outlined,
+                    color: CQColors.iron80,
+                    size: 45,
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
   void _showImagePickerDialog(BuildContext context, CadastrarState state) {
+    bool _hasImage = state.user.picture.isNotEmpty;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -81,27 +73,65 @@ class ImagePickerWidget extends StatelessWidget {
               const EdgeInsets.symmetric(horizontal: 120, vertical: 20),
           backgroundColor: CQColors.white,
           shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12.0))),
-          content: _buildDialogContents(context, state),
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+          ),
+          content: _buildDialogContents(context, state, _hasImage),
         );
       },
     );
   }
 
-  Widget _buildDialogContents(BuildContext context, CadastrarState state) {
-    bool hasImage = state.user.picture.isNotEmpty;
-
+  Widget _buildDialogContents(
+      BuildContext context, CadastrarState state, bool hasImage) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ... other dialog contents
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Identidade',
+              style: CQTheme.h2,
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Adicione o seu documento aqui',
+              style: CQTheme.body2,
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Container(
+            height: 300,
+            width: 400,
+            color: Colors.transparent,
+            child: hasImage
+                ? _buildImageContainer(hasImage, state)
+                : GestureDetector(
+                    onTap: () {
+                      cubit.pickImage();
+                      Navigator.pop(context);
+                    },
+                    child: Image.asset(
+                      'assets/imgs/rg2.2.png',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+          ),
+        ),
         GestureDetector(
           onTap: () async {
             if (!hasImage) {
-              cubit.pickImage();
+              await cubit.pickImage();
             } else {
               cubit.removeImage();
             }
+            Navigator.pop(context);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
@@ -113,10 +143,13 @@ class ImagePickerWidget extends StatelessWidget {
                 color: CQColors.iron100,
               ),
               child: Center(
-                child: Text(
-                  hasImage ? 'Remover credencial' : 'Adicionar credencial',
-                  style: CQTheme.h3.copyWith(
-                    color: CQColors.white,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text(
+                    hasImage ? 'Remover credencial' : 'Adicionar credencial',
+                    style: CQTheme.body.copyWith(
+                      color: CQColors.white,
+                    ),
                   ),
                 ),
               ),
@@ -139,7 +172,7 @@ class ImagePickerWidget extends StatelessWidget {
               child: const Center(
                 child: Text(
                   'Salvar',
-                  style: CQTheme.h3,
+                  style: CQTheme.headLine,
                 ),
               ),
             ),

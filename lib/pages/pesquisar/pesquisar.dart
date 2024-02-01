@@ -54,6 +54,8 @@ class UserListView extends StatelessWidget {
                 .toList();
           }
 
+          displayedUsers.sort((a, b) => a.name.compareTo(b.name));
+
           return Column(
             children: [
               Padding(
@@ -85,12 +87,20 @@ class UserListView extends StatelessWidget {
                       ),
                     ),
                     suffixIcon: GestureDetector(
-                      onTap: () => context.read<UserCubit>().fetchUsers(),
+                      onTap: () async {
+                        try {
+                          context.read<UserCubit>().fetchUsers();
+                        } catch (error) {
+                          print('Erro ao buscar usuários: $error');
+                        }
+                      },
                       child: const Icon(Icons.search_rounded),
                     ),
                   ),
-                  onSubmitted: (value) {
-                    context.read<UserCubit>().searchUsers(value);
+                  onChanged: (value) {
+                    context
+                        .read<UserCubit>()
+                        .searchUsers(value, filterByNumber: true);
                   },
                 ),
               ),
@@ -103,25 +113,45 @@ class UserListView extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    // Lista para a guia "Todos"
-                    ListView.builder(
-                      itemCount: displayedUsers.length,
-                      itemBuilder: (context, index) {
-                        User user = displayedUsers[index];
-                        return _buildUserListTile(context, user);
+                    // todos
+                    RefreshIndicator(
+                      color: CQColors.iron100,
+                      backgroundColor: CQColors.white,
+                      onRefresh: () async {
+                        context.read<UserCubit>().fetchUsers();
                       },
+                      child: ListView.builder(
+                        itemCount: displayedUsers.length,
+                        itemBuilder: (context, index) {
+                          if (displayedUsers.isEmpty) {
+                            return Center(
+                              child: Text('Nenhum usuário encontrado.'),
+                            );
+                          } else {
+                            User user = displayedUsers[index];
+                            return _buildUserListTile(context, user);
+                          }
+                        },
+                      ),
                     ),
-                    // Lista para a guia "A Bordo"
-                    ListView.builder(
-                      itemCount: displayedUsers.length,
-                      itemBuilder: (context, index) {
-                        User user = displayedUsers[index];
-                        if (user.isOnboarded) {
-                          return _buildUserListTile(context, user);
-                        } else {
-                          return Container();
-                        }
+                    // a bordo
+                    RefreshIndicator(
+                      color: CQColors.iron100,
+                      backgroundColor: CQColors.white,
+                      onRefresh: () async {
+                        context.read<UserCubit>().fetchUsers();
                       },
+                      child: ListView.builder(
+                        itemCount: displayedUsers.length,
+                        itemBuilder: (context, index) {
+                          User user = displayedUsers[index];
+                          if (user.isOnboarded) {
+                            return _buildUserListTile(context, user);
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -148,7 +178,7 @@ class UserListView extends StatelessWidget {
       child: ListTile(
         trailing:
             const Icon(Icons.chevron_right_rounded, color: CQColors.slate100),
-        title: Text(user.name, style: CQTheme.h2),
+        title: Text('${user.number} - ${user.name}', style: CQTheme.h2),
         titleAlignment: ListTileTitleAlignment.center,
         dense: true,
         visualDensity: VisualDensity.compact,
@@ -169,21 +199,19 @@ class UserListView extends StatelessWidget {
 
   Widget _buildLeadingIcon(User user) {
     if (user.isBlocked) {
-      // Ícone vermelho para usuários bloqueados
       return const Icon(
         Icons.circle,
         color: CQColors.danger100,
         size: 10,
       );
     } else if (user.isOnboarded) {
-      // Ícone verde para usuários a bordo
       return const Icon(
         Icons.circle,
         color: CQColors.success100,
         size: 10,
       );
     } else {
-      // Ícone verde para usuários cadastrados (independentemente de estarem a bordo)
+      //usuários cadastrados (independentemente de estarem a bordo)
       return const Icon(
         Icons.circle,
         color: CQColors.success100,

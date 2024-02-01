@@ -11,13 +11,13 @@ class CompanyRepository {
   CompanyRepository(this.apiService, this.localStorageService);
 
   Future<Company> createCompany(Company company) async {
-    await localStorageService.insertOrUpdate(
-        'companies', company.toJson(), 'id');
+    //  await localStorageService.insertOrUpdate(
+    //     'companies', company.toJson(), 'id');
 
     try {
       final data = await apiService.post('companies/create', company.toJson());
-      await localStorageService.insertOrUpdate(
-          'companies', Company.fromJson(data).toJson(), 'id');
+      //  await localStorageService.insertOrUpdate(
+      //     'companies', Company.fromJson(data).toJson(), 'id');
       return Company.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create company: ${e.toString()}');
@@ -51,14 +51,14 @@ class CompanyRepository {
   Future<Company> updateCompany(String id, Company company) async {
     try {
       final data = await apiService.put('companies/$id', company.toJson());
-      await localStorageService.insertOrUpdate(
-          'companies', Company.fromJson(data).toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      //    'companies', Company.fromJson(data).toJson(), 'id');
       return Company.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update company: ${e.toString()}');
       company.status = 'pending_update'; // Assuming 'status' field exists
-      await localStorageService.insertOrUpdate(
-          'companies', company.toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      //     'companies', company.toJson(), 'id');
       return company;
     }
   }
@@ -94,7 +94,7 @@ class CompanyRepository {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate('companies', pending, 'id');
+          //    await localStorageService.insertOrUpdate('companies', pending, 'id');
         }
       } catch (e) {
         SimpleLogger.warning('Error syncing pending company: $e');
@@ -111,8 +111,8 @@ class CompanyRepository {
       try {
         final companyData = await apiService.get('companies/$id');
         final company = Company.fromJson(companyData);
-        await localStorageService.insertOrUpdate(
-            'companies', company.toJson(), 'id');
+        //  await localStorageService.insertOrUpdate(
+        //     'companies', company.toJson(), 'id');
       } catch (e) {
         SimpleLogger.warning('Failed to fetch company: $id, error: $e');
         // Continue with the next ID if one fetch fails

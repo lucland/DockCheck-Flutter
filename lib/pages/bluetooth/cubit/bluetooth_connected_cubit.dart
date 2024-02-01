@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+/*import 'package:bloc/bloc.dart';
 import 'package:dockcheck/models/user.dart';
 import 'package:dockcheck/pages/bluetooth/cubit/bluetooth_connected_state.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue;
@@ -25,8 +25,8 @@ class BluetoothConnectedCubit extends Cubit<BluetoothConnectedState> {
 
       for (var dispositivoScan in lista) {
         try {
-          if (dispositivoScan.device.advName != "" ||
-              dispositivoScan.device.advName.isNotEmpty) {
+          if (dispositivoScan.device.name != "" ||
+              dispositivoScan.device.name.isNotEmpty) {
             // Verifique se o usuário já está na lista
             if (!usuarios.any(
                 (user) => user.iTag == dispositivoScan.device.remoteId.str)) {
@@ -75,3 +75,4 @@ class BluetoothConnectedCubit extends Cubit<BluetoothConnectedState> {
     }
   }
 }
+*/

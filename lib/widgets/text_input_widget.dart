@@ -10,6 +10,7 @@ class TextInputWidget extends StatelessWidget {
   final bool isRequired;
   final bool isID;
   final bool isPassword;
+
   final void Function(String)? onChanged;
 
   const TextInputWidget({
@@ -57,19 +58,19 @@ class TextInputWidget extends StatelessWidget {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
-                    color: CQColors.slate100,
+                    color: CQColors.iron100,
                     width: 1,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
-                    color: CQColors.slate100,
+                    color: CQColors.iron100,
                     width: 1,
                   ),
                 ),
               ),
-              cursorColor: CQColors.slate100,
+              cursorColor: CQColors.iron100,
               keyboardType: keyboardType,
               controller: controller,
               onChanged: onChanged,

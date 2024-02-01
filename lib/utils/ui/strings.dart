@@ -18,6 +18,7 @@ class CQStrings {
   static const String bluetooth = 'Bluetooth';
   static const String conectar = 'Conectar';
   static const String nome = "Nome do usuário";
+  static const String itag = "endereço ID vinculado";
   static const String nomedovisitante = "Nome do visitante";
   static const String cpf = 'CPF';
   static const String email = 'Email';
@@ -39,6 +40,7 @@ class CQStrings {
   static const String dataLimite = 'Data Limite';
   static const String limpar = 'LIMPAR';
   static const String cadastrarUpper = 'CADASTRAR';
+  static const String dashboard = 'Dashboard';
   static const String informacoes = 'INFORMAÇÕES';
   static const String empresa = 'Empresa';
   static const String validades = 'VALIDADES';
@@ -55,12 +57,14 @@ class CQStrings {
   static const String cadastrar = 'Cadastrar';
   static const String imprimirQRCode = 'Imprimir QR Code';
   static const String eventos = 'EVENTOS';
+  static const String updateCadastro = 'Atualizar Cadastro';
   static const String checkOut = 'CHECK-OUT';
   static const String usuarioCadastrado = 'USUÁRIO CADASTRADO.';
   static const String todos = 'Todos';
   static const String aBordo = 'À bordo';
+  static const String naoaBordo = 'Não está à bordo';
   static const String checkIn = 'CHECK-IN';
-  static const String usuario = 'Usuário';
+  static const String usuario = 'Prestador de serviço';
   static const String senha = 'Senha';
   static const String salvar = 'SALVAR';
   static const String usuarioEditado = 'USUÁRIO EDITADO.';

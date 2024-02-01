@@ -135,7 +135,7 @@ class LocalStorageService {
   }
 
   //For Syncing
-  Future<void> insertOrUpdate(
+  /*Future<void> insertOrUpdate(
       String table, Map<String, dynamic> data, String idColumn) async {
     SimpleLogger.info("Inserting or updating data: $data");
     var existingData = await _database
@@ -149,7 +149,7 @@ class LocalStorageService {
       await _database?.insert(table, data);
     }
   }
-
+*/
   Future<List<Map<String, dynamic>>> getPendingData(
       String table, String statusColumn) async {
     SimpleLogger.info("Getting pending data from table: $table");

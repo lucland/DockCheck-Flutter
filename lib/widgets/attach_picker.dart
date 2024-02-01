@@ -1,4 +1,4 @@
-import 'package:dockcheck/utils/theme.dart';
+/*import 'package:dockcheck/utils/theme.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -68,3 +68,4 @@ class _FilePickerWidgetState extends State<FilePickerWidget> {
     );
   }
 }
+*/

@@ -1,4 +1,4 @@
-import 'package:dockcheck/pages/bluetooth/bluetooth_scan.dart';
+/*import 'package:dockcheck/pages/bluetooth/bluetooth_scan.dart';
 import 'package:dockcheck/pages/bluetooth/state.dart';
 import 'package:dockcheck/pages/bluetooth/tasks/bluetooth_off_screen.dart';
 import 'package:flutter/material.dart';
@@ -62,4 +62,4 @@ class _IntegratedBluetoothScreenState extends State<IntegratedBluetoothScreen> {
     }
     return bluetoohOffScreen();
   }
-}
+}*/

@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+/*import 'package:bloc/bloc.dart';
 import 'package:dockcheck/models/user.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart' as blue;
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart'
@@ -30,3 +30,4 @@ class BluetoothConnectedErrorState extends BluetoothConnectedState {
 
   BluetoothConnectedErrorState(this.errorMessage);
 }
+*/

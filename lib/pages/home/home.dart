@@ -1,3 +1,7 @@
+import 'dart:async';
+import 'dart:ui';
+
+import 'package:dockcheck/pages/details/details.dart';
 import 'package:dockcheck/repositories/vessel_repository.dart';
 import 'package:dockcheck/utils/formatter.dart';
 import 'package:dockcheck/utils/theme.dart';
@@ -53,115 +57,121 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     context.read<HomeCubit>().fetchLoggedUser();
 
-    return BlocBuilder<HomeCubit, HomeState>(
-      builder: (context, state) {
-        if (state.isLoading) {
-          return Container(
+    return RefreshIndicator(
+      color: CQColors.iron100,
+      backgroundColor: CQColors.white,
+      onRefresh: () async {
+        context.read<HomeCubit>().reloadPage();
+      },
+      child: BlocBuilder<HomeCubit, HomeState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return Container(
+                color: CQColors.background,
+                child: const Center(child: CircularProgressIndicator()));
+          } else if (state.isLoading == false && state.loggedUser != null) {
+            List<User> users = state.onboardUsers;
+            User user = state.loggedUser!;
+            return Container(
               color: CQColors.background,
-              child: const Center(child: CircularProgressIndicator()));
-        } else if (state.isLoading == false && state.loggedUser != null) {
-          List<User> users = state.onboardUsers;
-          User user = state.loggedUser!;
-          return Container(
-            color: CQColors.background,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(16, 16, 0, 8),
-                      child: Text(
-                        'Olá, ${user.name}',
-                        style: CQTheme.h3.copyWith(
-                          color: Colors.black,
-                          fontSize: 24,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(16, 16, 0, 8),
+                        child: Text(
+                          'Olá, ${user.name}',
+                          style: CQTheme.h3.copyWith(
+                            color: Colors.black,
+                            fontSize: 24,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // --- essa é a parte que não rola ---
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: BlockedTicket(
-                              users: state.blockedUsers,
-                              vessel: state.vessels[0]),
-                        ),
-                        const Divider(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 2.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Pessoas a bordo:',
-                                style: CQTheme.h3.copyWith(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              Text(
-                                'Total: ${users.length}',
-                                style: CQTheme.h3.copyWith(
-                                  color: Colors.black,
-                                  fontSize: 24,
-                                ),
-                              ),
-                            ],
+                    ],
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(16),
+                            child: BlockedTicket(
+                                users: state.blockedUsers,
+                                vessel: state.vessels[0]),
                           ),
-                        ),
-                        // Lista de onboard tickets para cada navio
-                        if (state.vessels.isNotEmpty)
-                          ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: state.vessels.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: OnboardTicket(
-                                  users: users,
-                                  vessel: state.vessels[index],
+                          const Divider(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 2.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Pessoas a bordo:',
+                                  style: CQTheme.h3.copyWith(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                  ),
                                 ),
-                              );
-                            },
+                                Text(
+                                  'Total: ${users.length}',
+                                  style: CQTheme.h3.copyWith(
+                                    color: Colors.black,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SyncButtonWidget(
-                              onPressed: () {
-                                context.read<HomeCubit>().reloadPage();
+                          // Lista de onboard tickets para cada navio
+                          if (state.vessels.isNotEmpty)
+                            ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: state.vessels.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: OnboardTicket(
+                                    users: users,
+                                    vessel: state.vessels[index],
+                                  ),
+                                );
                               },
                             ),
-                            const SizedBox(height: 4),
-                          ],
-                        ),
-                      ],
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SyncButtonWidget(
+                                onPressed: () {
+                                  context.read<HomeCubit>().reloadPage();
+                                },
+                              ),
+                              const SizedBox(height: 4),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        } else {
-          // Delete the token and navigate to the login page
-          Provider.of<LocalStorageService>(context, listen: false)
-              .deleteToken();
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => LoginPage()),
-          );
-          return const SizedBox.shrink(); // Or any other placeholder widget
-        }
-      },
+                ],
+              ),
+            );
+          } else {
+            // Delete the token and navigate to the login page
+            Provider.of<LocalStorageService>(context, listen: false)
+                .deleteToken();
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => LoginPage()),
+            );
+            return const SizedBox.shrink(); // Or any other placeholder widget
+          }
+        },
+      ),
     );
   }
 }
@@ -292,30 +302,45 @@ class TicketBody extends StatelessWidget {
             itemCount: users.length,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TitleValueWidget(
-                                title: "Nome", value: users[index].name),
-                          ],
+              users.sort((a, b) => a.number.compareTo(b.number));
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Details(user: users[index]),
+                    ),
+                  );
+                },
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              TitleValueWidget(
+                                title: "Nome",
+                                value:
+                                    '${users[index].number} - ${users[index].name}',
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(users[index].area.toString(),
-                          style: CQTheme.h1.copyWith(
-                              fontSize: 14, color: CQColors.success100)),
-                    ),
-                  ]);
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(users[index].area.toString(),
+                            style: CQTheme.h1.copyWith(
+                                fontSize: 14, color: CQColors.success100)),
+                      ),
+                    ]),
+              );
             },
           ),
           const Divider(),

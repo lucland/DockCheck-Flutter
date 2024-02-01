@@ -1,10 +1,11 @@
-import 'package:dockcheck/pages/bluetooth/cubit/bluetooth_connected_cubit.dart';
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
 import 'package:dockcheck/pages/details/cubit/details_cubit.dart';
+import 'package:dockcheck/repositories/picture_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:dockcheck/repositories/login_repository.dart';
@@ -35,7 +36,7 @@ void main() async {
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);*/
 
   // Request Bluetooth permissions
-  var status = await [
+  /*var status = await [
     Permission.bluetooth,
     Permission.bluetoothScan,
     Permission.bluetoothConnect
@@ -45,7 +46,7 @@ void main() async {
       status[Permission.bluetoothConnect] != PermissionStatus.granted) {
     // Handle permission denied
     return;
-  }
+  }*/
 
   var localStorageService = LocalStorageService();
   await localStorageService.initDB();
@@ -74,16 +75,21 @@ void main() async {
   var vesselRepository = VesselRepository(apiService, localStorageService);
   var beaconRepository = BeaconRepository(apiService, localStorageService);
   var receptorRepository = ReceptorRepository(apiService, localStorageService);
+  var pictureRepository = PictureRepository(apiService);
 
   var loginCubit =
       LoginCubit(loginRepository, userRepository, localStorageService);
   var userCubit = UserCubit(userRepository);
   var cadastrarCubit =
       CadastrarCubit(userRepository, eventRepository, localStorageService);
-  var detailsCubit = DetailsCubit(userRepository, eventRepository,
-      localStorageService, authorizationRepository, vesselRepository);
-  //var bluetoothCubit = BluetoothCubit(userRepository);
-  var bluetoothConnectedCubit = BluetoothConnectedCubit(userRepository);
+  var detailsCubit = DetailsCubit(
+    userRepository,
+    eventRepository,
+    localStorageService,
+    authorizationRepository,
+    vesselRepository,
+    pictureRepository,
+  );
 
   BackgroundService();
 
@@ -106,15 +112,11 @@ void main() async {
         Provider<LocalStorageService>(create: (_) => localStorageService),
         BlocProvider<LoginCubit>(create: (_) => loginCubit),
         BlocProvider<UserCubit>(create: (_) => userCubit),
-        BlocProvider<BluetoothConnectedCubit>(
-            create: (_) => bluetoothConnectedCubit),
         BlocProvider<CadastrarCubit>(create: (_) => cadastrarCubit),
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
         Provider<BeaconRepository>(create: (_) => beaconRepository),
         Provider<ReceptorRepository>(create: (_) => receptorRepository),
-        /*BlocProvider<BluetoothCubit>(
-          create: (_) => bluetoothCubit,
-        ),*/
+        Provider<PictureRepository>(create: (_) => pictureRepository)
       ],
       child: MaterialApp(
         theme: CQTheme.theme,

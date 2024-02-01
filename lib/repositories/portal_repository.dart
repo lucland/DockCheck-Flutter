@@ -11,12 +11,12 @@ class PortalRepository {
   PortalRepository(this.apiService, this.localStorageService);
 
   Future<Portal> createPortal(Portal portal) async {
-    await localStorageService.insertOrUpdate('portals', portal.toJson(), 'id');
+    // await localStorageService.insertOrUpdate('portals', portal.toJson(), 'id');
 
     try {
       final data = await apiService.post('portals/create', portal.toJson());
-      await localStorageService.insertOrUpdate(
-          'portals', Portal.fromJson(data).toJson(), 'id');
+      // await localStorageService.insertOrUpdate(
+      //  'portals', Portal.fromJson(data).toJson(), 'id');
       return Portal.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create portal: ${e.toString()}');
@@ -38,14 +38,14 @@ class PortalRepository {
   Future<Portal> updatePortal(String id, Portal portal) async {
     try {
       final data = await apiService.put('portals/$id', portal.toJson());
-      await localStorageService.insertOrUpdate(
-          'portals', Portal.fromJson(data).toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      //    'portals', Portal.fromJson(data).toJson(), 'id');
       return Portal.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update portal: ${e.toString()}');
       portal.status = 'pending_update'; // Assuming 'status' field exists
-      await localStorageService.insertOrUpdate(
-          'portals', portal.toJson(), 'id');
+      // await localStorageService.insertOrUpdate(
+      //    'portals', portal.toJson(), 'id');
       return portal;
     }
   }
@@ -86,7 +86,7 @@ class PortalRepository {
         var response = await apiService.post('portals/create', pending);
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate('portals', pending, 'id');
+          //    await localStorageService.insertOrUpdate('portals', pending, 'id');
         }
       } catch (e) {
         SimpleLogger.warning('Error syncing pending portal: $e');

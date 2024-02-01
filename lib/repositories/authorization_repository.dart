@@ -10,14 +10,14 @@ class AuthorizationRepository {
   AuthorizationRepository(this.apiService, this.localStorageService);
 
   Future<Authorization> createAuthorization(Authorization authorization) async {
-    await localStorageService.insertOrUpdate(
-        'authorizations', authorization.toJson(), 'id');
+    // await localStorageService.insertOrUpdate(
+    // 'authorizations', authorization.toJson(), 'id');
 
     try {
       final data =
           await apiService.post('authorizations', authorization.toJson());
-      await localStorageService.insertOrUpdate(
-          'authorizations', Authorization.fromJson(data).toJson(), 'id');
+      /* await localStorageService.insertOrUpdate(
+          'authorizations', Authorization.fromJson(data).toJson(), 'id');*/
       return Authorization.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create authorization: ${e.toString()}');
@@ -57,14 +57,14 @@ class AuthorizationRepository {
     try {
       final data =
           await apiService.put('authorizations/$id', authorization.toJson());
-      await localStorageService.insertOrUpdate(
-          'authorizations', Authorization.fromJson(data).toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      //   'authorizations', Authorization.fromJson(data).toJson(), 'id');
       return Authorization.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update authorization: ${e.toString()}');
       authorization.status = 'pending_update'; // Assuming 'status' field exists
-      await localStorageService.insertOrUpdate(
-          'authorizations', authorization.toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      // 'authorizations', authorization.toJson(), 'id');
       return authorization;
     }
   }
@@ -113,8 +113,8 @@ class AuthorizationRepository {
         var response = await apiService.post('authorizations', pending);
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate(
-              'authorizations', pending, 'id');
+          //    await localStorageService.insertOrUpdate(
+          //  'authorizations', pending, 'id');
           SimpleLogger.info('Authorization synchronized');
         }
       } catch (e) {

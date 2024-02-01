@@ -8,7 +8,8 @@ class DetailsLoading extends DetailsState {}
 
 class DetailsLoaded extends DetailsState {
   final List<Event> eventos;
-  DetailsLoaded(this.eventos);
+  final String base64;
+  DetailsLoaded(this.eventos, this.base64);
 }
 
 class DetailsError extends DetailsState {

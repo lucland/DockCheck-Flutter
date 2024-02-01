@@ -1,5 +1,6 @@
 import 'package:dockcheck/models/event.dart';
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:dockcheck/pages/cadastrar/cubit/doc_enum.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 import '../../../models/user.dart';
 import '../../../utils/enums/beacon_button_enum.dart';
@@ -15,7 +16,9 @@ class CadastrarState {
   final String selectedITagDevice;
   final String isiTagValid;
   final String lastDeviceId;
-  final List<ScanResult> scanResults;
+  final List<DiscoveredDevice> scanResults;
+  final DiscoveredDevice? scanResult;
+  final DocumentosVisibility documentosVisibility;
   final BeaconButtonState beaconButtonState;
 
   CadastrarState({
@@ -31,6 +34,8 @@ class CadastrarState {
     this.lastDeviceId = '',
     this.scanResults = const [],
     this.beaconButtonState = BeaconButtonState.Searching,
+    required this.documentosVisibility,
+    this.scanResult,
   });
 
   CadastrarState copyWith({
@@ -44,7 +49,9 @@ class CadastrarState {
     String? selectedITagDevice,
     String? isiTagValid,
     String? lastDeviceId,
-    List<ScanResult>? scanResults,
+    List<DiscoveredDevice>? scanResults,
+    DiscoveredDevice? scanResult,
+    DocumentosVisibility? documentosVisibility,
     BeaconButtonState? beaconButtonState,
   }) {
     return CadastrarState(
@@ -60,6 +67,8 @@ class CadastrarState {
       lastDeviceId: lastDeviceId ?? this.lastDeviceId,
       scanResults: scanResults ?? this.scanResults,
       beaconButtonState: beaconButtonState ?? this.beaconButtonState,
+      documentosVisibility: documentosVisibility ?? this.documentosVisibility,
+      scanResult: scanResult,
     );
   }
 }

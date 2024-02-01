@@ -17,22 +17,55 @@ class BluetoothScanButton extends StatelessWidget {
     return BlocBuilder<CadastrarCubit, CadastrarState>(
       builder: (context, state) {
         switch (state.beaconButtonState) {
+          case BeaconButtonState.Search:
+            return _buildButton(
+                context,
+                'Buscar Beacon',
+                CQColors.iron100,
+                Colors.white,
+                CQColors.iron100,
+                //
+                true, () {
+              context.read<CadastrarCubit>().startSearching();
+            });
           case BeaconButtonState.Searching:
-            return _buildButton(context, "Buscando Beacon", CQColors.iron100,
-                Colors.white, CQColors.iron100, false);
+            return _buildButton(
+                context,
+                "Buscando Beacon",
+                CQColors.iron100,
+                Colors.white,
+                CQColors.iron100,
+                // ---
+                false);
           case BeaconButtonState.Register:
-            return _buildButton(context, "Registrar Beacon", Colors.white,
-                CQColors.iron100, CQColors.iron100, true, () {
-              context
-                  .read<CadastrarCubit>()
-                  .updateiTag(state.selectedITagDevice);
+            return _buildButton(
+                context,
+                "Registrar Beacon",
+                Colors.white, // cor do texto
+                CQColors.iron100, // cor do fundo
+                CQColors.iron100, // cor da borda
+                // ---
+                true, () {
+              context.read<CadastrarCubit>().updateiTag(state.scanResult!.id);
             });
           case BeaconButtonState.Invalid:
-            return _buildButton(context, "Beacon Inválido", Colors.white,
-                CQColors.danger100, CQColors.danger100, false);
+            return _buildButton(
+                context,
+                "Beacon Inválido",
+                Colors.white,
+                CQColors.danger100,
+                CQColors.danger100,
+                // ---
+                false);
           case BeaconButtonState.Unlink:
-            return _buildButton(context, "Desvincular Beacon",
-                CQColors.danger100, Colors.white, CQColors.danger100, true, () {
+            return _buildButton(
+                context,
+                "Desvincular Beacon",
+                CQColors.danger100,
+                Colors.white,
+                CQColors.danger100,
+                // ---
+                true, () {
               context.read<CadastrarCubit>().resetBeacon();
             });
           default:
@@ -56,12 +89,21 @@ class BluetoothScanButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(8.0),
             color: backgroundColor,
           ),
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(4.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(text.toUpperCase(),
-                  overflow: TextOverflow.ellipsis, style: CQTheme.h3),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  text.toUpperCase(),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800),
+                ),
+              ),
               if (text == "Buscando Beacon")
                 const SizedBox(
                   width: 8,
@@ -71,7 +113,7 @@ class BluetoothScanButton extends StatelessWidget {
                   width: 8,
                   height: 8,
                   child: CircularProgressIndicator(
-                    color: CQColors.iron100,
+                    color: CQColors.iron80,
                     strokeWidth: 2,
                   ),
                 ),
