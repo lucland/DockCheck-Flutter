@@ -47,8 +47,8 @@ class VesselRepository {
     } catch (e) {
       SimpleLogger.severe('Failed to update vessel: ${e.toString()}');
       vessel.status = 'pending_update';
-      await localStorageService.insertOrUpdate(
-          'vessels', vessel.toJson(), 'id');
+      //  await localStorageService.insertOrUpdate(
+      //     'vessels', vessel.toJson(), 'id');
       return vessel;
     }
   }
@@ -95,14 +95,14 @@ class VesselRepository {
   Future<Vessel> createVessel(Vessel vessel) async {
     try {
       final data = await apiService.post('vessels/create', vessel.toJson());
-      await localStorageService.insertOrUpdate(
-          'vessels', Vessel.fromJson(data).toJson(), 'id');
+      //  await localStorageService.insertOrUpdate(
+      //    'vessels', Vessel.fromJson(data).toJson(), 'id');
       return Vessel.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create vessel: ${e.toString()}');
       vessel.status = 'pending_creation'; // Assuming 'status' field exists
-      await localStorageService.insertOrUpdate(
-          'vessels', vessel.toJson(), 'id');
+      // await localStorageService.insertOrUpdate(
+      //    'vessels', vessel.toJson(), 'id');
       return vessel;
     }
   }
@@ -125,7 +125,7 @@ class VesselRepository {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate('vessels', pending, 'id');
+          //    await localStorageService.insertOrUpdate('vessels', pending, 'id');
           SimpleLogger.info('Vessel synchronized');
         }
       } catch (e) {
@@ -152,8 +152,8 @@ class VesselRepository {
       try {
         final vesselData = await apiService.get('vessels/$id');
         final vessel = Vessel.fromJson(vesselData);
-        await localStorageService.insertOrUpdate(
-            'vessels', vessel.toJson(), 'id');
+        //    await localStorageService.insertOrUpdate(
+        //      'vessels', vessel.toJson(), 'id');
       } catch (e) {
         SimpleLogger.warning('Failed to fetch vessel: $id, error: $e');
         // Continue with the next ID if one fetch fails

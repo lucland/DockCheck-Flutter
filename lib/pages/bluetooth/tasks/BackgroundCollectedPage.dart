@@ -1,4 +1,4 @@
-import 'package:dockcheck/pages/bluetooth/tasks/bluetoothScreens/LineChart.dart';
+/*import 'package:dockcheck/pages/bluetooth/tasks/bluetoothScreens/LineChart.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -147,3 +147,4 @@ class BackgroundCollectedPage extends StatelessWidget {
         ));
   }
 }
+*/

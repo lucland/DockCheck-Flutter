@@ -1,4 +1,4 @@
-import 'dart:convert';
+/*import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -113,3 +113,4 @@ class BackgroundCollectingTask extends Model {
     return samples.getRange(i, samples.length);
   }
 }
+*/

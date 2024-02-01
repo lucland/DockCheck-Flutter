@@ -1,7 +1,13 @@
 class Formatter {
   static String identidade(String identidade) {
     String identidadeString = identidade.toString();
-    return "${identidadeString.substring(0, 2)}.${identidadeString.substring(2, 5)}.${identidadeString.substring(5, 8)}-${identidadeString.substring(8, 9)}";
+
+    if (identidadeString.length >= 9) {
+      return "${identidadeString.substring(0, 2)}.${identidadeString.substring(2, 5)}.${identidadeString.substring(5, 8)}-${identidadeString.substring(8, 9)}";
+    } else {
+      // Trate o caso em que a string é muito curta
+      return identidadeString;
+    }
   }
 
   static String formatDateTime(DateTime dateTime) {
@@ -37,4 +43,6 @@ class Formatter {
     }
     return day + "/" + month + "/" + year + " - " + hour + ":" + minute + "h";
   }
+
+  static formatDate(date) {}
 }

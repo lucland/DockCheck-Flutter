@@ -1,4 +1,4 @@
-import 'package:dockcheck/pages/bluetooth/root_bluetooth.dart';
+import 'package:dockcheck/pages/Dashboard/dashboard.dart';
 import 'package:dockcheck/pages/cadastrar/cadastrar.dart';
 import 'package:dockcheck/pages/home/home.dart';
 import 'package:dockcheck/pages/manual/manual.dart';
@@ -36,7 +36,8 @@ class _RootState extends State<Root> {
     CQStrings.home,
     CQStrings.pesquisar,
     CQStrings.cadastrar,
-    CQStrings.conectar,
+    CQStrings.dashboard,
+    //CQStrings.conectar,
   ];
 
   @override
@@ -74,9 +75,13 @@ class _RootState extends State<Root> {
         label: 'Cadastrar',
         backgroundColor: CQColors.background),
     BottomNavigationBarItem(
+        icon: Icon(Icons.space_dashboard_rounded),
+        label: 'Dashboard',
+        backgroundColor: CQColors.background),
+    /*BottomNavigationBarItem(
         icon: Icon(Icons.bluetooth),
         label: 'Conectar',
-        backgroundColor: CQColors.background),
+        backgroundColor: CQColors.background),*/
   ];
 
   void _onItemTapped(int index) {
@@ -112,11 +117,12 @@ class _RootState extends State<Root> {
           _pageController.jumpToPage(0);
         },
       ),
-      const bluetoothSearch(),
+      Dashboard(),
+      Container(),
     ];
     return Scaffold(
       appBar: AppBar(
-        actions: [
+        /*actions: [
           GestureDetector(
             onTap: () {
               Navigator.push(context,
@@ -132,7 +138,7 @@ class _RootState extends State<Root> {
               )),
             ),
           ),
-        ],
+        ],*/
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -252,6 +258,23 @@ class _RootState extends State<Root> {
                   onTap: () => _navigateToPage(2),
                 ),
                 ListTile(
+                  leading: Icon(Icons.search,
+                      color: _selectedIndex == 1
+                          ? CQColors.iron100
+                          : CQColors.iron60),
+                  title: Text(
+                    'Dashboard',
+                    style: TextStyle(
+                        color: _selectedIndex == 1
+                            ? CQColors.iron100
+                            : CQColors.iron60,
+                        fontWeight: _selectedIndex == 1
+                            ? FontWeight.bold
+                            : FontWeight.normal),
+                  ),
+                  onTap: () => _navigateToPage(3),
+                ),
+                /*ListTile(
                   leading: Icon(Icons.bluetooth,
                       color: _selectedIndex == 3
                           ? CQColors.iron100
@@ -267,7 +290,7 @@ class _RootState extends State<Root> {
                             : FontWeight.normal),
                   ),
                   onTap: () => _navigateToPage(3),
-                ),
+                ),*/
               ]),
             ),
             ListTile(

@@ -51,8 +51,8 @@ class SupervisorRepository {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate(
-              'supervisors', pending, 'id');
+          //   await localStorageService.insertOrUpdate(
+          //     'supervisors', pending, 'id');
           SimpleLogger.info('Supervisor synchronized');
         }
       } catch (e) {

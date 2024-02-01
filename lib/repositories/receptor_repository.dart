@@ -10,13 +10,13 @@ class ReceptorRepository {
   ReceptorRepository(this.apiService, this.localStorageService);
 
   Future<Receptor> createReceptor(Receptor receptor) async {
-    await localStorageService.insertOrUpdate(
-        'receptors', receptor.toJson(), 'id');
+    //  await localStorageService.insertOrUpdate(
+    //     'receptors', receptor.toJson(), 'id');
 
     try {
       final data = await apiService.post('receptors/create', receptor.toJson());
-      await localStorageService.insertOrUpdate(
-          'receptors', Receptor.fromJson(data).toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      //      'receptors', Receptor.fromJson(data).toJson(), 'id');
       SimpleLogger.info('Receptor created: $data');
       return Receptor.fromJson(data);
     } catch (e) {
@@ -40,15 +40,15 @@ class ReceptorRepository {
   Future<Receptor> updateReceptor(String id, Receptor receptor) async {
     try {
       final data = await apiService.put('receptors/$id', receptor.toJson());
-      await localStorageService.insertOrUpdate(
-          'receptors', Receptor.fromJson(data).toJson(), 'id');
+      // await localStorageService.insertOrUpdate(
+      //    'receptors', Receptor.fromJson(data).toJson(), 'id');
       SimpleLogger.info('Receptor updated: $data');
       return Receptor.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update receptor: ${e.toString()}');
       receptor.status = 'pending_update'; // Assuming 'status' field exists
-      await localStorageService.insertOrUpdate(
-          'receptors', receptor.toJson(), 'id');
+      //  await localStorageService.insertOrUpdate(
+      //     'receptors', receptor.toJson(), 'id');
       return receptor;
     }
   }
@@ -84,7 +84,7 @@ class ReceptorRepository {
         var response = await apiService.post('receptors/create', pending);
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate('receptors', pending, 'id');
+          //    await localStorageService.insertOrUpdate('receptors', pending, 'id');
         }
       } catch (e) {
         SimpleLogger.warning('Error syncing pending receptor: $e');

@@ -1,5 +1,6 @@
 import 'package:dockcheck/models/user.dart';
 import 'package:dockcheck/models/vessel.dart';
+import 'package:dockcheck/pages/details/details.dart';
 import 'package:dockcheck/utils/formatter.dart';
 import 'package:dockcheck/utils/theme.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
@@ -130,34 +131,44 @@ class TicketBody extends StatelessWidget {
             itemCount: users.length,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TitleValueWidget(
-                            title: "Nome",
-                            value: users[index].name,
-                          ),
-                        ],
+              return InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Details(user: users[index]),
+                    ),
+                  );
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TitleValueWidget(
+                              title: "Nome",
+                              value: users[index].name,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      users[index].number.toString(),
-                      style: CQTheme.h1
-                          .copyWith(fontSize: 14, color: Colors.black),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        users[index].number.toString(),
+                        style: CQTheme.h1
+                            .copyWith(fontSize: 14, color: Colors.black),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           ),

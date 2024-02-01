@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:dockcheck/models/user.dart';
+import 'package:dockcheck/pages/cadastrar/cubit/doc_enum.dart';
 import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
 import 'package:dockcheck/utils/formatter.dart';
@@ -6,6 +10,8 @@ import 'package:dockcheck/widgets/image_picker_widget.dart';
 import 'package:dockcheck/widgets/switcher_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:intl/intl.dart';
 
 import '../../repositories/user_repository.dart';
 import '../../utils/theme.dart';
@@ -53,7 +59,48 @@ class CadastrarView extends StatefulWidget {
 }
 
 class _CadastrarViewState extends State<CadastrarView> {
-  // Variables and controller declarations remain
+  final TextEditingController areaController = TextEditingController();
+  final TextEditingController datetimeController = TextEditingController();
+  final TextEditingController liberadoPorController = TextEditingController();
+  final TextEditingController nameVisitorController = TextEditingController();
+  final TextEditingController nameUserController = TextEditingController();
+  final TextEditingController roleController = TextEditingController();
+  final TextEditingController companyController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController bloodtypeController = TextEditingController();
+
+  final TextEditingController asoController =
+      TextEditingController(text: '00/00/0000');
+
+  final TextEditingController nr34Controller =
+      TextEditingController(text: '00/00/0000');
+
+  final TextEditingController nr10Controller =
+      TextEditingController(text: '00/00/0000');
+
+  final TextEditingController nr33Controller =
+      TextEditingController(text: '00/00/0000');
+
+  final TextEditingController nr35Controller =
+      TextEditingController(text: '00/00/0000');
+
+  final TextEditingController dataInicialController = TextEditingController(
+    text: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+  );
+
+  final TextEditingController dataFinalController = TextEditingController(
+    text: DateFormat('dd/MM/yyyy').format(DateTime.now()),
+  );
+
+  void clearFields() {
+    liberadoPorController.clear();
+    nameVisitorController.clear();
+    nameUserController.clear();
+    roleController.clear();
+    companyController.clear();
+    emailController.clear();
+    bloodtypeController.clear();
+  }
 
   @override
   void initState() {
@@ -63,7 +110,6 @@ class _CadastrarViewState extends State<CadastrarView> {
 
   @override
   void dispose() {
-    context.read<CadastrarCubit>().stopScan();
     super.dispose();
   }
 
@@ -200,92 +246,190 @@ class _CadastrarViewState extends State<CadastrarView> {
 
   Widget _buildFields(CadastrarState state, CadastrarCubit cubit,
       BuildContext context, bool isVisitor) {
-    return Column(
-      children: [
-        Row(
+    return Column(children: [
+      Row(
+        children: [
+          Flexible(
+            flex: 7,
+            child: isVisitor
+                ? _buildVisitorHeader(state, cubit)
+                : _buildUserHeader(state, cubit),
+          ),
+          Flexible(
+            flex: 3,
+            child: ImagePickerWidget(cubit: cubit),
+          ),
+        ],
+      ),
+      if (!isVisitor) ...[
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Flexible(
-              flex: 7,
-              child: isVisitor
-                  ? _buildVisitorHeader(state, cubit)
-                  : _buildUserHeader(state, cubit),
-            ),
-            Flexible(
-              flex: 3,
-              child: ImagePickerWidget(cubit: cubit),
+            Padding(
+              padding: EdgeInsets.only(left: 8),
+              child: Text(
+                CQStrings.area,
+                style: CQTheme.h2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
-        if (!isVisitor) ...[
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(left: 8),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 8.0, 8, 16.0),
+          child: SwitcherWidget(
+              onTap: (txt) => cubit.updateArea(txt),
+              activeArea: state.user.area),
+        ),
+        InkWell(
+          onTap: () {
+            cubit.alternarVisibilidadeDocumentos();
+          },
+          child: Padding(
+            padding: EdgeInsets.only(left: 16, right: 16),
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color:
+                    state.documentosVisibility == DocumentosVisibility.visivel
+                        ? CQColors.iron100
+                        : CQColors.white,
+                border: Border.all(
+                  color: CQColors.iron100,
+                  width: 1.0,
+                ),
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Text(
-                  CQStrings.area,
-                  style: CQTheme.h2,
+                  'Documentos',
                   overflow: TextOverflow.ellipsis,
+                  style: CQTheme.h3.copyWith(
+                    color: state.documentosVisibility ==
+                            DocumentosVisibility.visivel
+                        ? CQColors.white
+                        : CQColors.iron100,
+                  ),
                 ),
               ),
-            ],
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 8.0, 8, 16.0),
-            child: SwitcherWidget(
-                onTap: (txt) => cubit.updateArea(txt),
-                activeArea: state.user.area),
+        ),
+        BlocBuilder<CadastrarCubit, CadastrarState>(builder: (context, state) {
+          return Visibility(
+            visible: state.documentosVisibility == DocumentosVisibility.visivel,
+            child: Column(children: [
+              CalendarPickerWidget(
+                showAttachmentIcon: false,
+                title: CQStrings.aso,
+                isRequired: false,
+                controller: asoController,
+                onChanged: (time) => cubit.updateASO(time),
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: CalendarPickerWidget(
+                      showAttachmentIcon: false,
+                      title: CQStrings.nr34,
+                      isRequired: false,
+                      controller: nr34Controller,
+                      onChanged: (time) => cubit.updateNR34(time),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: CalendarPickerWidget(
+                      showAttachmentIcon: false,
+                      title: CQStrings.nr10,
+                      controller: nr10Controller,
+                      onChanged: (time) => cubit.updateNR10(time),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 1,
+                    child: CalendarPickerWidget(
+                      showAttachmentIcon: false,
+                      title: CQStrings.nr33,
+                      controller: nr33Controller,
+                      onChanged: (time) => cubit.updateNR33(time),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: CalendarPickerWidget(
+                      showAttachmentIcon: false,
+                      title: CQStrings.nr35,
+                      controller: nr35Controller,
+                      onChanged: (time) => cubit.updateNR35(time),
+                    ),
+                  ),
+                ],
+              ),
+            ]),
+          );
+        })
+      ],
+      Divider(),
+      Row(
+        children: [
+          Flexible(
+            flex: 1,
+            child: CalendarPickerWidget(
+              showAttachmentIcon: false,
+              title: CQStrings.dataInicial,
+              isRequired: true,
+              controller: dataInicialController,
+              onChanged: (time) {
+                cubit.updateDataInicial(time);
+              },
+            ),
           ),
-          Row(
-            children: [
-              Flexible(
-                flex: 1,
-                child: CalendarPickerWidget(
-                  showAttachmentIcon: false,
-                  title: CQStrings.dataInicial,
-                  isRequired: true,
-                  controller: TextEditingController(
-                      text: Formatter.formatDateTime(state.user.startJob)),
-                  onChanged: (time) => cubit.updateDataInicial(time),
-                ),
-              ),
-              Flexible(
-                flex: 1,
-                child: CalendarPickerWidget(
-                  showAttachmentIcon: false,
-                  title: CQStrings.dataLimite,
-                  isRequired: true,
-                  controller: TextEditingController(
-                      text: Formatter.formatDateTime(state.user.endJob)),
-                  onChanged: (time) => cubit.updateDataLimite(time),
-                ),
-              ),
-            ],
+          Flexible(
+            flex: 1,
+            child: CalendarPickerWidget(
+              showAttachmentIcon: false,
+              title: CQStrings.dataLimite,
+              isRequired: true,
+              controller: dataFinalController,
+              onChanged: (time) {
+                cubit.updateDataLimite(time);
+              },
+            ),
           ),
         ],
-      ],
-    );
+      ),
+    ]);
   }
 
   Widget _buildVisitorHeader(CadastrarState state, CadastrarCubit cubit) {
     return Column(
       children: [
         TextInputWidget(
-            title: CQStrings.liberadoPor,
-            isRequired: true,
-            controller: TextEditingController(
-              text: state.user.blockReason,
-            ),
-            onChanged: (text) {
-              cubit.updateLiberadoPor(text);
-            }),
+          title: CQStrings.liberadoPor,
+          isRequired: true,
+          controller: liberadoPorController,
+          onChanged: (text) {
+            cubit.updateLiberadoPor(
+              text.toUpperCase(),
+            );
+          },
+        ),
         TextInputWidget(
           title: CQStrings.nomedovisitante,
           isRequired: true,
-          controller: TextEditingController(
-            text: state.user.name,
-          ),
-          onChanged: (text) => cubit.updateNome(text),
+          controller: nameVisitorController,
+          onChanged: (text) {
+            cubit.updateNome(
+              text.toUpperCase(),
+            );
+          },
         ),
         Row(
           children: [
@@ -293,10 +437,12 @@ class _CadastrarViewState extends State<CadastrarView> {
               flex: 1,
               child: TextInputWidget(
                 title: CQStrings.funcao,
-                controller: TextEditingController(
-                  text: state.user.role,
-                ),
-                onChanged: (text) => cubit.updateFuncao(text),
+                controller: roleController,
+                onChanged: (text) {
+                  cubit.updateFuncao(
+                    text.toUpperCase(),
+                  );
+                },
                 isRequired: true,
               ),
             ),
@@ -305,10 +451,12 @@ class _CadastrarViewState extends State<CadastrarView> {
               child: TextInputWidget(
                 title: CQStrings.empresa,
                 keyboardType: TextInputType.text,
-                controller: TextEditingController(
-                  text: state.user.company,
-                ),
-                onChanged: (text) => cubit.updateEmpresa(text),
+                controller: companyController,
+                onChanged: (text) {
+                  cubit.updateEmpresa(
+                    text.toUpperCase(),
+                  );
+                },
                 isRequired: true,
               ),
             ),
@@ -324,10 +472,12 @@ class _CadastrarViewState extends State<CadastrarView> {
         TextInputWidget(
           title: CQStrings.nome,
           isRequired: true,
-          controller: TextEditingController(
-            text: state.user.name,
-          ),
-          onChanged: (text) => cubit.updateNome(text),
+          controller: nameUserController,
+          onChanged: (text) {
+            cubit.updateNome(
+              text.toUpperCase(),
+            );
+          },
         ),
         Row(
           children: [
@@ -335,10 +485,12 @@ class _CadastrarViewState extends State<CadastrarView> {
               flex: 1,
               child: TextInputWidget(
                 title: CQStrings.email,
-                controller: TextEditingController(
-                  text: state.user.email,
-                ),
-                onChanged: (text) => cubit.updateEmail(text),
+                controller: emailController,
+                onChanged: (text) {
+                  cubit.updateEmail(
+                    text.toUpperCase(),
+                  );
+                },
               ),
             ),
             Flexible(
@@ -370,12 +522,12 @@ class _CadastrarViewState extends State<CadastrarView> {
                           ),
                         ),
                       ),
-                      value: cubit.selectedBloodType,
+                      value: state.user.bloodType,
                       onChanged: (String? newValue) {
                         cubit.updateBloodType(newValue ?? '');
                       },
                       items: [
-                        '',
+                        '-',
                         'A+',
                         'A-',
                         'B+',
@@ -403,10 +555,12 @@ class _CadastrarViewState extends State<CadastrarView> {
               flex: 1,
               child: TextInputWidget(
                 title: CQStrings.funcao,
-                controller: TextEditingController(
-                  text: state.user.role,
-                ),
-                onChanged: (text) => cubit.updateFuncao(text),
+                controller: roleController,
+                onChanged: (text) {
+                  cubit.updateFuncao(
+                    text.toUpperCase(),
+                  );
+                },
                 isRequired: true,
               ),
             ),
@@ -415,10 +569,12 @@ class _CadastrarViewState extends State<CadastrarView> {
               child: TextInputWidget(
                 title: CQStrings.empresa,
                 keyboardType: TextInputType.text,
-                controller: TextEditingController(
-                  text: state.user.company,
-                ),
-                onChanged: (text) => cubit.updateEmpresa(text),
+                controller: companyController,
+                onChanged: (text) {
+                  cubit.updateEmpresa(
+                    text.toUpperCase(),
+                  );
+                },
                 isRequired: true,
               ),
             ),
@@ -427,12 +583,6 @@ class _CadastrarViewState extends State<CadastrarView> {
       ],
     );
   }
-
-  void mostrarPopupFoto(BuildContext context) {
-    // Implementation for showing the photo popup
-  }
-
-  // Other methods for different parts of the UI
 
   Widget _buildFooter(CadastrarState state, CadastrarCubit cubit) {
     return Container(
@@ -444,7 +594,8 @@ class _CadastrarViewState extends State<CadastrarView> {
             flex: 1,
             child: InkWell(
               onTap: () {
-                cubit.clearFields();
+                cubit.reloadPage();
+                clearFields();
               },
               child: Container(
                 alignment: Alignment.center,
@@ -462,9 +613,13 @@ class _CadastrarViewState extends State<CadastrarView> {
           Expanded(
             flex: 1,
             child: InkWell(
-              onTap: () {
+              onTap: () async {
                 if (state.cadastroHabilitado) {
-                  cubit.createUser();
+                  state.copyWith(isLoading: true);
+                  await cubit.createUser();
+                  cubit.reloadPage();
+                  clearFields();
+                  state.copyWith(isLoading: false);
                 }
               },
               child: Container(

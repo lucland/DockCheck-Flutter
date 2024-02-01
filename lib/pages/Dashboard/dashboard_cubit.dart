@@ -1,5 +1,6 @@
 import 'package:dockcheck/models/event.dart';
 import 'package:dockcheck/models/user.dart';
+import 'package:dockcheck/pages/Dashboard/dashboard_state.dart';
 import 'package:dockcheck/repositories/picture_repository.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
 import 'package:dockcheck/utils/formatter.dart';
@@ -10,9 +11,8 @@ import '../../../repositories/authorization_repository.dart';
 import '../../../repositories/event_repository.dart';
 import '../../../repositories/user_repository.dart';
 import '../../../repositories/vessel_repository.dart';
-import 'details_state.dart';
 
-class DetailsCubit extends Cubit<DetailsState> {
+class DashboardCubit extends Cubit<DashboardState> {
   final UserRepository userRepository;
   final EventRepository eventRepository;
   final AuthorizationRepository authorizationRepository;
@@ -22,19 +22,19 @@ class DetailsCubit extends Cubit<DetailsState> {
   @override
   bool isClosed = false;
 
-  DetailsCubit(
+  DashboardCubit(
     this.userRepository,
     this.eventRepository,
     this.localStorageService,
     this.authorizationRepository,
     this.vesselRepository,
     this.pictureRepository,
-  ) : super(DetailsInitial());
+  ) : super(DashboardInitial());
 
   fetchEvents(String userId, String pictureId) async {
     try {
       if (!isClosed) {
-        emit(DetailsLoading());
+        emit(DashboardLoading());
       }
       //    var picture = await pictureRepository.getPicture(userId);
       var eventos = await eventRepository.getEventsByUser(userId);
@@ -42,7 +42,7 @@ class DetailsCubit extends Cubit<DetailsState> {
       List<Event> eventosMapped = eventos;
       print(eventosMapped.length > 0 ? eventosMapped[0].timestamp : "0");
       if (!isClosed) {
-        emit(DetailsLoaded(
+        emit(DashboardLoaded(
           eventosMapped,
           "",
         ));
@@ -50,7 +50,7 @@ class DetailsCubit extends Cubit<DetailsState> {
     } catch (e) {
       SimpleLogger.warning('Error during details_cubit fetchEvents: $e');
       if (!isClosed) {
-        emit(DetailsError("Failed to fetch events."));
+        emit(DashboardError("Failed to fetch events."));
       }
     }
   }
@@ -59,14 +59,14 @@ class DetailsCubit extends Cubit<DetailsState> {
       String userId, String justification, String pictureId) async {
     try {
       if (!isClosed) {
-        emit(DetailsLoading());
+        emit(DashboardLoading());
       }
 
       var user = await localStorageService.getUser();
       if (user == null) {
         SimpleLogger.warning('No logged-in user found.');
         if (!isClosed) {
-          emit(DetailsError("No logged-in user found."));
+          emit(DashboardError("No logged-in user found."));
         }
         return;
       }
@@ -93,13 +93,13 @@ class DetailsCubit extends Cubit<DetailsState> {
 
       fetchEvents(userId, userId);
       if (!isClosed) {
-        emit(DetailsLoaded([], ''));
+        emit(DashboardLoaded([], ''));
       }
     } catch (e) {
       SimpleLogger.warning(
           'Error during details_cubit createCheckoutEvento: $e');
       if (!isClosed) {
-        emit(DetailsError("Failed to create event."));
+        emit(DashboardError("Failed to create event."));
       }
     }
   }

@@ -1,0 +1,4 @@
+enum DocumentosVisibility {
+  visivel,
+  oculto,
+}

@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:dockcheck/models/authorization.dart';
 import 'package:dockcheck/models/vessel.dart';
 import 'package:dockcheck/repositories/user_repository.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
 import 'package:dockcheck/utils/simple_logger.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/user.dart';
@@ -154,6 +157,12 @@ class HomeCubit extends Cubit<HomeState> {
       ));
       // fetchBlockedUsers();
     }
+  }
+
+  void reloadPageFutureTimer(BuildContext context) {
+    Timer.periodic(Duration(seconds: 20), (Timer timer) {
+      context.read<HomeCubit>().reloadPage();
+    });
   }
 
   //função para recarregar a página

@@ -11,7 +11,7 @@ class EventRepository {
   EventRepository(this.apiService, this.localStorageService);
 
   Future<Event> createEvent(Event event) async {
-    await localStorageService.insertOrUpdate('events', event.toJson(), 'id');
+    //await localStorageService.insertOrUpdate('events', event.toJson(), 'id');
 
     try {
       final data = await apiService.post('events/create', event.toJson());
@@ -54,13 +54,13 @@ class EventRepository {
   Future<Event> updateEvent(String id, Event event) async {
     try {
       final data = await apiService.put('events/$id', event.toJson());
-      await localStorageService.insertOrUpdate(
-          'events', Event.fromJson(data).toJson(), 'id');
+      // await localStorageService.insertOrUpdate(
+      //   'events', Event.fromJson(data).toJson(), 'id');
       return Event.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update event: ${e.toString()}');
       event.status = 'pending_update'; // Assuming 'status' field exists
-      await localStorageService.insertOrUpdate('events', event.toJson(), 'id');
+      // await localStorageService.insertOrUpdate('events', event.toJson(), 'id');
       return event;
     }
   }
@@ -94,7 +94,7 @@ class EventRepository {
         var response = await apiService.post('events/create', pending);
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate('events', pending, 'id');
+          //  await localStorageService.insertOrUpdate('events', pending, 'id');
         }
       } catch (e) {
         SimpleLogger.warning('Error syncing pending event: $e');
@@ -111,8 +111,8 @@ class EventRepository {
       try {
         final eventData = await apiService.get('events/$id');
         final event = Event.fromJson(eventData);
-        await localStorageService.insertOrUpdate(
-            'events', event.toJson(), 'id');
+        // await localStorageService.insertOrUpdate(
+        //     'events', event.toJson(), 'id');
       } catch (e) {
         SimpleLogger.warning('Failed to fetch event: $id, error: $e');
         // Continue with the next ID if one fetch fails

@@ -11,15 +11,15 @@ class BeaconRepository {
 
   Future<Beacon> createBeacon(Beacon beacon) async {
     // Save to local storage first
-    await localStorageService.insertOrUpdate('beacons', beacon.toJson(), 'id');
+    //  await localStorageService.insertOrUpdate('beacons', beacon.toJson(), 'id');
 
     try {
       // Try posting to API
       final data = await apiService.post('beacons/create', beacon.toJson());
       SimpleLogger.info('Beacon created: $data');
       // Update local storage with API response
-      await localStorageService.insertOrUpdate(
-          'beacons', Beacon.fromJson(data).toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      //      'beacons', Beacon.fromJson(data).toJson(), 'id');
       return Beacon.fromJson(data);
     } catch (e) {
       // Log and handle API failure
@@ -33,16 +33,16 @@ class BeaconRepository {
       final data = await apiService.put('beacons/$id', beacon.toJson());
       SimpleLogger.info('Beacon updated: $data');
       // Update local storage with API response
-      await localStorageService.insertOrUpdate(
-          'beacons', Beacon.fromJson(data).toJson(), 'id');
+      //  await localStorageService.insertOrUpdate(
+      //    'beacons', Beacon.fromJson(data).toJson(), 'id');
       return Beacon.fromJson(data);
     } catch (e) {
       SimpleLogger.severe(
           'Failed to update beacon via API, updating local storage: ${e.toString()}');
       // Mark the beacon as pending update in local storage
       beacon.status = 'pending_update'; // Assuming 'status' field exists
-      await localStorageService.insertOrUpdate(
-          'beacons', beacon.toJson(), 'id');
+      //   await localStorageService.insertOrUpdate(
+      //     'beacons', beacon.toJson(), 'id');
       return beacon; // Return the local version
     }
   }
@@ -95,7 +95,7 @@ class BeaconRepository {
         var response = await apiService.post('beacons/create', pending);
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          await localStorageService.insertOrUpdate('beacons', pending, 'id');
+          //    await localStorageService.insertOrUpdate('beacons', pending, 'id');
           SimpleLogger.info('Beacon synchronized');
         }
       } catch (e) {
