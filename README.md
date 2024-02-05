@@ -4,7 +4,7 @@
 
 ## Overview
 
-DockCheck is an integrated maritime software ecosystem designed for operational efficiency, safety, and compliance. Utilizing cutting-edge .NET, Flutter, and Node.js technologies, DockCheck delivers real-time vessel and personnel tracking and management across various platforms.
+DockCheck is an integrated maritime software ecosystem designed for operational efficiency, safety, and compliance. Utilizing cutting-edge .NET, Flutter, Node.js, React, and TypeScript technologies, DockCheck delivers real-time vessel and personnel tracking and management across various platforms, including a sophisticated web interface.
 
 ## System Architecture Diagram
 
@@ -18,6 +18,7 @@ DockCheck is an integrated maritime software ecosystem designed for operational 
 - **Safety Monitoring**: Advanced tracking and alert systems for incident response.
 - **Compliance Support**: Maintains adherence to maritime regulations.
 - **Multilingual Support**: Accommodates a global user base with multiple language options.
+- **Web Interface**: Provides a comprehensive and responsive user experience, designed using React and TypeScript.
 
 ### Master-Field Sensor Synchronization
 
@@ -45,6 +46,7 @@ DockCheck's innovative solutions are not merely enhancements but transformative 
 
 - **Windows Application**: Built with .NET and Windows Forms.
 - **Mobile Application**: Developed using Flutter for a seamless cross-platform experience.
+- **Web Platform**: Crafted with React and TypeScript for a dynamic and responsive user interface.
 - **Backend**: Engineered with Node.js and robust database solutions like PostgreSQL and Firebase.
 
 <p float="left">
