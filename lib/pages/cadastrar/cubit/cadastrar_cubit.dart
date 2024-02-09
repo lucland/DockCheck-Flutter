@@ -157,7 +157,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
 
   void processScanResults(bler.DiscoveredDevice result) {
     if (state.scanResult != null && result.rssi >= -50) {
-      if (result.name.startsWith('iTAG')) {
+      if (result.name.startsWith('iTAG') ||
+          result.name.startsWith('Holy-IOT')) {
         print(result.name);
         print(result.rssi);
         print(result.id.toLowerCase());
@@ -170,7 +171,8 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         //});
       }
     } else if (state.scanResult == null && result.rssi >= -50) {
-      if (result.name.startsWith('iTAG') && state.scanResult == null) {
+      if (result.name.startsWith('iTAG') ||
+          result.name.startsWith('Holy-IOT') && state.scanResult == null) {
         print(result.name);
 
         print(result.rssi);

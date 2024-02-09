@@ -7,10 +7,12 @@ import 'package:dockcheck/utils/formatter.dart';
 import 'package:dockcheck/utils/theme.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:dockcheck/widgets/blocked_ticket.dart';
+import 'package:dockcheck/widgets/identificator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/company.dart';
 import '../../models/user.dart';
 
 import '../../models/vessel.dart';
@@ -26,7 +28,7 @@ import 'cubit/home_cubit.dart';
 import 'cubit/home_state.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key});
+  const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +46,62 @@ class Home extends StatelessWidget {
           vesselRepository, authorizationRepository),
       child: Container(
         color: CQColors.white,
-        child: const HomeView(),
+        child: HomeView(),
       ),
     );
   }
 }
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  HomeView({Key? key}) : super(key: key);
+
+  final List<Company> conpanies = [
+    Company(
+        name: "Googlemarine",
+        logo: "",
+        supervisors: [""],
+        vessels: [""],
+        updatedAt: DateTime.now(),
+        id: '',
+        expirationDate: DateTime.now(),
+        status: "56"),
+    Company(
+        name: "Vard",
+        logo: "",
+        supervisors: [""],
+        vessels: [""],
+        updatedAt: DateTime.now(),
+        id: '',
+        expirationDate: DateTime.now(),
+        status: "18"),
+    Company(
+        name: "DOF",
+        logo: "",
+        supervisors: [""],
+        vessels: [""],
+        updatedAt: DateTime.now(),
+        id: '',
+        expirationDate: DateTime.now(),
+        status: "62"),
+    Company(
+        name: "Empresa",
+        logo: "",
+        supervisors: [""],
+        vessels: [""],
+        updatedAt: DateTime.now(),
+        id: '',
+        expirationDate: DateTime.now(),
+        status: "3"),
+    Company(
+        name: "Googlemarine",
+        logo: "",
+        supervisors: [""],
+        vessels: [""],
+        updatedAt: DateTime.now(),
+        id: '',
+        expirationDate: DateTime.now(),
+        status: "4"),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -76,73 +126,52 @@ class HomeView extends StatelessWidget {
               color: CQColors.background,
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(16, 16, 0, 8),
-                        child: Text(
-                          'Olá, ${user.name}',
-                          style: CQTheme.h3.copyWith(
-                            color: Colors.black,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: EdgeInsets.all(16),
-                            child: BlockedTicket(
-                                users: state.blockedUsers,
-                                vessel: state.vessels[0]),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                flex: 1,
+                                child: HeaderTicket(
+                                  totalheight: 300,
+                                  bannercolor: CQColors.systemBlue110,
+                                  bannertitle: 'total à bordo', //sleaver
+                                  updatedAt: DateTime.now(),
+                                  numberofmembers: 142,
+                                ),
+                              ),
+                              Flexible(
+                                flex: 1,
+                                child: HeaderTicket(
+                                  totalheight: 300,
+                                  bannercolor: CQColors.success100,
+                                  bannertitle: 'total no dique', //sleaver
+                                  updatedAt: DateTime.now(),
+                                  numberofmembers: 34,
+                                ),
+                              ),
+                            ],
                           ),
+                          PrimaryTicket(
+                              bannertitle: 'LOCALIZAÇÕES',
+                              bannercolor: CQColors.iron100,
+                              users: state.onboardUsers,
+                              companies: conpanies,
+                              vessel: state.vessels[0]),
+                          PrimaryTicket(
+                              bannertitle: 'EMPRESAS',
+                              bannercolor: CQColors.iron100,
+                              users: state.onboardUsers,
+                              companies: conpanies,
+                              isCompany: true,
+                              vessel: state.vessels[0]),
                           const Divider(),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 2.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Pessoas a bordo:',
-                                  style: CQTheme.h3.copyWith(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  'Total: ${users.length}',
-                                  style: CQTheme.h3.copyWith(
-                                    color: Colors.black,
-                                    fontSize: 24,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Lista de onboard tickets para cada navio
-                          if (state.vessels.isNotEmpty)
-                            ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: state.vessels.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: OnboardTicket(
-                                    users: users,
-                                    vessel: state.vessels[index],
-                                  ),
-                                );
-                              },
-                            ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -176,12 +205,198 @@ class HomeView extends StatelessWidget {
   }
 }
 
+class HeaderTicket extends StatelessWidget {
+  final double totalheight;
+  final Color bannercolor;
+  final String bannertitle;
+  final int numberofmembers;
+  final DateTime updatedAt;
+  final bool hasTime;
+  final bool isAlt;
+
+  const HeaderTicket({
+    Key? key,
+    this.isAlt = false,
+    required this.totalheight,
+    required this.bannercolor,
+    required this.bannertitle,
+    required this.updatedAt,
+    this.hasTime = true,
+    required this.numberofmembers,
+  }) : super(key: key);
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) {
+    return Container(
+      height: totalheight,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(
+          Radius.circular(10.0),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Stack(
+          children: [
+            Column(
+              children: [
+                Container(
+                  height: 68,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+                    color: bannercolor,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Center(
+                      child: Text(
+                        bannertitle.toUpperCase(),
+                        style: CQTheme.h3.copyWith(
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: totalheight - 138,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                    ),
+                    color: CQColors.white,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                  child: Expanded(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                          color: CQColors.white,
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10.0),
+                            bottomRight: Radius.circular(10.0),
+                          )),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(0.0),
+                          child: Text(
+                            numberofmembers.toString(),
+                            style: isAlt
+                                ? TextStyle(
+                                    color: CQColors.iron80,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 75,
+                                    overflow: TextOverflow.ellipsis,
+                                  )
+                                : TextStyle(
+                                    color: CQColors.iron100,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 100,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                    ),
+                    color: CQColors.white,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (hasTime) ...[
+                          const Icon(Icons.info_outline,
+                              color: CQColors.slate100, size: 14),
+                          const SizedBox(width: 8),
+                          Text(
+                            CQStrings.atualizadoEm(
+                                Formatter.formatDateTime(updatedAt)),
+                            style: CQTheme.body.copyWith(
+                              color: CQColors.slate100,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              top: 56,
+              left: -10,
+              child: CustomPaint(
+                size: const Size(20, 10),
+                painter: CirclePainter(
+                  color: CQColors.background,
+                  direction: Direction.left,
+                ),
+              ),
+            ),
+            Positioned(
+              top: 56,
+              right: -10,
+              child: CustomPaint(
+                size: const Size(20, 10),
+                painter: CirclePainter(
+                  color: CQColors.background,
+                  direction: Direction.right,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 48,
+              left: -10,
+              child: CustomPaint(
+                size: const Size(20, 10),
+                painter: CirclePainter(
+                  color: CQColors.background,
+                  direction: Direction.right,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 48,
+              right: -10,
+              child: CustomPaint(
+                size: const Size(20, 10),
+                painter: CirclePainter(
+                  color: CQColors.background,
+                  direction: Direction.left,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class OnboardTicket extends StatelessWidget {
   const OnboardTicket({
-    super.key,
+    Key? key,
     required this.users,
     required this.vessel,
-  });
+  }) : super(key: key);
 
   final List<User> users;
   final Vessel vessel;
@@ -258,18 +473,35 @@ class OnboardTicket extends StatelessWidget {
   }
 }
 
-class TicketBody extends StatelessWidget {
+class TicketBody extends StatefulWidget {
   const TicketBody({
-    super.key,
+    Key? key,
     required this.users,
     required this.vessel,
-  });
+  }) : super(key: key);
 
   final List<User> users;
   final Vessel vessel;
 
   @override
+  _TicketBodyState createState() => _TicketBodyState();
+}
+
+class _TicketBodyState extends State<TicketBody> {
+  bool _showAllUsers = false;
+  bool get showAllUsers => _showAllUsers;
+
+  void _toggleShowAllUsers() {
+    setState(() {
+      _showAllUsers = !_showAllUsers;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    List<User> displayedUsers =
+        _showAllUsers ? widget.users : widget.users.sublist(0, 3);
+
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.only(
@@ -288,7 +520,7 @@ class TicketBody extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
-                'Total: ${users.length}',
+                'Total: ${widget.users.length}',
                 style: CQTheme.h3.copyWith(
                   color: Colors.black,
                   fontSize: 16,
@@ -299,16 +531,16 @@ class TicketBody extends StatelessWidget {
           const Divider(),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: users.length,
+            itemCount: displayedUsers.length,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
-              users.sort((a, b) => a.number.compareTo(b.number));
               return InkWell(
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Details(user: users[index]),
+                      builder: (context) =>
+                          Details(user: displayedUsers[index]),
                     ),
                   );
                 },
@@ -324,27 +556,28 @@ class TicketBody extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TitleValueWidget(
-                                title: "Nome",
-                                value:
-                                    '${users[index].number} - ${users[index].name}',
+                              HomeListItemWidget(
+                                area: displayedUsers[index].area,
+                                number: displayedUsers[index].number.toString(),
+                                name: displayedUsers[index].name,
+                                company: displayedUsers[index].company,
                               ),
                             ],
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(users[index].area.toString(),
-                            style: CQTheme.h1.copyWith(
-                                fontSize: 14, color: CQColors.success100)),
-                      ),
                     ]),
               );
             },
           ),
+          if (!_showAllUsers)
+            InkWell(
+              onTap: _toggleShowAllUsers,
+              child:
+                  const Center(child: Icon(Icons.keyboard_arrow_down_rounded)),
+            ),
           const Divider(),
-          TicketFooter(updatedAt: vessel.updatedAt),
+          TicketFooter(updatedAt: widget.vessel.updatedAt),
         ],
       ),
     );
@@ -353,9 +586,9 @@ class TicketBody extends StatelessWidget {
 
 class TicketHeader extends StatelessWidget {
   const TicketHeader({
-    super.key,
+    Key? key,
     required this.vessel,
-  });
+  }) : super(key: key);
 
   final Vessel vessel;
 
@@ -390,9 +623,9 @@ class TicketHeader extends StatelessWidget {
 
 class TicketFooter extends StatelessWidget {
   const TicketFooter({
-    super.key,
+    Key? key,
     required this.updatedAt,
-  });
+  }) : super(key: key);
 
   final DateTime updatedAt;
 
@@ -430,9 +663,9 @@ class TicketFooter extends StatelessWidget {
 
 class EstadiaWidget extends StatelessWidget {
   const EstadiaWidget({
-    super.key,
+    Key? key,
     required this.user,
-  });
+  }) : super(key: key);
 
   final User user;
 

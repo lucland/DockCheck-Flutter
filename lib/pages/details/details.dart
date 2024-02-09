@@ -212,6 +212,7 @@ class DetailsView extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                        /*
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 8),
@@ -520,7 +521,7 @@ class DetailsView extends StatelessWidget {
                               ),
                             ),
                           ),
-                        ),
+                        ),*/
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Card(
@@ -650,7 +651,10 @@ class DetailsView extends StatelessWidget {
                                         thickness: 0.3,
                                       ),
                                     ),
-                                    YourWidget(eventos: state.eventos)
+                                    YourWidget(
+                                      eventos: state.eventos,
+                                      user: user,
+                                    )
                                   ],
                                 ),
                               ),

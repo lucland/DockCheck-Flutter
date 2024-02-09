@@ -9,7 +9,7 @@ class ApiService {
   //Local:
   //final String baseUrl = 'http://localhost:3000/api/v1';
   //Device:
-  final String baseUrl = 'http://172.20.254.220:3000/api/v1';
+  final String baseUrl = 'http://172.20.253.81:3000/api/v1';
   //
   final LocalStorageService localStorageService;
 

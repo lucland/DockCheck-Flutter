@@ -8,6 +8,8 @@ class CQColors {
   static const Color purpleBlue = Color.fromRGBO(99, 102, 241, 1);
 
   static const Color white = Colors.white;
+
+  static const Color danger30 = Color.fromARGB(255, 236, 233, 233);
   static const Color danger110 = Color(0xFFC22B38);
   static const Color danger100 = Color(0xFFCF3845);
   static const Color systemBlue120 = Color(0xFF215FA6);
