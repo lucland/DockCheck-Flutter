@@ -133,12 +133,12 @@ class TicketBody extends StatelessWidget {
             itemBuilder: (context, index) {
               return InkWell(
                 onTap: () {
-                  Navigator.push(
+                  /*Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => Details(user: users[index]),
                     ),
-                  );
+                  );*/
                 },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -173,7 +173,7 @@ class TicketBody extends StatelessWidget {
             },
           ),
           const Divider(),
-          TicketFooter(updatedAt: vessel.updatedAt),
+          TicketFooter(updatedAt: DateTime.now()),
         ],
       ),
     );

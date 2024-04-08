@@ -44,4 +44,26 @@ class Login {
       'status': status,
     };
   }
+
+  Login copyWith({
+    String? id,
+    String? userId,
+    DateTime? timestamp,
+    DateTime? expiration,
+    String? system,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? status,
+  }) {
+    return Login(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      timestamp: timestamp ?? this.timestamp,
+      expiration: expiration ?? this.expiration,
+      system: system ?? this.system,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      status: status ?? this.status,
+    );
+  }
 }

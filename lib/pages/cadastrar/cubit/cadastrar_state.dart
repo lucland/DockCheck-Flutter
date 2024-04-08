@@ -1,74 +1,61 @@
-import 'package:dockcheck/models/event.dart';
-import 'package:dockcheck/pages/cadastrar/cubit/doc_enum.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:dockcheck/models/document.dart';
 
-import '../../../models/user.dart';
-import '../../../utils/enums/beacon_button_enum.dart';
+import '../../../models/event.dart';
+import '../../../models/employee.dart';
+import '../../../models/picture.dart';
 
 class CadastrarState {
   final int numero;
-  final User user;
+  final Employee employee;
   final bool isLoading;
   final String? errorMessage;
-  final Event evento;
-  final bool userCreated;
+  final Event event;
+  final bool employeeCreated;
   final bool cadastroHabilitado;
-  final String selectedITagDevice;
-  final String isiTagValid;
-  final String lastDeviceId;
-  final List<DiscoveredDevice> scanResults;
-  final DiscoveredDevice? scanResult;
-  final DocumentosVisibility documentosVisibility;
-  final BeaconButtonState beaconButtonState;
+  final List<String> nrTypes;
+  final List<Document> documents;
+  final Picture picture;
+  final String selectedNr;
 
   CadastrarState({
     this.numero = 0,
-    required this.user,
+    required this.employee,
     this.isLoading = true,
     this.errorMessage,
-    required this.evento,
-    this.userCreated = false,
+    required this.event,
+    this.employeeCreated = false,
     this.cadastroHabilitado = false,
-    this.selectedITagDevice = '',
-    this.isiTagValid = '',
-    this.lastDeviceId = '',
-    this.scanResults = const [],
-    this.beaconButtonState = BeaconButtonState.Searching,
-    required this.documentosVisibility,
-    this.scanResult,
+    this.nrTypes = const [],
+    this.documents = const [],
+    required this.picture,
+    this.selectedNr = '',
   });
 
   CadastrarState copyWith({
     int? numero,
-    User? user,
+    Employee? employee,
     bool? isLoading,
     String? errorMessage,
-    Event? evento,
-    bool? userCreated,
+    Event? event,
+    bool? employeeCreated,
     bool? cadastroHabilitado,
-    String? selectedITagDevice,
-    String? isiTagValid,
-    String? lastDeviceId,
-    List<DiscoveredDevice>? scanResults,
-    DiscoveredDevice? scanResult,
-    DocumentosVisibility? documentosVisibility,
-    BeaconButtonState? beaconButtonState,
+    List<String>? nrTypes,
+    List<Document>? documents,
+    Picture? picture,
+    String? selectedNr,
   }) {
     return CadastrarState(
       numero: numero ?? this.numero,
-      user: user ?? this.user,
+      employee: employee ?? this.employee,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage,
-      evento: evento ?? this.evento,
-      userCreated: userCreated ?? this.userCreated,
+      event: event ?? this.event,
+      employeeCreated: employeeCreated ?? this.employeeCreated,
       cadastroHabilitado: cadastroHabilitado ?? this.cadastroHabilitado,
-      selectedITagDevice: selectedITagDevice ?? this.selectedITagDevice,
-      isiTagValid: isiTagValid ?? this.isiTagValid,
-      lastDeviceId: lastDeviceId ?? this.lastDeviceId,
-      scanResults: scanResults ?? this.scanResults,
-      beaconButtonState: beaconButtonState ?? this.beaconButtonState,
-      documentosVisibility: documentosVisibility ?? this.documentosVisibility,
-      scanResult: scanResult,
+      nrTypes: nrTypes ?? this.nrTypes,
+      documents: documents ?? this.documents,
+      picture: picture ?? this.picture,
+      selectedNr: selectedNr ?? this.selectedNr,
     );
   }
 }

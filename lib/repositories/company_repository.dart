@@ -1,8 +1,7 @@
-import 'package:dockcheck/services/api_service.dart';
 import 'package:dockcheck/models/company.dart';
-
-import '../services/local_storage_service.dart';
-import '../utils/simple_logger.dart';
+import 'package:dockcheck/services/api_service.dart';
+import 'package:dockcheck/services/local_storage_service.dart';
+import 'package:dockcheck/utils/simple_logger.dart';
 
 class CompanyRepository {
   final ApiService apiService;
@@ -11,13 +10,9 @@ class CompanyRepository {
   CompanyRepository(this.apiService, this.localStorageService);
 
   Future<Company> createCompany(Company company) async {
-    //  await localStorageService.insertOrUpdate(
-    //     'companies', company.toJson(), 'id');
-
     try {
       final data = await apiService.post('companies/create', company.toJson());
-      //  await localStorageService.insertOrUpdate(
-      //     'companies', Company.fromJson(data).toJson(), 'id');
+      SimpleLogger.info('Company created: $data');
       return Company.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create company: ${e.toString()}');
@@ -42,23 +37,18 @@ class CompanyRepository {
       return (data as List).map((item) => Company.fromJson(item)).toList();
     } catch (e) {
       SimpleLogger.severe('Failed to get all companies: ${e.toString()}');
-      // Fetch from local storage as fallback
-      // Implement logic to return data from local storage or an empty list
-      return []; // Return an empty list as a fallback
+      return [];
     }
   }
 
   Future<Company> updateCompany(String id, Company company) async {
     try {
       final data = await apiService.put('companies/$id', company.toJson());
-      //   await localStorageService.insertOrUpdate(
-      //    'companies', Company.fromJson(data).toJson(), 'id');
+      SimpleLogger.info('Company updated: $data');
       return Company.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update company: ${e.toString()}');
-      company.status = 'pending_update'; // Assuming 'status' field exists
-      //   await localStorageService.insertOrUpdate(
-      //     'companies', company.toJson(), 'id');
+      company.status = 'pending_update';
       return company;
     }
   }
@@ -70,16 +60,13 @@ class CompanyRepository {
   Future<void> syncCompanies() async {
     SimpleLogger.info('Syncing companies');
 
-    // Try to fetch new data from the server and update local storage
     try {
       var serverCompanies = await getCompanyIdsFromServer();
       await fetchAndStoreNewCompanies(serverCompanies);
     } catch (e) {
       SimpleLogger.warning('Error fetching companies from server: $e');
-      // If fetching from server fails, use local data
     }
 
-    // Sync any pending updates from local storage to the server
     var pendingCompanies =
         await localStorageService.getPendingData('companies', 'status');
     for (var pending in pendingCompanies) {
@@ -94,45 +81,25 @@ class CompanyRepository {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          //    await localStorageService.insertOrUpdate('companies', pending, 'id');
         }
       } catch (e) {
         SimpleLogger.warning('Error syncing pending company: $e');
-        // If syncing fails, leave it as pending
       }
     }
   }
 
-  // ... (existing methods) ...
-
-  // Add a method to update local storage with new data from the server
   Future<void> fetchAndStoreNewCompanies(List<String> newIds) async {
     for (String id in newIds) {
       try {
         final companyData = await apiService.get('companies/$id');
         final company = Company.fromJson(companyData);
-        //  await localStorageService.insertOrUpdate(
-        //     'companies', company.toJson(), 'id');
+        await localStorageService.insertData('companies', company.toJson());
       } catch (e) {
         SimpleLogger.warning('Failed to fetch company: $id, error: $e');
-        // Continue with the next ID if one fetch fails
       }
     }
   }
 
-// Implement fetchAndStoreNewCompanies similarly
-
-  Future<void> updateLocalDatabase(List<Company> serverCompanies) async {
-    // Clear local data
-    await localStorageService.clearTable('companies');
-
-    // Insert new data into the local database
-    for (var company in serverCompanies) {
-      await localStorageService.insertData('companies', company.toJson());
-    }
-  }
-
-  //get all companies ids from server with /companies/ids
   Future<List<String>> getCompanyIdsFromServer() async {
     final data = await apiService.get('companies/ids');
     return (data as List).map((item) => item.toString()).toList();

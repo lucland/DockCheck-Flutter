@@ -107,7 +107,7 @@ class _RootState extends State<Root> {
     final LoginRepository loginRepository = context.read<LoginRepository>();
 
     _widgetOptions = [
-      const Home(),
+      /* const Home(),
       const Pesquisar(),
       Cadastrar(
         userRepository: userRepository,
@@ -116,7 +116,7 @@ class _RootState extends State<Root> {
         onCadastrar: () {
           _pageController.jumpToPage(0);
         },
-      ),
+      ),*/
       Dashboard(),
       Container(),
     ];

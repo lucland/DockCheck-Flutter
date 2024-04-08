@@ -1,75 +1,69 @@
 class Event {
   String id;
-  String portalId;
-  String userId;
+  String employeeId;
   DateTime timestamp;
-  String beaconId;
-  String vesselId;
+  String projectId;
   int action;
-  String justification;
+  String sensorId;
   String status;
+  String beaconId;
 
   Event({
     required this.id,
-    required this.portalId,
-    required this.userId,
+    required this.employeeId,
     required this.timestamp,
-    required this.beaconId,
-    required this.vesselId,
+    required this.projectId,
     required this.action,
-    required this.justification,
+    required this.sensorId,
     required this.status,
+    required this.beaconId,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
       id: json['id'],
-      portalId: json['portal_id'],
-      userId: json['user_id'],
+      employeeId: json['employee_id'],
       timestamp: DateTime.parse(json['timestamp']),
-      beaconId: json['beacon_id'],
-      vesselId: json['vessel_id'],
+      projectId: json['project_id'],
       action: json['action'],
-      justification: json['justification'],
+      sensorId: json['sensor_id'],
       status: json['status'],
+      beaconId: json['beacon_id'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'portal_id': portalId,
-      'user_id': userId,
+      'employee_id': employeeId,
       'timestamp': timestamp.toIso8601String(),
-      'beacon_id': beaconId,
-      'vessel_id': vesselId,
+      'project_id': projectId,
       'action': action,
-      'justification': justification,
+      'sensor_id': sensorId,
       'status': status,
+      'beacon_id': beaconId,
     };
   }
 
   Event copyWith({
     String? id,
-    String? portalId,
-    String? userId,
+    String? employeeId,
     DateTime? timestamp,
-    String? beaconId,
-    String? vesselId,
+    String? projectId,
     int? action,
-    String? justification,
+    String? sensorId,
     String? status,
+    String? beaconId,
   }) {
     return Event(
       id: id ?? this.id,
-      portalId: portalId ?? this.portalId,
-      userId: userId ?? this.userId,
+      employeeId: employeeId ?? this.employeeId,
       timestamp: timestamp ?? this.timestamp,
-      beaconId: beaconId ?? this.beaconId,
-      vesselId: vesselId ?? this.vesselId,
+      projectId: projectId ?? this.projectId,
       action: action ?? this.action,
-      justification: justification ?? this.justification,
+      sensorId: sensorId ?? this.sensorId,
       status: status ?? this.status,
+      beaconId: beaconId ?? this.beaconId,
     );
   }
 }

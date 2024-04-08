@@ -10,14 +10,9 @@ class AuthorizationRepository {
   AuthorizationRepository(this.apiService, this.localStorageService);
 
   Future<Authorization> createAuthorization(Authorization authorization) async {
-    // await localStorageService.insertOrUpdate(
-    // 'authorizations', authorization.toJson(), 'id');
-
     try {
       final data =
           await apiService.post('authorizations', authorization.toJson());
-      /* await localStorageService.insertOrUpdate(
-          'authorizations', Authorization.fromJson(data).toJson(), 'id');*/
       return Authorization.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create authorization: ${e.toString()}');
@@ -40,15 +35,12 @@ class AuthorizationRepository {
   Future<List<Authorization>> getAuthorizations(String userId) async {
     try {
       final data = await apiService.get('authorizations/user/$userId');
-      SimpleLogger.info(data.toString());
       return (data as List)
           .map((item) => Authorization.fromJson(item))
           .toList();
     } catch (e) {
       SimpleLogger.severe('Failed to get authorizations: ${e.toString()}');
-      // Fetch from local storage as fallback
-      // Implement logic to return data from local storage or an empty list
-      return []; // Return an empty list as a fallback
+      return [];
     }
   }
 
@@ -57,14 +49,10 @@ class AuthorizationRepository {
     try {
       final data =
           await apiService.put('authorizations/$id', authorization.toJson());
-      //   await localStorageService.insertOrUpdate(
-      //   'authorizations', Authorization.fromJson(data).toJson(), 'id');
       return Authorization.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to update authorization: ${e.toString()}');
-      authorization.status = 'pending_update'; // Assuming 'status' field exists
-      //   await localStorageService.insertOrUpdate(
-      // 'authorizations', authorization.toJson(), 'id');
+      authorization.status = 'pending_update';
       return authorization;
     }
   }
@@ -78,7 +66,6 @@ class AuthorizationRepository {
     return (data as List).map((item) => Authorization.fromJson(item)).toList();
   }
 
-  //getAuthorizationIdsFromServer returns a list of authorization ids
   Future<List<String>> getAuthorizationIdsFromServer() async {
     final data = await apiService.get('authorizations/ids');
     return (data as List).map((item) => item.toString()).toList();
@@ -95,17 +82,13 @@ class AuthorizationRepository {
   Future<void> syncAuthorizations() async {
     SimpleLogger.info('Syncing authorizations');
 
-    // First, try to fetch new data from the server
     try {
       var serverAuthorizations = await getAuthorizationsFromServer();
-      await updateLocalDatabase(
-          serverAuthorizations); // Update local database with new data
+      await updateLocalDatabase(serverAuthorizations);
     } catch (e) {
       SimpleLogger.warning('Error fetching authorizations from server: $e');
-      // If fetching from server fails, use local data
     }
 
-    // Then, sync any pending updates from local storage to the server
     var pendingAuthorizations =
         await localStorageService.getPendingData('authorizations', 'status');
     for (var pending in pendingAuthorizations) {
@@ -113,20 +96,14 @@ class AuthorizationRepository {
         var response = await apiService.post('authorizations', pending);
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          //    await localStorageService.insertOrUpdate(
-          //  'authorizations', pending, 'id');
           SimpleLogger.info('Authorization synchronized');
         }
       } catch (e) {
         SimpleLogger.warning('Error syncing pending authorization: $e');
-        // If syncing fails, leave it as pending
       }
     }
   }
 
-  // ... (other methods) ...
-
-  // Add a method to update local storage with new data from the server
   Future<void> updateLocalDatabase(
       List<Authorization> serverAuthorizations) async {
     for (var auth in serverAuthorizations) {

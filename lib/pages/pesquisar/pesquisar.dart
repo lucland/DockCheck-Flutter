@@ -1,4 +1,4 @@
-import 'package:dockcheck/pages/details/details.dart';
+/*import 'package:dockcheck/pages/details/details.dart';
 import 'package:dockcheck/utils/theme.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
@@ -145,11 +145,12 @@ class UserListView extends StatelessWidget {
                         itemCount: displayedUsers.length,
                         itemBuilder: (context, index) {
                           User user = displayedUsers[index];
-                          if (user.isOnboarded) {
+                          //TODO: alterar
+                          /* if (user.isOnboarded) {
                             return _buildUserListTile(context, user);
                           } else {
                             return Container();
-                          }
+                          }*/
                         },
                       ),
                     ),
@@ -183,7 +184,8 @@ class UserListView extends StatelessWidget {
         dense: true,
         visualDensity: VisualDensity.compact,
         horizontalTitleGap: 0,
-        leading: _buildLeadingIcon(user),
+        //TODO: alterar
+        //leading: _buildLeadingIcon(user),
         subtitle: Text(user.cpf.toString()),
         onTap: () {
           Navigator.push(
@@ -197,7 +199,8 @@ class UserListView extends StatelessWidget {
     );
   }
 
-  Widget _buildLeadingIcon(User user) {
+  //TODO: alterar
+  /*Widget _buildLeadingIcon(User user) {
     if (user.isBlocked) {
       return const Icon(
         Icons.circle,
@@ -218,5 +221,6 @@ class UserListView extends StatelessWidget {
         size: 10,
       );
     }
-  }
+  }*/
 }
+*/

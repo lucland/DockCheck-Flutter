@@ -1,4 +1,4 @@
-import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
+/*import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_state.dart';
 import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:dockcheck/utils/formatter.dart';
@@ -31,7 +31,7 @@ class _EditarState extends State<Editar> {
   @override
   void initState() {
     super.initState();
-    context.read<CadastrarCubit>().startScan();
+    //context.read<CadastrarCubit>().startScan();
   }
 
   @override
@@ -72,12 +72,12 @@ class EditarView extends StatelessWidget {
         TextEditingController(text: user.name);
     final TextEditingController funcaoController =
         TextEditingController(text: user.role);
-    final TextEditingController empresaController =
-        TextEditingController(text: user.company);
+    //TODO: alterar
+    //final TextEditingController empresaController = TextEditingController(text: user.company);
     final TextEditingController emailController =
         TextEditingController(text: user.email);
     //TODO: senhaController
-    final TextEditingController senhaController =
+    /*final TextEditingController senhaController =
         TextEditingController(text: user.name);
     final TextEditingController asoController =
         TextEditingController(text: Formatter.formatDateTime(user.aso));
@@ -88,7 +88,7 @@ class EditarView extends StatelessWidget {
     final TextEditingController nr33Controller =
         TextEditingController(text: Formatter.formatDateTime(user.nr33));
     final TextEditingController nr35Controller =
-        TextEditingController(text: Formatter.formatDateTime(user.nr35));
+        TextEditingController(text: Formatter.formatDateTime(user.nr35));*/
     final TextEditingController dataInicialController =
         TextEditingController(text: Formatter.formatDateTime(DateTime.now()));
     final TextEditingController dataFinalController =
@@ -110,13 +110,9 @@ class EditarView extends StatelessWidget {
         identidadeController.clear();
         nomeController.clear();
         funcaoController.clear();
-        empresaController.clear();
+
         emailController.clear();
-        asoController.clear();
-        nr34Controller.clear();
-        nr10Controller.clear();
-        nr33Controller.clear();
-        nr35Controller.clear();
+
         dataInicialController.clear();
         dataFinalController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -247,7 +243,8 @@ class EditarView extends StatelessWidget {
                                   isRequired: true,
                                 ),
                               ),
-                              Flexible(
+                              //TODO: alterar
+                              /*Flexible(
                                 flex: 1,
                                 child: TextInputWidget(
                                   title: CQStrings.empresa,
@@ -257,7 +254,7 @@ class EditarView extends StatelessWidget {
                                       cubit.updateEmpresa(text),
                                   isRequired: true,
                                 ),
-                              ),
+                              ),*/
                             ],
                           ),
                           /*
@@ -349,138 +346,14 @@ class EditarView extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(16.0, 8.0, 8, 16.0),
-                            child: SwitcherWidget(
-                                onTap: (txt) => cubit.updateArea(txt),
-                                activeArea: state.user.area),
-                          ),
+
                           const Divider(),
-                          CalendarPickerWidget(
-                            title: CQStrings.aso,
-                            isRequired: true,
-                            controller: asoController,
-                            onChanged: (time) => cubit.updateASO(time),
-                          ),
-                          Row(
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: CalendarPickerWidget(
-                                  title: CQStrings.nr34,
-                                  isRequired: true,
-                                  controller: nr34Controller,
-                                  onChanged: (time) => cubit.updateNR34(time),
-                                ),
-                              ),
-                              Flexible(
-                                flex: 1,
-                                child: CalendarPickerWidget(
-                                  title: CQStrings.nr10,
-                                  controller: nr10Controller,
-                                  onChanged: (time) => cubit.updateNR10(time),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: CalendarPickerWidget(
-                                  title: CQStrings.nr33,
-                                  controller: nr33Controller,
-                                  onChanged: (time) => cubit.updateNR33(time),
-                                ),
-                              ),
-                              Flexible(
-                                flex: 1,
-                                child: CalendarPickerWidget(
-                                  title: CQStrings.nr35,
-                                  controller: nr35Controller,
-                                  onChanged: (time) => cubit.updateNR35(time),
-                                ),
-                              ),
-                            ],
-                          ),
+
                           const Divider(),
-                          Row(
-                            children: [
-                              Flexible(
-                                flex: 1,
-                                child: InkWell(
-                                  onTap: () {
-                                    state.user.isVisitor
-                                        ? cubit.updateIsVisitante(false)
-                                        : cubit.updateIsVisitante(true);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        8.0, 8.0, 0, 8.0),
-                                    child: Row(
-                                      children: [
-                                        const Expanded(
-                                          child: Text(
-                                            CQStrings.visitante,
-                                            style: CQTheme.h2,
-                                          ),
-                                        ),
-                                        Checkbox(
-                                          value: state.user.isVisitor,
-                                          onChanged: (value) {
-                                            state.user.isVisitor
-                                                ? cubit.updateIsVisitante(false)
-                                                : cubit.updateIsVisitante(true);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                height: 30.0,
-                                width: 1.0,
-                                color: CQColors.iron30,
-                                margin: const EdgeInsets.only(
-                                    left: 12.0, right: 2.0),
-                              ),
-                              Flexible(
-                                flex: 1,
-                                child: InkWell(
-                                  onTap: () {
-                                    state.user.isAdmin
-                                        ? cubit.updateIsAdmin(false)
-                                        : cubit.updateIsAdmin(true);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: [
-                                        const Expanded(
-                                          child: Text(
-                                            CQStrings.admin,
-                                            style: CQTheme.h2,
-                                          ),
-                                        ),
-                                        Checkbox(
-                                          value: state.user.isAdmin,
-                                          onChanged: (value) {
-                                            state.user.isAdmin
-                                                ? cubit.updateIsAdmin(false)
-                                                : cubit.updateIsAdmin(true);
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+
                           const Divider(),
-                          Row(
+                          //TODO: alterar
+                          /*Row(
                             children: [
                               Flexible(
                                 flex: 1,
@@ -503,7 +376,7 @@ class EditarView extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          ),
+                          ),*/
                         ],
                       ),
                     ),
@@ -522,16 +395,12 @@ class EditarView extends StatelessWidget {
                           identidadeController.clear();
                           nomeController.clear();
                           funcaoController.clear();
-                          empresaController.clear();
+
                           emailController.clear();
-                          asoController.clear();
-                          nr34Controller.clear();
-                          nr10Controller.clear();
-                          nr33Controller.clear();
-                          nr35Controller.clear();
+
                           dataInicialController.clear();
                           dataFinalController.clear();
-                          senhaController.clear();
+
                           cubit.clearFields();
                         },
                         child: Container(
@@ -580,3 +449,4 @@ class EditarView extends StatelessWidget {
     });
   }
 }
+*/

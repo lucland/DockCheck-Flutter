@@ -1,7 +1,6 @@
 import 'package:dockcheck/models/event.dart';
 import 'package:dockcheck/services/api_service.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
-
 import '../utils/simple_logger.dart';
 
 class EventRepository {
@@ -77,7 +76,6 @@ class EventRepository {
   Future<void> syncEvents() async {
     SimpleLogger.info('Syncing events');
 
-    // Try to fetch new data from the server and update local storage
     try {
       var serverEventIds = await getEventsIdsFromServer();
       await fetchAndStoreNewEvents(serverEventIds);
@@ -86,7 +84,6 @@ class EventRepository {
       // If fetching from server fails, use local data
     }
 
-    // Sync any pending updates from local storage to the server
     var pendingEvents =
         await localStorageService.getPendingData('events', 'status');
     for (var pending in pendingEvents) {

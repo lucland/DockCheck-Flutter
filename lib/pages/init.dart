@@ -1,14 +1,21 @@
+import 'package:dockcheck/repositories/area_repository.dart';
 import 'package:dockcheck/repositories/beacon_repository.dart';
-import 'package:dockcheck/repositories/receptor_repository.dart';
-import 'package:dockcheck/repositories/supervisor_repository.dart';
+import 'package:dockcheck/repositories/dashboard_repository.dart';
+import 'package:dockcheck/repositories/document_repository.dart';
+import 'package:dockcheck/repositories/employee_repository.dart';
+import 'package:dockcheck/repositories/invite_repository.dart';
+import 'package:dockcheck/repositories/login_repository.dart';
+import 'package:dockcheck/repositories/picture_repository.dart';
+import 'package:dockcheck/repositories/project_repository.dart';
+import 'package:dockcheck/repositories/sensor_repository.dart';
+import 'package:dockcheck/repositories/third_company_repository.dart';
+import 'package:dockcheck/repositories/third_project_repository.dart';
 import 'package:dockcheck/utils/simple_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repositories/authorization_repository.dart';
 import '../repositories/company_repository.dart';
-import '../repositories/docking_repository.dart';
 import '../repositories/event_repository.dart';
-import '../repositories/portal_repository.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/vessel_repository.dart';
 import '../services/local_storage_service.dart';
@@ -53,49 +60,73 @@ class _InitPageState extends State<InitPage> {
       _navigateToLoginPage();
     }
 
-    await _syncData();
+    //await _syncData();
   }
 
-  Future<void> _syncData() async {
+  /*Future<void> _syncData() async {
     //create tables if not exists
     final localStorageService = context.read<LocalStorageService>();
     final authorizationRepository = context.read<AuthorizationRepository>();
     final companyRepository = context.read<CompanyRepository>();
-    final dockingRepository = context.read<DockingRepository>();
     final eventRepository = context.read<EventRepository>();
-    final portalRepository = context.read<PortalRepository>();
-    final supervisorRepository = context.read<SupervisorRepository>();
     final userRepository = context.read<UserRepository>();
     final vesselRepository = context.read<VesselRepository>();
     final beaconRepository = context.read<BeaconRepository>();
-    final receptorRepository = context.read<ReceptorRepository>();
+    final dashboardRepository = context.read<DashboardRepository>();
+    final areaRepository = context.read<AreaRepository>(); //
+    final documentRepository = context.read<DocumentRepository>(); //
+    final employeeRepository = context.read<EmployeeRepository>(); //
+    final inviteRepository = context.read<InviteRepository>(); //
+    final loginRepository = context.read<LoginRepository>(); //
+    final pictureRepository = context.read<PictureRepository>(); //
+    final projectRepository = context.read<ProjectRepository>(); //
+    final sensorRepository = context.read<SensorRepository>(); //
+    final thirdCompany = context.read<ThirdCompany>(); //
+    final thirdProject = context.read<ThirdProject>(); //
 
-    try {
+    /*try {
       SimpleLogger.info('Starting data synchronization');
       await localStorageService.ensureTableExists('authorizations');
       authorizationRepository.syncAuthorizations();
       await localStorageService.ensureTableExists('companies');
       companyRepository.syncCompanies();
-      await localStorageService.ensureTableExists('dockings');
-      dockingRepository.syncDockings();
       await localStorageService.ensureTableExists('events');
       eventRepository.syncEvents();
-      await localStorageService.ensureTableExists('portals');
-      portalRepository.syncPortals();
       await localStorageService.ensureTableExists('users');
       userRepository.syncPendingUsers();
-      await localStorageService.ensureTableExists('supervisors');
-      supervisorRepository.syncPendingSupervisors();
-      await localStorageService.ensureTableExists('vessels');
-      vesselRepository.syncPendingVessels();
+      //TODO: alterar
+      /*await localStorageService.ensureTableExists('vessels');
+      vesselRepository.sync();
       await localStorageService.ensureTableExists('beacons');
       beaconRepository.syncBeacons();
-      await localStorageService.ensureTableExists('receptors');
-      receptorRepository.syncReceptors();
+      await localStorageService.ensureTableExists('dashboard'); //
+      dashboardRepository.sync();
+      await localStorageService.ensureTableExists('area'); //
+      areaRepository.sync();
+      await localStorageService.ensureTableExists('document'); //
+      documentRepository.sync();
+      await localStorageService.ensureTableExists('employee'); //
+      employeeRepository.sync();
+      await localStorageService.ensureTableExists('invite'); //
+      inviteRepository.sync();
+      await localStorageService.ensureTableExists('login'); //
+      loginRepository.sync();
+      await localStorageService.ensureTableExists('picture'); //
+      pictureRepository.sync();
+      await localStorageService.ensureTableExists('project'); //
+      projectRepository.sync();
+      await localStorageService.ensureTableExists('sensor'); //
+      sensorRepository.sync();
+      await localStorageService.ensureTableExists('sync'); //
+      sync();
+      await localStorageService.ensureTableExists('third_company'); //
+      thirdCompany.sync();
+      await localStorageService.ensureTableExists('third_project'); //
+      thirdProject.sync();*/
     } catch (e) {
       SimpleLogger.warning('Error during data synchronization: $e');
-    }
-  }
+    }*/
+  }*/
 
   void _navigateToLoginPage() {
     Navigator.of(context).pushReplacement(
@@ -114,10 +145,8 @@ class _InitPageState extends State<InitPage> {
     return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is LoginSuccess) {
-          _syncData().then((_) {
-            SimpleLogger.info('Data synchronization completed');
-            _navigateToRootPage();
-          });
+          SimpleLogger.info('Data synchronization completed');
+          _navigateToRootPage();
         } else if (state is LoginError) {
           _navigateToLoginPage();
         }

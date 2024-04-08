@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../pages/cadastrar/cubit/cadastrar_cubit.dart';
@@ -46,7 +46,8 @@ class BluetoothScanButton extends StatelessWidget {
                 CQColors.iron100, // cor da borda
                 // ---
                 true, () {
-              context.read<CadastrarCubit>().updateiTag(state.scanResult!.id);
+              //TODO: alterar
+              //context.read<CadastrarCubit>().updateiTag(state.scanResult!.id);
             });
           case BeaconButtonState.Invalid:
             return _buildButton(
@@ -124,3 +125,4 @@ class BluetoothScanButton extends StatelessWidget {
     );
   }
 }
+*/

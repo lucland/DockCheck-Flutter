@@ -1,4 +1,4 @@
-import 'package:dockcheck/models/vessel.dart';
+/*import 'package:dockcheck/models/vessel.dart';
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
 import 'package:dockcheck/pages/editar/editar.dart';
 import 'package:dockcheck/repositories/event_repository.dart';
@@ -86,16 +86,16 @@ class DetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<DetailsCubit>().fetchEvents(user.id, user.picture);
+    //TODO: alterar user.(picture)
+    //context.read<DetailsCubit>().fetchEvents(user.id, user.picture);
 
-    return BlocBuilder<DetailsCubit, DetailsState>(
-      builder: (context, state) {
-        if (state is DetailsLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is DetailsError) {
-          return Center(child: Text('Error: ${state.message}'));
-        } else if (state is DetailsLoaded) {
-          return Scaffold(
+    return BlocBuilder<DetailsCubit, DetailsState>(builder: (context, state) {
+      if (state is DetailsLoading) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (state is DetailsError) {
+        return Center(child: Text('Error: ${state.message}'));
+      } else if (state is DetailsLoaded) {
+        return Scaffold(
             floatingActionButton: Padding(
               padding: const EdgeInsets.only(bottom: 40),
               child: FloatingActionButton(
@@ -136,10 +136,10 @@ class DetailsView extends StatelessWidget {
                   style: CQTheme.h2, overflow: TextOverflow.ellipsis),
             ),
             body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  /*Expanded(
                   child: SingleChildScrollView(
                     controller: _scrollController,
                     physics: const BouncingScrollPhysics(),
@@ -160,7 +160,7 @@ class DetailsView extends StatelessWidget {
                                         fontWeight: FontWeight.w600),
                                     overflow: TextOverflow.ellipsis),
                               ),
-                              Text('|   N° ${user.number.toString()}',
+                              Text('|   N° ${employee.number.toString()}',
                                   style:
                                       CQTheme.h1.copyWith(color: Colors.white),
                                   overflow: TextOverflow.ellipsis),
@@ -666,9 +666,10 @@ class DetailsView extends StatelessWidget {
                   children: [
                     SyncButtonWidget(
                       onPressed: () {
-                        context
+                        //TODO: alterar user.(picture)
+                        /* context
                             .read<DetailsCubit>()
-                            .fetchEvents(user.id, user.picture);
+                            .fetchEvents(user.id, user.picture);*/
                       },
                     ),
                   ],
@@ -679,119 +680,124 @@ class DetailsView extends StatelessWidget {
         } else {
           return const Center(child: Text('Erro desconhecido'));
         }
-      },
-    );
-  }
+      },*/
+                ]));
+      }
 
-  List<Widget> _buildEventContainers(
-      BuildContext context, List<Event> eventos) {
-    Map<String, List<Event>> eventsByDate = {};
+      List<Widget> _buildEventContainers(
+          BuildContext context, List<Event> eventos) {
+        Map<String, List<Event>> eventsByDate = {};
 
-    for (Event evento in eventos) {
-      print(evento.portalId);
-      String formattedDate = Formatter.formatDateTime(
-        evento.timestamp,
-      );
-      eventsByDate.putIfAbsent(formattedDate, () => []);
-      eventsByDate[formattedDate]!.add(evento);
-    }
+        for (Event evento in eventos) {
+          //deveria ser portaliD
+          print(evento.beaconId);
+          String formattedDate = Formatter.formatDateTime(
+            evento.timestamp,
+          );
+          eventsByDate.putIfAbsent(formattedDate, () => []);
+          eventsByDate[formattedDate]!.add(evento);
+        }
 
-    List<Widget> containers = [];
-    eventsByDate.forEach((date, events) {
-      containers.add(
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.all(width: 1, color: CQColors.iron100),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    child: Text(
-                      date,
-                      style: CQTheme.h3,
+        List<Widget> containers = [];
+        eventsByDate.forEach((date, events) {
+          containers.add(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      border: Border.all(width: 1, color: CQColors.iron100),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4, horizontal: 8),
+                        child: Text(
+                          date,
+                          style: CQTheme.h3,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Column(
-              children: events.map((event) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      actionEnumToString(event.action),
-                      style: CQTheme.body.copyWith(
-                        color: CQColors.iron100,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
+                const SizedBox(height: 8),
+                Column(
+                  children: events.map((event) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            event.portalId,
-                            style: CQTheme.body.copyWith(
-                              color: CQColors.iron100,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
                         Text(
-                          ' -',
-                          style: CQTheme.body2,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            Formatter.fromatHourDateTime(
-                              event.timestamp.subtract(Duration(hours: 3)),
-                            ),
-                            style: CQTheme.body.copyWith(
-                              color: CQColors.iron100,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                            ),
+                          actionEnumToString(event.action),
+                          style: CQTheme.body.copyWith(
+                            color: CQColors.iron100,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            event.id,
-                            style: CQTheme.body.copyWith(
-                              color: CQColors.iron100,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                //deveria ser portalid
+                                event.beaconId,
+                                style: CQTheme.body.copyWith(
+                                  color: CQColors.iron100,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
                             ),
-                          ),
+                            Text(
+                              ' -',
+                              style: CQTheme.body2,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                Formatter.fromatHourDateTime(
+                                  event.timestamp.subtract(Duration(hours: 3)),
+                                ),
+                                style: CQTheme.body.copyWith(
+                                  color: CQColors.iron100,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                event.id,
+                                style: CQTheme.body.copyWith(
+                                  color: CQColors.iron100,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20,
                         ),
                       ],
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                  ],
-                );
-              }).toList(),
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-    });
+          );
+        });
 
-    return containers;
+        return containers;
+      }
+    });
   }
 }
+*/
