@@ -74,19 +74,17 @@ class DetailsCubit extends Cubit<DetailsState> {
       var authorizations =
           await authorizationRepository.getAuthorizations(user.id);
 
-      var vessel = await vesselRepository.getVessel(authorizations[0].vesselId);
+      var vessel =
+          await vesselRepository.getVessel(authorizations[0].employeeId);
 
       String UUID = DateTime.now().millisecondsSinceEpoch.toString();
       Event event = Event(
         id: UUID,
-        portalId: '0',
-        userId: userId,
         timestamp: DateTime.now(),
-        vesselId: vessel.id,
+        //TODO: alterar vesselId
         action: 1,
-        justification: justification,
         status: '',
-        beaconId: '',
+        beaconId: '', employeeId: '', projectId: '', sensorId: '',
       );
 
       await eventRepository.createEvent(event);

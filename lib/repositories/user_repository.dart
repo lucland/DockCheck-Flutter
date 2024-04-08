@@ -1,12 +1,11 @@
 import 'dart:convert';
-
 import 'package:dockcheck/models/user.dart';
+import 'package:dockcheck/models/picture.dart';
+import 'package:dockcheck/models/authorization.dart';
 import 'package:dockcheck/services/api_service.dart';
 import 'package:dockcheck/services/local_storage_service.dart';
-
-import '../models/authorization.dart';
-import '../utils/simple_logger.dart';
 import 'package:http/http.dart' as http;
+import '../utils/simple_logger.dart';
 
 class UserRepository {
   final ApiService apiService;
@@ -17,14 +16,11 @@ class UserRepository {
   Future<User> createUser(User user) async {
     try {
       final data = await apiService.post('users/create', user.toJson());
-      //await localStorageService.insertOrUpdate(
-      //  'users', User.fromJson(data).toJson(), 'id');
       SimpleLogger.info(user.toJson());
       return User.fromJson(data);
     } catch (e) {
       SimpleLogger.severe('Failed to create user: ${e.toString()}');
       user.status = 'pending_creation';
-      //await localStorageService.insertOrUpdate('users', user.toJson(), 'id');
       return user;
     }
   }
@@ -46,7 +42,6 @@ class UserRepository {
 
   Future<bool> getValidITag(String itag) async {
     try {
-      print(itag);
       await apiService.get('users/itag/$itag');
       return true;
     } catch (e) {
@@ -66,29 +61,22 @@ class UserRepository {
 
   Future<List<User>> getAllUsers({int limit = 10000, int offset = 0}) async {
     final data = await apiService.get('users?limit=$limit&offset=$offset');
-    print(data.toString());
-    List<User> usuarios =
+    List<User> users =
         (data as List).map((item) => User.fromJson(item)).toList();
-    print(usuarios[0]);
-
-    SimpleLogger.severe('user: ${usuarios[0]}');
-    return (data).map((item) => User.fromJson(item)).toList();
+    return users;
   }
 
-  // Get User Authorizations
   Future<List<Authorization>> getUserAuthorizations(String userId) async {
     final data = await apiService.get('users/$userId/authorizations');
     return (data as List).map((item) => Authorization.fromJson(item)).toList();
   }
 
-  // Check Username Availability
   Future<bool> checkUsername(String username) async {
     final data =
         await apiService.post('users/checkUsername', {'username': username});
     return data['message'] == 'Username available';
   }
 
-  // Search Users
   Future<List<User>> searchUsers(String searchTerm,
       {int page = 1, int pageSize = 10}) async {
     const String apiUrl = 'http://172.20.255.223:3000/api/v1/users/search';
@@ -102,10 +90,9 @@ class UserRepository {
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
         return (data['users'] as List)
             .map((item) => User.fromJson(item))
-            .toList(); // Returns the JSON response as a Map
+            .toList();
       } else {
         print('Failed to load users');
         return [];
@@ -116,19 +103,16 @@ class UserRepository {
     }
   }
 
-  // Get Last User Number
   Future<int> getLastUserNumber() async {
     final data = await apiService.get('users/all/lastnumber');
     return int.parse(data.toString());
   }
 
-  // Get Valid Users by Vessel ID
   Future<List<String>> getValidUsersByVesselID(String vesselId) async {
     final data = await apiService.get('users/valids/$vesselId');
     return List<String>.from(data);
   }
 
-  //sync pending users
   Future<void> syncPendingUsers() async {
     SimpleLogger.info('Syncing users');
     var pendingUsers =
@@ -145,12 +129,10 @@ class UserRepository {
 
         if (response.statusCode == 200 || response.statusCode == 201) {
           pending['status'] = 'synced';
-          //   await localStorageService.insertOrUpdate('users', pending, 'id');
           SimpleLogger.info('User synchronized');
         }
       } catch (e) {
         SimpleLogger.severe('Failed to sync pending user: ${e.toString()}');
-        // If syncing fails, leave it as pending
       }
     }
   }
@@ -171,15 +153,12 @@ class UserRepository {
       try {
         final userData = await apiService.get('users/$id');
         final user = User.fromJson(userData);
-        //     await localStorageService.insertOrUpdate('users', user.toJson(), 'id');
       } catch (e) {
         SimpleLogger.warning('Failed to fetch user: $id, error: $e');
-        // Continue with the next ID if one fetch fails
       }
     }
   }
 
-  //getUsersIdsFromServer returns a list of user ids
   Future<List<String>> getUsersIdsFromServer() async {
     final data = await apiService.get('users/ids');
     return (data as List).map((item) => item.toString()).toList();
@@ -197,6 +176,73 @@ class UserRepository {
       } else {
         throw Exception('User not found locally');
       }
+    }
+  }
+
+  Future<void> createEmployeePicture(
+      String id, String employeeId, String base64, String docPath) async {
+    try {
+      final response = await apiService.post(
+        'createEmployeePicture',
+        {
+          'id': id,
+          'employee_id': employeeId,
+          'base_64': base64,
+          'doc_path': docPath,
+        },
+      );
+
+      if (response.containsKey('error')) {
+        SimpleLogger.warning("Error creating employee picture");
+        throw Exception(response['error']);
+      } else {
+        SimpleLogger.info("Employee picture created successfully");
+      }
+    } catch (error) {
+      SimpleLogger.severe(
+          "Error creating employee picture: ${error.toString()}");
+      throw Exception('Error creating employee picture');
+    }
+  }
+
+  Future<Picture> getPicture(String id) async {
+    try {
+      final data = await apiService.get('getPicture/$id');
+      return Picture.fromJson(data);
+    } catch (error) {
+      SimpleLogger.severe("Error getting picture: ${error.toString()}");
+      throw Exception('Error getting picture');
+    }
+  }
+
+  Future<void> updatePicture(String id, String picture) async {
+    try {
+      final response =
+          await apiService.put('updatePicture/$id', {'picture': picture});
+      if (response.containsKey('error')) {
+        SimpleLogger.warning("Error updating picture");
+        throw Exception(response['error']);
+      } else {
+        SimpleLogger.info("Picture updated successfully");
+      }
+    } catch (error) {
+      SimpleLogger.severe("Error updating picture: ${error.toString()}");
+      throw Exception('Error updating picture');
+    }
+  }
+
+  Future<void> deletePicture(String id) async {
+    try {
+      final response = await apiService.delete('deletePicture/$id');
+      if (response.containsKey('error')) {
+        SimpleLogger.warning("Error deleting picture");
+        throw Exception(response['error']);
+      } else {
+        SimpleLogger.info("Picture deleted successfully");
+      }
+    } catch (error) {
+      SimpleLogger.severe("Error deleting picture: ${error.toString()}");
+      throw Exception('Error deleting picture');
     }
   }
 }

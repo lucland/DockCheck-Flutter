@@ -1,6 +1,16 @@
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
 import 'package:dockcheck/pages/details/cubit/details_cubit.dart';
+import 'package:dockcheck/repositories/area_repository.dart';
+import 'package:dockcheck/repositories/dashboard_repository.dart';
+import 'package:dockcheck/repositories/document_repository.dart';
+import 'package:dockcheck/repositories/employee_repository.dart';
+import 'package:dockcheck/repositories/invite_repository.dart';
 import 'package:dockcheck/repositories/picture_repository.dart';
+import 'package:dockcheck/repositories/project_repository.dart';
+import 'package:dockcheck/repositories/sensor_repository.dart';
+import 'package:dockcheck/repositories/sync_repository.dart';
+import 'package:dockcheck/repositories/third_company_repository.dart';
+import 'package:dockcheck/repositories/third_project_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,11 +27,7 @@ import 'pages/init.dart';
 import 'pages/login/cubit/login_cubit.dart';
 import 'repositories/beacon_repository.dart';
 import 'repositories/company_repository.dart';
-import 'repositories/docking_repository.dart';
 import 'repositories/event_repository.dart';
-import 'repositories/portal_repository.dart';
-import 'repositories/receptor_repository.dart';
-import 'repositories/supervisor_repository.dart';
 import 'repositories/user_repository.dart';
 import 'repositories/vessel_repository.dart';
 import 'services/background_service.dart';
@@ -62,26 +68,40 @@ void main() async {
   var apiService = ApiService(localStorageService);
   var permissionHandlerService = PermissionHandlerService();
 
-  var loginRepository = LoginRepository(apiService);
+// Repositorys callback
+
+  var areaRepository = AreaRepository(apiService);
   var authorizationRepository =
       AuthorizationRepository(apiService, localStorageService);
+  var beaconRepository = BeaconRepository(apiService, localStorageService);
   var companyRepository = CompanyRepository(apiService, localStorageService);
-  var dockingRepository = DockingRepository(apiService, localStorageService);
+  var dashboardRepository = DashboardRepository(apiService);
+  var documentRepository = DocumentRepository(apiService);
+  var employeeRepository = EmployeeRepository(apiService);
   var eventRepository = EventRepository(apiService, localStorageService);
-  var portalRepository = PortalRepository(apiService, localStorageService);
-  var supervisorRepository =
-      SupervisorRepository(apiService, localStorageService);
+  var inviteRepository = InviteRepository(apiService);
+  var loginRepository = LoginRepository(apiService);
+  var pictureRepository = PictureRepository(apiService);
+  var projectRepository = ProjectRepository(apiService);
+  var sensorRepository = SensorRepository(apiService);
+  var syncRepository = SyncController(apiService);
+  //var thirdCompanyRepository = ThirdCompany(id: null, name: '', logo: '', razaoSocial: '', cnpj: '', admisId: null);
+  //var thirdProjectRepository = ThirdProject(id: id, name: name, onboardedCount: onboardedCount, dateStart: dateStart, dateEnd: dateEnd, thirdCompany: thirdCompany, projectId: projectId, allowedAreasId: allowedAreasId, employeesId: employeesId, status: status);
   var userRepository = UserRepository(apiService, localStorageService);
   var vesselRepository = VesselRepository(apiService, localStorageService);
-  var beaconRepository = BeaconRepository(apiService, localStorageService);
-  var receptorRepository = ReceptorRepository(apiService, localStorageService);
-  var pictureRepository = PictureRepository(apiService);
+
+  // ------
 
   var loginCubit =
       LoginCubit(loginRepository, userRepository, localStorageService);
   var userCubit = UserCubit(userRepository);
-  var cadastrarCubit =
-      CadastrarCubit(userRepository, eventRepository, localStorageService);
+  var cadastrarCubit = CadastrarCubit(
+    employeeRepository,
+    localStorageService,
+    eventRepository,
+    pictureRepository,
+    documentRepository,
+  );
   var detailsCubit = DetailsCubit(
     userRepository,
     eventRepository,
@@ -100,10 +120,7 @@ void main() async {
         Provider<AuthorizationRepository>(
             create: (_) => authorizationRepository),
         Provider<CompanyRepository>(create: (_) => companyRepository),
-        Provider<DockingRepository>(create: (_) => dockingRepository),
         Provider<EventRepository>(create: (_) => eventRepository),
-        Provider<PortalRepository>(create: (_) => portalRepository),
-        Provider<SupervisorRepository>(create: (_) => supervisorRepository),
         Provider<UserRepository>(create: (_) => userRepository),
         Provider<VesselRepository>(create: (_) => vesselRepository),
         Provider<PermissionHandlerService>(
@@ -115,7 +132,8 @@ void main() async {
         BlocProvider<CadastrarCubit>(create: (_) => cadastrarCubit),
         BlocProvider<DetailsCubit>(create: (_) => detailsCubit),
         Provider<BeaconRepository>(create: (_) => beaconRepository),
-        Provider<ReceptorRepository>(create: (_) => receptorRepository),
+        Provider<SensorRepository>(
+            create: (_) => SensorRepository(apiService)), //sensor repository
         Provider<PictureRepository>(create: (_) => pictureRepository)
       ],
       child: MaterialApp(

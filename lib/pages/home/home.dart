@@ -1,4 +1,4 @@
-import 'dart:async';
+/*import 'dart:async';
 import 'dart:ui';
 
 import 'package:dockcheck/pages/details/details.dart';
@@ -333,12 +333,13 @@ class TicketBody extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Padding(
+                      //TODO: alterar
+                      /*Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(users[index].area.toString(),
                             style: CQTheme.h1.copyWith(
                                 fontSize: 14, color: CQColors.success100)),
-                      ),
+                      ),*/
                     ]),
               );
             },
@@ -449,3 +450,4 @@ class EstadiaWidget extends StatelessWidget {
     );
   }
 }
+*/

@@ -90,7 +90,8 @@ class _YourWidgetState extends State<YourWidget> {
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
                             child: Text(
-                              event.portalId,
+                              //aqui deveria ser o portalId
+                              event.beaconId,
                               style: CQTheme.body.copyWith(
                                 color: CQColors.iron100,
                                 fontWeight: FontWeight.w700,

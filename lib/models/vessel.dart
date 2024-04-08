@@ -1,51 +1,63 @@
 class Vessel {
+  String id;
   String name;
   String companyId;
-  DateTime updatedAt;
-  String id;
-  List<String> admins;
+  List<String> crewId;
   int onboardedCount;
-  List<String> portals;
-  List<String> onboardedUsers;
+  List<String> areasId;
   String status;
 
   Vessel({
+    required this.id,
     required this.name,
     required this.companyId,
-    required this.updatedAt,
-    required this.id,
-    required this.admins,
+    required this.crewId,
     required this.onboardedCount,
-    required this.portals,
-    required this.onboardedUsers,
+    required this.areasId,
     required this.status,
   });
 
   factory Vessel.fromJson(Map<String, dynamic> json) {
     return Vessel(
+      id: json['id'],
       name: json['name'],
       companyId: json['company_id'],
-      updatedAt: DateTime.parse(json['updated_at']),
-      id: json['id'],
-      admins: List<String>.from(json['admins']),
+      crewId: List<String>.from(json['crew_id']),
       onboardedCount: json['onboarded_count'],
-      portals: List<String>.from(json['portals']),
-      onboardedUsers: List<String>.from(json['onboarded_users']),
+      areasId: List<String>.from(json['areas_id']),
       status: json['status'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'company_id': companyId,
-      'updated_at': updatedAt.toIso8601String(),
-      'id': id,
-      'admins': admins,
+      'crew_id': crewId,
       'onboarded_count': onboardedCount,
-      'portals': portals,
-      'onboarded_users': onboardedUsers,
+      'areas_id': areasId,
       'status': status,
     };
+  }
+
+  Vessel copyWith({
+    String? id,
+    String? name,
+    String? companyId,
+    List<String>? crewId,
+    int? onboardedCount,
+    List<String>? areasId,
+    String? status,
+  }) {
+    return Vessel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      companyId: companyId ?? this.companyId,
+      crewId: crewId ?? this.crewId,
+      onboardedCount: onboardedCount ?? this.onboardedCount,
+      areasId: areasId ?? this.areasId,
+      status: status ?? this.status,
+    );
   }
 }

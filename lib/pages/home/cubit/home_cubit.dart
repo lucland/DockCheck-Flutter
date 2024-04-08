@@ -1,4 +1,4 @@
-import 'dart:async';
+/*import 'dart:async';
 
 import 'package:dockcheck/models/authorization.dart';
 import 'package:dockcheck/models/vessel.dart';
@@ -80,10 +80,10 @@ class HomeCubit extends Cubit<HomeState> {
       //fetch each vessel from authorizations with getVesselById from vessel repository and set it to vessels list
       List<Vessel> vessels = [];
       for (var authorization in authorizations) {
-        Vessel vessel =
-            await vesselRepository.getVessel(authorization.vesselId);
+        //TODO: alterar
+        /*Vessel vessel = await vesselRepository.getVessel(authorization.vesselId);
         vessels.add(vessel);
-        localStorageService.saveVesselId(vessel.id);
+        localStorageService.saveVesselId(vessel.id);*/
       }
       SimpleLogger.info('vessels cubit: $vessels');
 
@@ -112,13 +112,13 @@ class HomeCubit extends Cubit<HomeState> {
 
   //fetch onboard users from a vessel and set it to state onboardUsers list, fetch the ids of the users from vessel repository and then fetch the users from user repository
   void fetchOnboardUsers(String vesselId) async {
+    //TODO: alterar para buscar usuários abordo (onboard)
     try {
       if (!isClosed && state.isLoading == false) {
         emit(HomeState(isLoading: true));
       }
       //fetch onboard users from vessel repository
-      List<String> onboardUsers =
-          await vesselRepository.getOnboardedUsers(vesselId);
+      List<String> onboardUsers = await vesselRepository(vesselId);
       SimpleLogger.info('onboardUsers: $onboardUsers');
       //fetch the ids of the users from vessel repository
       List<String> onboardUsersIds = [];
@@ -190,3 +190,4 @@ class HomeCubit extends Cubit<HomeState> {
  
 
 
+*/

@@ -10,9 +10,8 @@ class LoginRepository {
 
   Future<Map<String, dynamic>> login(
       String username, String password, String role, String system) async {
-    print("repo login callled");
     try {
-      final response = await apiService.postLogin(
+      final response = await apiService.post(
         'login',
         {
           'username': username,
@@ -44,7 +43,7 @@ class LoginRepository {
     }
 
     try {
-      final response = await apiService.postLogin(
+      final response = await apiService.post(
         'logout', // Assuming the endpoint for logout is 'logout'
         {'user_id': userId},
       );
