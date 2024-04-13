@@ -15,3 +15,8 @@ class UserError extends UserState {
   final String message;
   UserError(this.message);
 }
+
+class EmployeeLoaded extends UserState {
+  final List<User> employees;
+  EmployeeLoaded(this.employees);
+}

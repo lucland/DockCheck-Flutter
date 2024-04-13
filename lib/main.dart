@@ -1,5 +1,8 @@
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
 import 'package:dockcheck/pages/details/cubit/details_cubit.dart';
+import 'package:dockcheck/pages/home/cubit/home_cubit.dart';
+import 'package:dockcheck/pages/home/cubit/home_details_cubit.dart';
+import 'package:dockcheck/pages/pesquisar/cubit/pesquisar_cubit.dart';
 import 'package:dockcheck/repositories/area_repository.dart';
 import 'package:dockcheck/repositories/dashboard_repository.dart';
 import 'package:dockcheck/repositories/document_repository.dart';
@@ -11,6 +14,7 @@ import 'package:dockcheck/repositories/sensor_repository.dart';
 import 'package:dockcheck/repositories/sync_repository.dart';
 import 'package:dockcheck/repositories/third_company_repository.dart';
 import 'package:dockcheck/repositories/third_project_repository.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,6 +93,10 @@ void main() async {
   //var thirdProjectRepository = ThirdProject(id: id, name: name, onboardedCount: onboardedCount, dateStart: dateStart, dateEnd: dateEnd, thirdCompany: thirdCompany, projectId: projectId, allowedAreasId: allowedAreasId, employeesId: employeesId, status: status);
   var userRepository = UserRepository(apiService, localStorageService);
   var vesselRepository = VesselRepository(apiService, localStorageService);
+  var pesquisarCUbit = PesquisarCubit(employeeRepository, projectRepository, localStorageService);
+  var homeCubit = HomeCubit(projectRepository, localStorageService);
+  var homeDetailsCubit = HomeDetailsCubit(
+      employeeRepository, projectRepository, localStorageService);
 
   // ------
 
@@ -103,13 +111,7 @@ void main() async {
     documentRepository,
   );
   var detailsCubit = DetailsCubit(
-    userRepository,
-    eventRepository,
-    localStorageService,
-    authorizationRepository,
-    vesselRepository,
-    pictureRepository,
-  );
+      employeeRepository, documentRepository, localStorageService);
 
   BackgroundService();
 
@@ -134,7 +136,11 @@ void main() async {
         Provider<BeaconRepository>(create: (_) => beaconRepository),
         Provider<SensorRepository>(
             create: (_) => SensorRepository(apiService)), //sensor repository
-        Provider<PictureRepository>(create: (_) => pictureRepository)
+        Provider<PictureRepository>(create: (_) => pictureRepository),
+        Provider<EmployeeRepository>(create: (_) => employeeRepository),
+        BlocProvider<PesquisarCubit>(create: (_) => pesquisarCUbit),
+        BlocProvider<HomeCubit>(create: (_) => homeCubit),
+        BlocProvider<HomeDetailsCubit>(create: (_) => homeDetailsCubit),
       ],
       child: MaterialApp(
         theme: CQTheme.theme,

@@ -18,6 +18,11 @@ class EmployeeRepository {
     }
   }
 
+  Future<Employee> getEmployeeById(String id) async {
+    final data = await apiService.get('employees/$id');
+    return Employee.fromJson(data);
+  }
+
   Future<void> blockEmployee(String id, String blockReason) async {
     try {
       await apiService
@@ -39,13 +44,29 @@ class EmployeeRepository {
     }
   }
 
-  Future<List<Employee>> getAllEmployees() async {
+    //get all employees by employee.user_id
+  Future<List<Employee>> getEmployeesByUserId(String userId) async {
     try {
-      final data = await apiService.get('employees');
-      SimpleLogger.info('All employees fetched successfully');
-      return List<Employee>.from(data.map((item) => Employee.fromJson(item)));
-    } catch (error) {
-      SimpleLogger.severe('Error fetching all employees: $error');
+      print("userId: $userId");
+      final data = await apiService.get('employees/user/$userId');
+      print("Data fetched: $data");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get employees by user id: ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<List<Employee>> getAllEmployees() async {
+    final data = await apiService.get('employees');
+    if (data != null && data is List) {
+      print("Data fetched: $data");
+      var list = (data).map((item) => Employee.fromJson(item)).toList();
+      print("First employee name: ${list.first.name}"); // More detailed log
+      return list;
+    } else {
+      print("Data fetched is null");
       return [];
     }
   }

@@ -1,5 +1,6 @@
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_cubit.dart';
 import 'package:dockcheck/pages/cadastrar/cubit/cadastrar_state.dart';
+import 'package:dockcheck/utils/enums/nrs_enum.dart';
 import 'package:dockcheck/utils/theme.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:dockcheck/utils/ui/strings.dart';
@@ -10,10 +11,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class CadastrarModal extends StatelessWidget {
-  final String s;
+  final String title;
   const CadastrarModal({
     super.key,
-    required this.s,
+    required this.title,
   });
 
   @override
@@ -26,9 +27,9 @@ class CadastrarModal extends StatelessWidget {
           ),
           backgroundColor: CQColors.white,
           surfaceTintColor: CQColors.white,
-          title: Text(s),
+          title: Text(title),
           content: SizedBox(
-            width: 800,
+            width: MediaQuery.of(context).size.width - 00,
             height: MediaQuery.of(context).size.height - 300,
             child: SingleChildScrollView(
               child: Column(
@@ -171,7 +172,9 @@ class CadastrarModal extends StatelessWidget {
                               color: CQColors.iron80,
                               fontWeight: FontWeight.w400),
                         ),
+                      
                       ),
+                      Divider(),
                       CalendarPickerWidget(
                         showAttachmentIcon: true,
                         title: CQStrings.aso,
@@ -204,11 +207,11 @@ class CadastrarModal extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.all(16.0),
                         child: Row(
                           children: [
                             Expanded(
-                              child: /*DropdownButtonFormField<String>(
+                              child: DropdownButtonFormField<String>(
                                 decoration: InputDecoration(
                                   contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 11.5),
@@ -227,58 +230,55 @@ class CadastrarModal extends StatelessWidget {
                                       width: 1,
                                     ),
                                   ),
-                                  focusColor: CQColors.background,
-                                  hoverColor: CQColors.background,
-                                  fillColor: CQColors.background,
                                 ),
-                                focusColor: CQColors.white,
                                 value: state.selectedNr == ''
                                     ? null
                                     : state.selectedNr,
                                 onChanged: (String? newValue) {
-                                  context
-                                      .read<CadastrarCubit>()
-                                      .updateSelectedNr(
-                                        newValue ?? '',
-                                      );
+                                  context.read<CadastrarCubit>().updateSelectedNr(
+                                    newValue ?? '',
+                                  );
                                 },
-                               items: NrsEnum.nrs
-                                    .map<DropdownMenuItem<String>>(
-                                        (String value) {
+                                items: NrsEnum.nrs
+                                    .map<DropdownMenuItem<String>>((String value) {
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: SizedBox(
-                                        width: 600,
-                                        child: Text(value,
-                                            overflow: TextOverflow.ellipsis)),
+                                      width: 600,
+                                      child: Text(
+                                        value,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
                                   );
                                 }).toList(),
                               ),
-                            ),*/
-                                  Padding(
-                                padding: const EdgeInsets.only(left: 8.0),
-                                child: InkWell(
-                                  onTap: () => state.selectedNr != ''
-                                      ? context
-                                          .read<CadastrarCubit>()
-                                          .addNrType(state.selectedNr)
-                                      : null,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: state.selectedNr != ''
-                                          ? CQColors.success100
-                                          : CQColors.slate100,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Icon(Icons.add,
-                                          color: CQColors.white),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: InkWell(
+                                onTap: () => state.selectedNr != ''
+                                    ? context
+                                        .read<CadastrarCubit>()
+                                        .addNrType(state.selectedNr)
+                                    : null,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: state.selectedNr != ''
+                                        ? CQColors.success100
+                                        : CQColors.slate100,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.add,
+                                      color: CQColors.white,
                                     ),
                                   ),
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -288,22 +288,34 @@ class CadastrarModal extends StatelessWidget {
               ),
             ),
           ),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 context.read<CadastrarCubit>().resetState();
               },
-              child: const Text('Fechar',
-                  style: TextStyle(color: CQColors.danger100)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                context.read<CadastrarCubit>().resetState();
-              },
-              child: const Text('Adicionar'),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                                          decoration: BoxDecoration(
+                                            color: 
+                                                 CQColors.slate100,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Center(
+                                              child: Text('cadastrar',
+                                              style: TextStyle(color: Colors.white)
+                                                 ),
+                                            ),
+                                          ),
+                                        ),
+                  ),
+                ],
+              ),
             ),
           ],
         );

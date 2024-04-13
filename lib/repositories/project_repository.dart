@@ -18,14 +18,25 @@ class ProjectRepository {
     }
   }
 
-  Future<Project?> getProjectById(String projectId) async {
+ Future<Project?> getProjectById(String projectId) async {
     try {
       final data = await apiService.get('projects/$projectId');
-      SimpleLogger.info('Project fetched successfully');
       return Project.fromJson(data);
-    } catch (error) {
-      SimpleLogger.severe('Error fetching project: $error');
-      return null;
+    } catch (e) {
+      SimpleLogger.severe('Failed to get project: ${e.toString()}');
+      return null; // Return null as a fallback
+    }
+  }
+
+  Future<List<Project>> getAllProjectsByUserId(String userId) async {
+    try {
+      print("Getting all projects by user id: $userId");
+      final data = await apiService.get('projects/user/$userId');
+      print("Data projects fetched: $data");
+      return List<Project>.from(data.map((x) => Project.fromJson(x)));
+    } catch (e) {
+      SimpleLogger.severe('Failed to get all projects: ${e.toString()}');
+      return [];
     }
   }
 

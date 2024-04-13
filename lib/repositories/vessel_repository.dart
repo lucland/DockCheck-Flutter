@@ -9,6 +9,22 @@ class VesselRepository {
 
   VesselRepository(this.apiService, this.localStorageService);
 
+  Future<List<String>> getOnboardUsers(String Id) async {
+        try {
+            final data = await apiService.get('vessels/$Id/onboard-users');
+            print('200 - Onboard users fetched successfully');
+
+            // Assume-se que a API retorna uma lista de strings (ou outro tipo)
+            // Aqui convertendo a resposta em uma lista de strings
+            List<String> onboardUsers = (data as List).map((item) => item.toString()).toList();
+
+            return onboardUsers;
+        } catch (error) {
+          print('400 - Error fetching onboard users');
+            return [];
+        }
+    }
+
   Future<Vessel?> createVessel(Vessel vessel) async {
     try {
       final data = await apiService.post('vessels/create', vessel.toJson());

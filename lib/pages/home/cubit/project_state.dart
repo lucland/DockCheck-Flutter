@@ -2,7 +2,7 @@ import 'package:dockcheck/models/document.dart';
 
 import '../../../models/project.dart';
 
-class HomeState {
+class ProjectState {
   final String name;
   final DateTime? startDate;
   final DateTime? endDate;
@@ -21,7 +21,7 @@ class HomeState {
   final List<Document> documents;
   final List<Project> projects;
 
-  HomeState({
+  ProjectState({
     this.name = '',
     this.startDate,
     this.endDate,
@@ -41,7 +41,7 @@ class HomeState {
     this.projects = const [],
   });
 
-  HomeState copyWith({
+  ProjectState copyWith({
     String? name,
     DateTime? startDate,
     DateTime? endDate,
@@ -60,7 +60,7 @@ class HomeState {
     List<Document>? documents,
     List<Project>? projects,
   }) {
-    return HomeState(
+    return ProjectState(
       name: name ?? this.name,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,

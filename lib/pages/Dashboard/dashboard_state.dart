@@ -1,4 +1,4 @@
-import 'package:dockcheck/models/event.dart';
+/*import 'package:dockcheck/models/event.dart';
 
 abstract class DashboardState {}
 
@@ -16,3 +16,4 @@ class DashboardError extends DashboardState {
   final String message;
   DashboardError(this.message);
 }
+*/

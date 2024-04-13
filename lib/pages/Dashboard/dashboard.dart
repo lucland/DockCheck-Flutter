@@ -1,4 +1,4 @@
-import 'package:dockcheck/pages/Dashboard/dashboard_cubit.dart';
+/*import 'package:dockcheck/pages/Dashboard/dashboard_cubit.dart';
 import 'package:dockcheck/repositories/authorization_repository.dart';
 import 'package:dockcheck/repositories/event_repository.dart';
 import 'package:dockcheck/repositories/picture_repository.dart';
@@ -253,3 +253,4 @@ class DashboardView extends StatelessWidget {
     );
   }
 }
+*/

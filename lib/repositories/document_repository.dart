@@ -18,6 +18,18 @@ class DocumentRepository {
     }
   }
 
+  Future<List<Document>> getDocumentByEmployeeId(String employeeId) async {
+    try {
+      final data = await apiService
+          .get('documents/employee/$employeeId');
+      return (data as List).map((item) => Document.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get document IDs by employee ID: ${e.toString()}');
+      return []; // Return an empty list as a fallback
+    }
+  }
+
   Future<Document?> getDocument(String id) async {
     try {
       final data = await apiService.get('documents/$id');

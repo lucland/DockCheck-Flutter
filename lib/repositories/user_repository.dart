@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dockcheck/models/employee.dart';
 import 'package:dockcheck/models/user.dart';
 import 'package:dockcheck/models/picture.dart';
 import 'package:dockcheck/models/authorization.dart';
@@ -60,11 +61,26 @@ class UserRepository {
   }
 
   Future<List<User>> getAllUsers({int limit = 10000, int offset = 0}) async {
-    final data = await apiService.get('users?limit=$limit&offset=$offset');
+    final data1 = await apiService.get('users');//users
     List<User> users =
-        (data as List).map((item) => User.fromJson(item)).toList();
+        (data1 as List).map((item) => User.fromJson(item)).toList();
+        print("Data fetched: $data1");
     return users;
   }
+
+    Future<List<Employee>> getAllEmployees() async {
+    final data = await apiService.get('employees');
+    if (data != null && data is List) {
+      print("Data fetched: $data");
+      var list = (data as List).map((item) => Employee.fromJson(item)).toList();
+      print("First employee name: ${list.first.name}"); // More detailed log
+      return list;
+    } else {
+      print("Data fetched is null");
+      return [];
+    }
+  }
+
 
   Future<List<Authorization>> getUserAuthorizations(String userId) async {
     final data = await apiService.get('users/$userId/authorizations');

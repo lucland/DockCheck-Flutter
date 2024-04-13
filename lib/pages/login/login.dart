@@ -28,7 +28,7 @@ class LoginPage extends StatelessWidget {
             );
           } else if (state is LoginError) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Login Failed')),
+              const SnackBar(content: Text('Login falhou. Por favor, verifique seu nome de usuário e senha e tente novamente')),
             );
           }
         },

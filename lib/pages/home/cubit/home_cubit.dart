@@ -1,193 +1,151 @@
-/*import 'dart:async';
-
-import 'package:dockcheck/models/authorization.dart';
-import 'package:dockcheck/models/vessel.dart';
-import 'package:dockcheck/repositories/user_repository.dart';
-import 'package:dockcheck/services/local_storage_service.dart';
-import 'package:dockcheck/utils/simple_logger.dart';
-import 'package:flutter/widgets.dart';
+import 'dart:convert';
+import 'package:dockcheck/pages/home/cubit/home_state.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../models/user.dart';
-import '../../../repositories/authorization_repository.dart';
-import '../../../repositories/vessel_repository.dart';
-import 'home_state.dart';
+import 'package:uuid/uuid.dart';
+import '../../../models/document.dart';
+import '../../../models/project.dart';
+import '../../../repositories/project_repository.dart';
+import '../../../services/local_storage_service.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final UserRepository userRepository;
-  final VesselRepository vesselRepository;
+  final ProjectRepository projectRepository;
   final LocalStorageService localStorageService;
-  final AuthorizationRepository authorizationRepository;
 
-  HomeCubit(
-    this.userRepository,
-    this.localStorageService,
-    this.vesselRepository,
-    this.authorizationRepository,
-  ) : super(HomeState());
+  HomeCubit(this.projectRepository, this.localStorageService,)
+      : super(HomeState());
+  //retrieve the logged in userId from the local storage.getUserId Future method and set it into a variable
+  Future<String?> get loggedInUser => localStorageService.getUserId();
+  String loggedUserId = '';
 
-  //local logged user, vessels and onboard users
-  User? _loggedUser;
-  List<Vessel>? _vessels;
-  List<User>? _onboardUsers;
-  List<User>? _blocked;
-  @override
-  bool isClosed = false;
+  //assign the logged in userId to the variable, knowing that it is a Future<String>
+  void getLoggedUserId() async {
+    loggedUserId = await loggedInUser ?? '';
+  }
 
-  //fetch last added user
-  void fetchLoggedUser() async {
-    if (!isClosed && state.isLoading == false) {
-      emit(HomeState(isLoading: true));
-    }
+  //fetch all projects from the repository and emit the state with the projects
+  void fetchProjects() async {
+    getLoggedUserId();
+    print('fetchProjects');
+    emit(state.copyWith(
+      isLoading: true,
+      startDate: DateTime.now(),
+      endDate: DateTime.now(),
+      projects: [],
+    ));
     try {
-      String? userNumber = await localStorageService.getUserId();
-      User user = await userRepository.getUser(userNumber ?? "");
-      _loggedUser = user;
-      fetchVessels();
+      String? userId = await localStorageService.getUserId();
+      final projects = await projectRepository.getAllProjectsByUserId(userId!);
+      //reorder the projects to show the most recent first
+      projects.sort((a, b) => b.dateStart.compareTo(a.dateStart));
+      emit(state.copyWith(isLoading: false, projects: projects));
     } catch (e) {
-      if (e is Exception && e.toString() == "Exception: InvalidTokenError") {
-        // Handle the specific 'jwt expired' error
-        if (!isClosed) {
-          emit(HomeState(
-              isLoading: false,
-              error: 'Session expired. Please login again.',
-              invalidToken: true));
-        }
-      } else {
-        // Handle other errors
-        if (!isClosed) {
-          emit(HomeState(isLoading: false, error: 'An error occurred.'));
-        }
-      }
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 
-  //fetch list of vessels from logged user based on user.authorization and the authorization.vesselId from vessel repository and set it to state, if any
-  void fetchVessels() async {
-    try {
-      if (!isClosed) {
-        emit(HomeState(isLoading: true));
-      }
-      //retrieve user_id from local storage
-      String? userNumber = await localStorageService.getUserId();
-      //fetch logged user
-      User user = await userRepository.getUser(userNumber ?? "");
-      //fetch authorizations from logged user
-      List<Authorization> authorizations =
-          await authorizationRepository.getAuthorizations(user.id);
-      SimpleLogger.info('authorizations: $authorizations');
-      SimpleLogger.info('authorizations: ${user.id}');
-      //fetch each vessel from authorizations with getVesselById from vessel repository and set it to vessels list
-      List<Vessel> vessels = [];
-      for (var authorization in authorizations) {
-        //TODO: alterar
-        /*Vessel vessel = await vesselRepository.getVessel(authorization.vesselId);
-        vessels.add(vessel);
-        localStorageService.saveVesselId(vessel.id);*/
-      }
-      SimpleLogger.info('vessels cubit: $vessels');
+  void updateName(String name) => emit(state.copyWith(name: name));
 
-      List<User> allUsers = await userRepository.getAllUsers();
-      SimpleLogger.info('allUsers: $allUsers');
-      //fetch the ids of the users from vessel repository
-      List<User> blockedUsers = [];
-      for (var user in allUsers) {
-        if (user.isBlocked) {
-          blockedUsers.add(user);
-        }
-      }
-      _blocked = blockedUsers;
-      //for each vessel, fetch the onboard users
-      for (var vessel in vessels) {
-        fetchOnboardUsers(vessel.id);
-      }
+  void updateStartDate(DateTime startDate) =>
+      emit(state.copyWith(startDate: startDate));
 
-      _vessels = vessels;
-    } catch (e) {
-      if (!isClosed) {
-        emit(HomeState(resultMessage: e.toString(), isLoading: false));
-      }
-    }
+  void updateEndDate(DateTime endDate) =>
+      emit(state.copyWith(endDate: endDate));
+
+  void updateVesselId(String vesselId) =>
+      emit(state.copyWith(vesselId: vesselId));
+
+  void updateCompanyId(String companyId) =>
+      emit(state.copyWith(companyId: companyId));
+
+  void addFile(String fileName) {
+    final updatedFileNames = List<String>.from(state.fileNames)..add(fileName);
+    emit(state.copyWith(fileNames: updatedFileNames));
   }
 
-  //fetch onboard users from a vessel and set it to state onboardUsers list, fetch the ids of the users from vessel repository and then fetch the users from user repository
-  void fetchOnboardUsers(String vesselId) async {
-    //TODO: alterar para buscar usuários abordo (onboard)
-    try {
-      if (!isClosed && state.isLoading == false) {
-        emit(HomeState(isLoading: true));
-      }
-      //fetch onboard users from vessel repository
-      List<String> onboardUsers = await vesselRepository(vesselId);
-      SimpleLogger.info('onboardUsers: $onboardUsers');
-      //fetch the ids of the users from vessel repository
-      List<String> onboardUsersIds = [];
-      for (var onboardUser in onboardUsers) {
-        onboardUsersIds.add(onboardUser);
-      }
-      SimpleLogger.info('onboardUsersIds: $onboardUsersIds');
-      //fetch the users from user repository
-      List<User> onboardUsersList = [];
-      for (var onboardUserId in onboardUsersIds) {
-        User onboardUser = await userRepository.getUser(onboardUserId);
-        onboardUsersList.add(onboardUser);
-      }
-      SimpleLogger.info('onboardUsersList: $onboardUsersList');
-      //set onboard users list to state
-      _onboardUsers = onboardUsersList;
+  //turn the File to base64, create a Document object and add to the state
+  void addDocument(PlatformFile file) async {
+    //turn file to base64
+    getLoggedUserId();
 
-      if (_loggedUser != null && _vessels != null && _onboardUsers != null) {
-        setLoggedUserAndVessels();
-      }
+    try {
+      
     } catch (e) {
+      print(e.toString());
+
       if (!isClosed) {
-        emit(HomeState(resultMessage: e.toString(), isLoading: false));
+        emit(state.copyWith(
+          errorMessage: e.toString(),
+        ));
       }
     }
-  }
 
-  void setLoggedUserAndVessels() {
-    if (!isClosed) {
-      emit(HomeState(
-        loggedUser: _loggedUser,
-        vessels: _vessels!,
-        onboardUsers: _onboardUsers!,
-        isLoading: false,
-        blockedUsers: _blocked!,
+    final String base64 = base64Encode(file.bytes!);
+
+    final updatedDocuments = List<Document>.from(state.documents)
+      ..add(Document(
+        id: const Uuid().v4(),
+        type: file.extension ?? 'unknown',
+        employeeId: loggedUserId,
+        expirationDate: DateTime.now().add(const Duration(days: 365)),
+        path: base64,
+        status: 'pending',
       ));
-      // fetchBlockedUsers();
+    emit(state.copyWith(documents: updatedDocuments));
+  }
+
+  void removeFile(String fileName) {
+    final updatedFileNames = List<String>.from(state.fileNames)
+      ..remove(fileName);
+    emit(state.copyWith(fileNames: updatedFileNames));
+  }
+
+  //updateIsDocking
+  void updateIsDocking(bool isDocking) =>
+      emit(state.copyWith(isDocking: isDocking));
+
+  //update the address
+  void updateAddress(String address) => emit(state.copyWith(address: address));
+
+  // Implement other update methods following the pattern above
+
+  void createProject(String name, String vesselId, String address) async {
+    emit(state.copyWith(
+        isLoading: true,
+        name: name,
+        vesselId: vesselId,
+        address: address,
+        thirdCompaniesId: []));
+
+    try {
+      final project = Project(
+        id: const Uuid().v4(), // Generate a new UUID for the project
+        name: state.isDocking
+            ? 'Docagem - ${state.vesselId}'
+            : 'Mobilização - ${state.vesselId}',
+        dateStart: state.startDate ?? DateTime.now(),
+        dateEnd: state.endDate ?? DateTime.now(),
+        vesselId: state.vesselId,
+        companyId: "companyId",
+        thirdCompaniesId: state.thirdCompaniesId,
+        adminsId: [loggedUserId],
+        employeesId: [],
+        areasId: ["areasId"],
+        address: state.address,
+        isDocking: state.isDocking,
+        status: 'created',
+        userId: loggedUserId,
+      );
+      await projectRepository.createProject(project);
+      emit(state.copyWith(isLoading: false, projectCreated: true));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 
-  void reloadPageFutureTimer(BuildContext context) {
-    Timer.periodic(Duration(seconds: 20), (Timer timer) {
-      context.read<HomeCubit>().reloadPage();
-    });
-  }
-
-  //função para recarregar a página
-  void reloadPage() {
-    if (!isClosed) {}
-    emit(HomeState(isLoading: true));
-    fetchLoggedUser();
-  }
-
-  @override
-  Future<void> close() async {
-    if (!isClosed) {
-      isClosed = true;
-
-      // Dispose of any resources, cancel subscriptions, etc.
-      // For example, if you have streams, make sure to close them.
-
-      // Let the superclass handle the rest of the closing process.
-      await super.close();
-    }
+  //reset function
+  void reset() {
+    emit(HomeState());
+    fetchProjects();
   }
 }
-
-//when _loggedUser, _vessels and _onboardUsers are set, set it to state
- 
-
-
-*/

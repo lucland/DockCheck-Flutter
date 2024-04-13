@@ -120,7 +120,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     emit(state.copyWith(selectedNr: nrType));
   }
 
-  void addDocument(Document document) {
+  void addDocument(Document document, DateTime expirationDate, String type) {
     final updatedDocuments = List<Document>.from(state.documents)
       ..add(document);
     emit(state.copyWith(documents: updatedDocuments));
@@ -248,7 +248,7 @@ class CadastrarCubit extends Cubit<CadastrarState> {
     }
   }
 
-  void createEvent() async {
+  void createEvent(String name, String cpf, String email, String funcao, String empresa, String bloodType) async {
     final event = state.event.copyWith(
       timestamp: DateTime.now(),
       action: 1,
@@ -271,6 +271,19 @@ class CadastrarCubit extends Cubit<CadastrarState> {
         ));
       }
     }
+  }
+
+  void updateAuthorizationType(String authorizationType) {
+    final employee = state.employee.copyWith(area: authorizationType);
+    bool canCreate = state.picture.base64.isNotEmpty &&
+        state.documents.length >= 2 &&
+        state.employee.cpf.isNotEmpty &&
+        state.employee.name.isNotEmpty &&
+        state.employee.email.isNotEmpty &&
+        state.employee.thirdCompanyId.isNotEmpty;
+    state.employee.role.isNotEmpty;
+    emit(state.copyWith(employee: employee));
+    //  checkCadastroHabilitado();
   }
 
   //create picture with PictureRepository passing state.picture

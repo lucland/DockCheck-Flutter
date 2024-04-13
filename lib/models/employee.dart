@@ -120,6 +120,7 @@ class Employee {
     DateTime? lastTimeFound,
     bool? isBlocked,
     bool? documentsOk,
+    bool? isOnboard,
     String? blockReason,
     String? status,
     DateTime? createdAt,

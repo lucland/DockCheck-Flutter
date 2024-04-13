@@ -1,4 +1,4 @@
-import 'package:dockcheck/models/event.dart';
+/*import 'package:dockcheck/models/event.dart';
 import 'package:dockcheck/models/user.dart';
 import 'package:dockcheck/pages/Dashboard/dashboard_state.dart';
 import 'package:dockcheck/repositories/picture_repository.dart';
@@ -116,3 +116,4 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 }
+*/

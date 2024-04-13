@@ -1,4 +1,9 @@
-/*import 'package:dockcheck/pages/details/details.dart';
+import 'package:dockcheck/models/employee.dart';
+import 'package:dockcheck/pages/cadastrar/cadastrar.dart';
+import 'package:dockcheck/pages/details/details.dart';
+import 'package:dockcheck/pages/pesquisar/cubit/pesquisar_cubit.dart';
+import 'package:dockcheck/pages/pesquisar/cubit/pesquisar_state.dart';
+import 'package:dockcheck/repositories/employee_repository.dart';
 import 'package:dockcheck/utils/theme.dart';
 import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:flutter/material.dart';
@@ -11,162 +16,173 @@ import '../../models/user.dart';
 import '../../repositories/user_repository.dart';
 import '../../utils/ui/strings.dart';
 
-class Pesquisar extends StatelessWidget {
+class Pesquisar extends StatefulWidget {
   const Pesquisar({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final userRepository = Provider.of<UserRepository>(context, listen: false);
-
-    return BlocProvider(
-      create: (context) => UserCubit(userRepository),
-      child: DefaultTabController(
-        length: 2,
-        child: Container(
-          color: CQColors.white,
-          child: const UserListView(),
-        ),
-      ),
-    );
-  }
+  _PesquisarState createState() => _PesquisarState();
 }
 
-class UserListView extends StatelessWidget {
-  const UserListView({Key? key}) : super(key: key);
+class _PesquisarState extends State<Pesquisar> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<PesquisarCubit>().fetchEmployees();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    context.read<UserCubit>().fetchUsers();
-
-    return BlocBuilder<UserCubit, UserState>(
-      builder: (context, state) {
-        if (state is UserLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is UserError) {
-          return Center(child: Text('Error: ${state.message}'));
-        } else if (state is UserLoaded) {
-          List<User> displayedUsers = state.users;
-
-          if (context.read<UserCubit>().isSearching) {
-            displayedUsers = displayedUsers
-                .where((user) => user.name.toLowerCase().contains(
-                    context.read<UserCubit>().searchQuery.toLowerCase()))
-                .toList();
-          }
-
-          displayedUsers.sort((a, b) => a.name.compareTo(b.name));
-
-          return Column(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        body: Container(
+          color: Colors.white,
+          child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 11.5),
-                    hintText: CQStrings.pesquisar,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: CQColors.slate100,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: CQColors.slate100,
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(
-                        color: CQColors.slate100,
-                        width: 1,
-                      ),
-                    ),
-                    suffixIcon: GestureDetector(
-                      onTap: () async {
-                        try {
-                          context.read<UserCubit>().fetchUsers();
-                        } catch (error) {
-                          print('Erro ao buscar usuários: $error');
-                        }
-                      },
-                      child: const Icon(Icons.search_rounded),
-                    ),
-                  ),
-                  onChanged: (value) {
-                    context
-                        .read<UserCubit>()
-                        .searchUsers(value, filterByNumber: true);
-                  },
-                ),
-              ),
-              const TabBar(
+              _buildSearchBar(context),
+              TabBar(
                 tabs: [
-                  Tab(text: CQStrings.todos),
-                  Tab(text: CQStrings.aBordo),
+                  Tab(text: 'Todos'),
+                  Tab(text: 'À bordo'),
                 ],
               ),
               Expanded(
                 child: TabBarView(
                   children: [
-                    // todos
-                    RefreshIndicator(
-                      color: CQColors.iron100,
-                      backgroundColor: CQColors.white,
-                      onRefresh: () async {
-                        context.read<UserCubit>().fetchUsers();
-                      },
-                      child: ListView.builder(
-                        itemCount: displayedUsers.length,
-                        itemBuilder: (context, index) {
-                          if (displayedUsers.isEmpty) {
-                            return Center(
-                              child: Text('Nenhum usuário encontrado.'),
-                            );
-                          } else {
-                            User user = displayedUsers[index];
-                            return _buildUserListTile(context, user);
-                          }
-                        },
-                      ),
-                    ),
-                    // a bordo
-                    RefreshIndicator(
-                      color: CQColors.iron100,
-                      backgroundColor: CQColors.white,
-                      onRefresh: () async {
-                        context.read<UserCubit>().fetchUsers();
-                      },
-                      child: ListView.builder(
-                        itemCount: displayedUsers.length,
-                        itemBuilder: (context, index) {
-                          User user = displayedUsers[index];
-                          //TODO: alterar
-                          /* if (user.isOnboarded) {
-                            return _buildUserListTile(context, user);
-                          } else {
-                            return Container();
-                          }*/
-                        },
-                      ),
-                    ),
+                    _buildTodosTab(context),
+                    _buildOnboardTab(context),
                   ],
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTodosTab(BuildContext context) {
+    return BlocBuilder<PesquisarCubit, PesquisarState>(
+      builder: (context, state) {
+        if (state is PesquisarLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
           );
+        } else if (state is PesquisarError) {
+          return Center(
+            child: Text('Erro: ${state.message}'),
+          );
+        } else if (state is PesquisarLoaded) {
+          List<Employee> displayEmployees = state.employees;
+          if (context.read<PesquisarCubit>().isSearching) {
+            displayEmployees = displayEmployees
+                .where((employee) => employee.name.toLowerCase().contains(
+                    context.read<PesquisarCubit>().searchQuery.toLowerCase()))
+                .toList();
+          }
+          return _buildEmployeeList(context, displayEmployees);
         } else {
-          return const Center(child: Text(CQStrings.nenhumUsuarioEncontrado));
+          return const Center(child: Text('Erro ao carregar dados'));
         }
       },
     );
   }
 
-  Widget _buildUserListTile(BuildContext context, User user) {
+  Widget _buildOnboardTab(BuildContext context) {
+    return BlocBuilder<PesquisarCubit, PesquisarState>(
+      builder: (context, state) {
+        if (state is PesquisarLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (state is PesquisarError) {
+          return Center(
+            child: Text('Erro: ${state.message}'),
+          );
+        } else if (state is PesquisarLoaded) {
+          List<Employee> onboardEmployees = state.employees
+          //alterar depois
+              .where((employee) => employee.lastAreaFound == "P1")
+              .toList();
+
+          return _buildEmployeeList(context, onboardEmployees);
+        } else {
+          return const Center(child: Text('Erro ao carregar dados'));
+        }
+      },
+    );
+}
+
+
+  Widget _buildEmployeeList(BuildContext context, List<Employee> employees) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildEmployeeListView(context, employees),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 11.5),
+                      hintText: CQStrings.pesquisar,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: CQColors.slate100,
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: CQColors.slate100,
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                          color: CQColors.slate100,
+                          width: 1,
+                        ),
+                      ),
+                      ),
+        onSubmitted: (value) {
+          context.read<PesquisarCubit>().searchEmployee(value);
+        },
+      ),
+    );
+  }
+
+  Widget _buildEmployeeListView(BuildContext context, List<Employee> employees) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 200,
+      child: ListView.builder(
+        itemCount: employees.length,
+        itemBuilder: (context, index) {
+          Employee employee = employees[index];
+          return _buildUserListTile(context, employee);
+        },
+      ),
+    );
+  }
+
+Widget _buildUserListTile(BuildContext context, Employee employee) {
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -179,19 +195,17 @@ class UserListView extends StatelessWidget {
       child: ListTile(
         trailing:
             const Icon(Icons.chevron_right_rounded, color: CQColors.slate100),
-        title: Text('${user.number} - ${user.name}', style: CQTheme.h2),
+        title: Text('${employee.number} - ${employee.name}', style: CQTheme.h2),
         titleAlignment: ListTileTitleAlignment.center,
         dense: true,
         visualDensity: VisualDensity.compact,
         horizontalTitleGap: 0,
-        //TODO: alterar
-        //leading: _buildLeadingIcon(user),
-        subtitle: Text(user.cpf.toString()),
+        subtitle: Text(employee.cpf.toString()),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Details(user: user),
+              builder: (context) => DetailsView(employee: employee, employeeId: employee.id,),
             ),
           );
         },
@@ -199,28 +213,62 @@ class UserListView extends StatelessWidget {
     );
   }
 
-  //TODO: alterar
-  /*Widget _buildLeadingIcon(User user) {
-    if (user.isBlocked) {
+  Widget _buildLeadingIcon(Employee employee) {
+    if (employee.lastAreaFound == "P1") {
+      //is OnBoard
       return const Icon(
         Icons.circle,
-        color: CQColors.danger100,
+        color: Colors.green,
         size: 10,
       );
-    } else if (user.isOnboarded) {
+    } else if (employee.lastAreaFound != "P1") {
+      // Isn't onBoard
       return const Icon(
         Icons.circle,
-        color: CQColors.success100,
+        color: Colors.red,
         size: 10,
       );
     } else {
-      //usuários cadastrados (independentemente de estarem a bordo)
       return const Icon(
         Icons.circle,
-        color: CQColors.success100,
+        color: Colors.yellow,
         size: 10,
       );
     }
-  }*/
+  }
+
+  void _openRightSideModal(BuildContext context, Employee employee) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return FractionallySizedBox(
+          heightFactor: 1,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: Container(
+              color: Colors.white,
+              child: Text(
+                'Conteúdo da modal',
+                style: const TextStyle(fontSize: 18),
+              ),
+            ),
+          ),
+        );
+      },
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  void openModal(BuildContext context, String s) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return CadastrarModal(
+           title: '',
+        );
+      },
+    );
+  }
 }
-*/

@@ -74,10 +74,10 @@ class _RootState extends State<Root> {
         icon: Icon(Icons.person_add_rounded),
         label: 'Cadastrar',
         backgroundColor: CQColors.background),
-    BottomNavigationBarItem(
+    /*BottomNavigationBarItem(
         icon: Icon(Icons.space_dashboard_rounded),
         label: 'Dashboard',
-        backgroundColor: CQColors.background),
+        backgroundColor: CQColors.background),*/
     /*BottomNavigationBarItem(
         icon: Icon(Icons.bluetooth),
         label: 'Conectar',
@@ -107,18 +107,18 @@ class _RootState extends State<Root> {
     final LoginRepository loginRepository = context.read<LoginRepository>();
 
     _widgetOptions = [
-      /* const Home(),
-      const Pesquisar(),
-      Cadastrar(
-        userRepository: userRepository,
-        eventRepository: eventRepository,
-        localStorageService: localStorageService,
-        onCadastrar: () {
-          _pageController.jumpToPage(0);
-        },
-      ),*/
-      Dashboard(),
-      Container(),
+       const Home(),
+       const Pesquisar(),
+      const CadastrarModal(
+         title: '',
+        //userRepository: userRepository,
+        //eventRepository: eventRepository,
+        //localStorageService: localStorageService,
+        //onCadastrar: () {
+          //_pageController.jumpToPage(0);
+        //},
+      ),
+      //dashboard(),
     ];
     return Scaffold(
       appBar: AppBar(
