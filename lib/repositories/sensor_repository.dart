@@ -1,3 +1,4 @@
+import 'package:dockcheck/models/employee.dart';
 import 'package:dockcheck/models/sensor.dart';
 import 'package:dockcheck/services/api_service.dart';
 import '../utils/simple_logger.dart';
@@ -15,6 +16,78 @@ class SensorRepository {
     } catch (error) {
       SimpleLogger.severe('Error creating sensor: $error');
       return null;
+    }
+  }
+
+    Future<List<Employee>> getUniqueBeaconsFound() async {
+    try {
+      final data = await apiService.get('sensors/getUniqueBeaconsFound');
+      print("Data fetched: $data");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get employees by user id: ${e.toString()}');
+      return [];
+    }
+  }
+
+      Future<List<Employee>> getTotalBeaconsFoundVessel() async {
+    try {
+      final data = await apiService.get('sensors/getTotalBeaconsFoundVessel');
+      print("Data fetched: $data");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get employees by user id: ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<List<Employee>> getTotalBeaconsFoundArea() async {
+    try {
+      final data = await apiService.get('sensors/getTotalBeaconsFoundArea');
+      print("Data fetched: $data");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get employees by user id: ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<List<Employee>> getEmployeesInVessel() async {
+    try {
+      final data = await apiService.get('sensors/getEmployeesInVessel');
+      print("Data fetched: $data");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get employees by user id: ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<List<Employee>> getEmployeesInSensor() async {
+    try {
+      final data = await apiService.get('sensors/getEmployeesInSensor');
+      print("Data fetched: $data");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get employees by user id: ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<List<Employee>> getAllEmployeesFound() async {
+    try {
+      final data = await apiService.get('sensors/getAllEmployeesFound');
+      print("Data fetched: $data");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe(
+          'Failed to get employees by user id: ${e.toString()}');
+      return [];
     }
   }
 

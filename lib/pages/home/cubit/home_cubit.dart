@@ -44,6 +44,8 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
+  
+
   void updateName(String name) => emit(state.copyWith(name: name));
 
   void updateStartDate(DateTime startDate) =>

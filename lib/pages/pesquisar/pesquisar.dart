@@ -85,6 +85,7 @@ class _PesquisarState extends State<Pesquisar> {
                     context.read<PesquisarCubit>().searchQuery.toLowerCase()))
                 .toList();
           }
+          displayEmployees.sort((a, b) => a.number.compareTo(b.number));
           return _buildEmployeeList(context, displayEmployees);
         } else {
           return const Center(child: Text('Erro ao carregar dados'));
@@ -109,7 +110,7 @@ class _PesquisarState extends State<Pesquisar> {
           //alterar depois
               .where((employee) => employee.lastAreaFound == "P1")
               .toList();
-
+              onboardEmployees.sort((a, b) => a.number.compareTo(b.number));
           return _buildEmployeeList(context, onboardEmployees);
         } else {
           return const Center(child: Text('Erro ao carregar dados'));
@@ -162,7 +163,7 @@ class _PesquisarState extends State<Pesquisar> {
                         ),
                       ),
                       ),
-        onSubmitted: (value) {
+        onChanged: (value) {
           context.read<PesquisarCubit>().searchEmployee(value);
         },
       ),
