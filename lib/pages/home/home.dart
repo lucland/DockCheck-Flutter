@@ -24,8 +24,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   List<Employee> employeesInSensor = []; 
-  int fetchDataVesselLenght = 0;
-  int fetchDataDiqueLenght = 0;
+  List<Employee> employeesInVessel = [];
+  List<Employee> employeesDiqueLenght = [];
+  
 
   @override
   void initState() {
@@ -34,23 +35,23 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _fetchData() async {
-    List<Employee> employees = await context.read<EmployeeRepository>().getAllEmployees();
+    List<Employee> employees = await context.read<SensorRepository>().getEmployeesInSensor('sensorId1');
     setState(() {
       employeesInSensor = employees;
     });
   }
 
   Future<void> _fetchDataVesselLenght() async {
-    List<Employee> VesselLenght = await context.read<SensorRepository>().getAllEmployeesFound();
+    List<Employee> VesselLenght = await context.read<SensorRepository>().getEmployeesInVessel();
     setState(() {
-      fetchDataVesselLenght = VesselLenght as int;
+      employeesInVessel = VesselLenght;
     });
   }
 
   Future<void> _fetchDataDiqueLenght() async {
     List<Employee> DiqueLenght = await context.read<SensorRepository>().getAllEmployeesFound();
     setState(() {
-      fetchDataDiqueLenght = DiqueLenght as int;
+      employeesDiqueLenght = DiqueLenght;
     });
   }
 
@@ -143,13 +144,13 @@ class _HomeState extends State<Home> {
                 children: [
                   Expanded(
                     child: _buildFirstDecoratedContainer(
-                      _buildFirstContainer()
+                      _buildFirstContainer(employeesDiqueLenght)
                       ),
                   ),
                   SizedBox(width: 8),
                   Expanded(
                     child: _buildSecondDecoratedContainer(
-                      _buildSecondContainer()
+                      _buildSecondContainer(employeesInVessel)
                       ),
                   ),
                 ],
@@ -298,7 +299,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildFirstContainer() {
+  Widget _buildFirstContainer(List<Employee> employeesDiqueLenght) {
     return Container(
       decoration: BoxDecoration(
         color: CQColors.white,
@@ -338,7 +339,7 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  '12',
+                  '${employeesDiqueLenght.length}',
                   style: CQTheme.h3.copyWith(
                     color: Colors.black,
                     fontSize: 120,
@@ -374,7 +375,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildSecondContainer() {
+  Widget _buildSecondContainer(List<Employee> employeesInVessel) {
     return Container(
       margin: const EdgeInsets.only(left: 8.0),
       decoration: BoxDecoration(
@@ -415,7 +416,7 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  '20',
+                  '${employeesInVessel.length}',
                   style: CQTheme.h3.copyWith(
                     color: Colors.black,
                     fontSize: 120,
@@ -502,7 +503,7 @@ class _HomeState extends State<Home> {
                 ),
                 const Divider(),
                 ListView.builder(
-                  physics: NeverScrollableScrollPhysics(), // Desabilita o scroll da ListView
+                  physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: employees.length,
                   itemBuilder: (context, index) {
@@ -526,7 +527,7 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                       trailing: Text(
-                        '${employees[index].documentsOk}',
+                        '${employees[index].lastAreaFound}',
                         style: CQTheme.h1.copyWith(
                           fontSize: 14,
                           color: Colors.black,

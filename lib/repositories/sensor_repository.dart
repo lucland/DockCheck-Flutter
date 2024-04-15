@@ -67,17 +67,28 @@ class SensorRepository {
     }
   }
 
-  Future<List<Employee>> getEmployeesInSensor() async {
+Future<List<Employee>> getEmployeesInSensor(String sensorId) async {
     try {
-      final data = await apiService.get('sensors/getEmployeesInSensor');
-      print("Data fetched: $data");
-      return (data as List).map((item) => Employee.fromJson(item)).toList();
+        final apiUrl = 'sensors/getEmployeesInSensor';
+        final url = Uri.parse(apiUrl).replace(queryParameters: {
+            'sensorId': sensorId,
+        });
+        final response = await apiService.get(url.toString());
+        if (response.statusCode == 200) {
+            final List data = response.data;
+            return data.map((item) => Employee.fromJson(item)).toList();
+        } else {
+            SimpleLogger.severe(
+                'Failed to get employees by user id: ${response.statusCode}');
+            return [];
+        }
     } catch (e) {
-      SimpleLogger.severe(
-          'Failed to get employees by user id: ${e.toString()}');
-      return [];
+        SimpleLogger.severe(
+            'Failed to get employees by sensor id: ${e.toString()}');
+        return [];
     }
-  }
+}
+
 
   Future<List<Employee>> getAllEmployeesFound() async {
     try {
