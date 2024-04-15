@@ -34,7 +34,7 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _fetchData() async {
-    List<Employee> employees = await context.read<SensorRepository>().getAllEmployeesFound();
+    List<Employee> employees = await context.read<EmployeeRepository>().getAllEmployees();
     setState(() {
       employeesInSensor = employees;
     });
@@ -76,14 +76,14 @@ class _HomeState extends State<Home> {
             height: MediaQuery.of(context).size.height,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView( // Transformando a página inteira em um ScrollView
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: ListView.builder(
-                        physics: NeverScrollableScrollPhysics(), // Desabilita o scroll da ListView
+                        physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: allHome.length,
                         itemBuilder: (context, index) {
