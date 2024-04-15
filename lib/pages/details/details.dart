@@ -222,7 +222,7 @@ class DetailsView extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Padding(
+                          /*Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
                               color: CQColors.white,
@@ -452,8 +452,8 @@ class DetailsView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          ),
-                          Padding(
+                          ),*/
+                          /*Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
                               color: CQColors.white,
@@ -552,10 +552,10 @@ class DetailsView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                          ),
+                          ),*/
                           if (state.employee.lastAreaFound != 'P1' &&
                               state.employee.lastAreaFound != 'P2') ...[
-                            Padding(
+                            /*Padding(
                               padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 16),
                               child: Card(
                                 color: CQColors.white,
@@ -587,7 +587,7 @@ class DetailsView extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                            ),
+                            ),*/
                           ],
                         ],
                       ),

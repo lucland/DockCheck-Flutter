@@ -23,7 +23,8 @@ class CadastrarModal extends StatefulWidget {
 
 class _CadastrarModalState extends State<CadastrarModal> {
     final ImagePicker _imagePicker = ImagePicker();
-    XFile? _selectedImage; // Guarda a imagem selecionada
+    XFile? _selectedImage;
+    String selectedOption = 'tripulação';
 
     Future<void> _pickImage() async {
         final pickedFile = await _imagePicker.pickImage(source: ImageSource.camera);
@@ -60,12 +61,71 @@ class _CadastrarModalState extends State<CadastrarModal> {
                                     widget.title,
                                     style: CQTheme.h2,
                                 ),
-                                SizedBox(height: 16.0),
                                 Expanded(
                                     child: SingleChildScrollView(
                                         child: Column(
                                             children: [
-                                                Divider(),
+                                               Row(
+    children: [
+        Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                          selectedOption = 'tripulação';
+                      });
+              },
+              child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: selectedOption == 'tripulação' ? CQColors.iron100 : CQColors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                      color: selectedOption == 'tripulação' ? Colors.transparent : CQColors.iron60,
+                      width: selectedOption == 'tripulação' ? 1.0 : 1.0,
+                  ), 
+                  ),
+                  child: Text(
+                      'tripulação',
+                      style:  CQTheme.h3.copyWith(
+                          color: selectedOption == 'tripulação' ? Colors.white : CQColors.iron100,
+                      ),
+                  ),
+              ),
+            ),
+        ),
+        SizedBox(width: 8.0),
+        Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                          selectedOption = 'convidado';
+                      });
+              },
+              child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: selectedOption == 'convidado' ? CQColors.iron100 : CQColors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                      color: selectedOption == 'convidado' ? Colors.transparent : CQColors.iron60,
+                      width: selectedOption == 'convidado' ? 1.0 : 1.0,
+                                               ),
+                                               ),
+                                               child: Text(
+                                                   'convidado',
+                                                   style:  CQTheme.h3.copyWith(
+                          color: selectedOption == 'convidado' ? Colors.white : CQColors.iron100,
+                      ),
+                      ),
+                                           ),
+                                         ),
+                                     ),
+                                 ],
+                             ),
+
+                                Divider(),
                                                 TextInputWidget(
                                                     title: CQStrings.nome,
                                                     isRequired: true,
@@ -254,15 +314,17 @@ class _CadastrarModalState extends State<CadastrarModal> {
                                               padding: const EdgeInsets.symmetric(horizontal: 16),
                                               child: Container(
                                                   height: 50,
-                                                  width: double.infinity, // Expandindo o botão à largura máxima
+                                                  width: double.infinity,
                                                   decoration: BoxDecoration(
-                                                      color: CQColors.slate100,
+                                                      color: CQColors.iron100,
                                                       borderRadius: BorderRadius.circular(4),
                                                   ),
                                                   child: Center(
                                                       child: Text(
                                                           'Cadastrar',
-                                                          style: TextStyle(color: Colors.white),
+                                                          style:  CQTheme.body.copyWith(
+                                                          color:  Colors.white,
+                                                           ),
                                                       ),
                                                   ),
                                               ),
