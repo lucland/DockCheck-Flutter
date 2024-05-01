@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dockcheck/models/project.dart';
 import 'package:dockcheck/models/employee.dart'; // Importe o modelo de Employee
 import 'package:dockcheck/pages/home/cubit/home_cubit.dart';
@@ -23,36 +25,29 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Employee> employeesInSensor = []; 
-  List<Employee> employeesInVessel = [];
   List<Employee> employeesDiqueLenght = [];
-  
+
+  late Timer timer;
+  int counter = 0;
 
   @override
   void initState() {
     super.initState();
-    _fetchData();
-  }
-
-  Future<void> _fetchData() async {
-    List<Employee> employees = await context.read<SensorRepository>().getEmployeesInSensor('sensorId1');
-    setState(() {
-      employeesInSensor = employees;
+    timer = Timer.periodic(const Duration(seconds: 10), (Timer t) {
+      _refresh();
     });
   }
 
-  Future<void> _fetchDataVesselLenght() async {
-    List<Employee> VesselLenght = await context.read<SensorRepository>().getEmployeesInVessel();
-    setState(() {
-      employeesInVessel = VesselLenght;
-    });
+  Future<void> _refresh() async {
+    context.read<HomeCubit>().reset();
   }
 
-  Future<void> _fetchDataDiqueLenght() async {
-    List<Employee> DiqueLenght = await context.read<SensorRepository>().getAllEmployeesFound();
-    setState(() {
-      employeesDiqueLenght = DiqueLenght;
-    });
+  @override
+  void dispose() {
+    if (timer.isActive) {
+      timer.cancel();
+    }
+    super.dispose();
   }
 
   @override
@@ -89,7 +84,8 @@ class _HomeState extends State<Home> {
                         itemCount: allHome.length,
                         itemBuilder: (context, index) {
                           Project project = allHome[index];
-                          return _buildProjectListTile(context, project);
+                          return _buildProjectListTile(
+                              context, project, state.employees);
                         },
                       ),
                     ),
@@ -118,7 +114,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildProjectListTile(BuildContext context, Project project) {
+  Widget _buildProjectListTile(
+      BuildContext context, Project project, List<Employee> employeesInSensor) {
     return Column(
       children: [
         Padding(
@@ -132,7 +129,40 @@ class _HomeState extends State<Home> {
                   fontSize: 24,
                 ),
               ),
+              Spacer(),
+              GestureDetector(
+                onTap: () {
+                  context.read<HomeCubit>().fetchProjects();
+                },
+                child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: CQColors.iron100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.sync,
+                        color: Colors.white,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Atualizar',
+                        style: CQTheme.h3.copyWith(color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 14.0),
+          child: const Divider(
+            color: CQColors.slate100,
           ),
         ),
         Padding(
@@ -144,14 +174,12 @@ class _HomeState extends State<Home> {
                 children: [
                   Expanded(
                     child: _buildFirstDecoratedContainer(
-                      _buildFirstContainer(employeesDiqueLenght)
-                      ),
+                        _buildFirstContainer(employeesInSensor)),
                   ),
                   SizedBox(width: 8),
                   Expanded(
                     child: _buildSecondDecoratedContainer(
-                      _buildSecondContainer(employeesInVessel)
-                      ),
+                        _buildSecondContainer(employeesInSensor)),
                   ),
                 ],
               ),
@@ -300,6 +328,9 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildFirstContainer(List<Employee> employeesDiqueLenght) {
+    List<Employee> employees = employeesDiqueLenght
+        .where((employee) => employee.lastAreaFound == 'Dique Seco')
+        .toList();
     return Container(
       decoration: BoxDecoration(
         color: CQColors.white,
@@ -339,7 +370,7 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  '${employeesDiqueLenght.length}',
+                  '${employees.length}',
                   style: CQTheme.h3.copyWith(
                     color: Colors.black,
                     fontSize: 120,
@@ -358,7 +389,10 @@ class _HomeState extends State<Home> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Atualizado às: ' + DateFormat('HH:mm').format(DateTime.now()).toString(),
+                        'Atualizado às: ' +
+                            DateFormat('HH:mm')
+                                .format(DateTime.now())
+                                .toString(),
                         style: CQTheme.body.copyWith(
                           color: CQColors.slate100,
                           fontSize: 14,
@@ -376,6 +410,13 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildSecondContainer(List<Employee> employeesInVessel) {
+    List<Employee> employees = employeesInVessel
+        .where((employee) =>
+            employee.lastAreaFound == 'Convés' ||
+            employee.lastAreaFound == 'Acesso Interno' ||
+            employee.lastAreaFound == 'Passadiço' ||
+            employee.lastAreaFound == 'CCM')
+        .toList();
     return Container(
       margin: const EdgeInsets.only(left: 8.0),
       decoration: BoxDecoration(
@@ -416,7 +457,7 @@ class _HomeState extends State<Home> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  '${employeesInVessel.length}',
+                  '${employees.length}',
                   style: CQTheme.h3.copyWith(
                     color: Colors.black,
                     fontSize: 120,
@@ -435,7 +476,10 @@ class _HomeState extends State<Home> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Atualizado às: ' + DateFormat('HH:mm').format(DateTime.now()).toString(),
+                        'Atualizado às: ' +
+                            DateFormat('HH:mm')
+                                .format(DateTime.now())
+                                .toString(),
                         style: CQTheme.body.copyWith(
                           color: CQColors.slate100,
                           fontSize: 14,
@@ -480,7 +524,7 @@ class _HomeState extends State<Home> {
             ),
             child: Center(
               child: Text(
-                'Pessoas avistadas',
+                'Pessoas à bordo',
                 style: CQTheme.h3.copyWith(
                   color: Colors.white,
                 ),
@@ -492,7 +536,7 @@ class _HomeState extends State<Home> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
+                /*  Center(
                   child: Text(
                     'Total: ${employees.length}',
                     style: CQTheme.h3.copyWith(
@@ -501,36 +545,50 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                const Divider(),
+                const Divider(),*/
                 ListView.builder(
                   physics: NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: employees.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Nome:',
-                          style: CQTheme.body.copyWith(
-                              color: CQColors.iron60,
-                              fontSize: 13,
+                    return InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DetailsView(
+                              employeeId: employees[index].id,
+                              employee: employees[index],
                             ),
                           ),
-                          Text(
-                            '${employees[index].name}',
-                            style: CQTheme.h3.copyWith(
-                              color: CQColors.iron100,
-                              fontSize: 14,
+                        );
+                      },
+                      child: ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${employees[index].name}',
+                              style: CQTheme.h3.copyWith(
+                                color: CQColors.iron100,
+                                fontSize: 14,
+                              ),
                             ),
+                            Text(
+                              '${employees[index].role}',
+                              style: CQTheme.body.copyWith(
+                                color: CQColors.iron60,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Text(
+                          '${employees[index].thirdCompanyId}',
+                          style: CQTheme.h1.copyWith(
+                            fontSize: 14,
+                            color: Colors.black,
                           ),
-                        ],
-                      ),
-                      trailing: Text(
-                        '${employees[index].lastAreaFound}',
-                        style: CQTheme.h1.copyWith(
-                          fontSize: 14,
-                          color: Colors.black,
                         ),
                       ),
                     );
@@ -550,7 +608,9 @@ class _HomeState extends State<Home> {
                       const SizedBox(width: 8),
                       Text(
                         'Atualizado às: ' +
-                            DateFormat('HH:mm').format(DateTime.now()).toString(),
+                            DateFormat('HH:mm')
+                                .format(DateTime.now())
+                                .toString(),
                         style: CQTheme.body.copyWith(
                           color: CQColors.slate100,
                           fontSize: 14,
