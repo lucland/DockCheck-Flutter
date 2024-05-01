@@ -1,4 +1,5 @@
 import 'package:dockcheck/models/document.dart';
+import 'package:dockcheck/models/employee.dart';
 
 import '../../../models/project.dart';
 
@@ -20,6 +21,7 @@ class HomeState {
   final List<String> fileNames;
   final List<Document> documents;
   final List<Project> projects;
+  final List<Employee> employees;
 
   HomeState({
     this.name = '',
@@ -39,6 +41,7 @@ class HomeState {
     this.fileNames = const [],
     this.documents = const [],
     this.projects = const [],
+    this.employees = const [],
   });
 
   HomeState copyWith({
@@ -59,6 +62,7 @@ class HomeState {
     List<String>? fileNames,
     List<Document>? documents,
     List<Project>? projects,
+    List<Employee>? employees,
   }) {
     return HomeState(
       name: name ?? this.name,
@@ -78,6 +82,7 @@ class HomeState {
       fileNames: fileNames ?? this.fileNames,
       documents: documents ?? this.documents,
       projects: projects ?? this.projects,
+      employees: employees ?? this.employees,
     );
   }
 }
