@@ -94,8 +94,10 @@ void main() async {
   //var thirdProjectRepository = ThirdProject(id: id, name: name, onboardedCount: onboardedCount, dateStart: dateStart, dateEnd: dateEnd, thirdCompany: thirdCompany, projectId: projectId, allowedAreasId: allowedAreasId, employeesId: employeesId, status: status);
   var userRepository = UserRepository(apiService, localStorageService);
   var vesselRepository = VesselRepository(apiService, localStorageService);
-  var pesquisarCUbit = PesquisarCubit(employeeRepository, projectRepository, localStorageService);
-  var homeCubit = HomeCubit(projectRepository, localStorageService);
+  var pesquisarCUbit = PesquisarCubit(
+      employeeRepository, projectRepository, localStorageService);
+  var homeCubit =
+      HomeCubit(projectRepository, employeeRepository, localStorageService);
   var homeDetailsCubit = HomeDetailsCubit(
       employeeRepository, projectRepository, localStorageService);
 
@@ -111,8 +113,8 @@ void main() async {
     pictureRepository,
     documentRepository,
   );
-  var detailsCubit = DetailsCubit(
-      employeeRepository, documentRepository, localStorageService);
+  var detailsCubit =
+      DetailsCubit(employeeRepository, documentRepository, localStorageService);
 
   BackgroundService();
 
