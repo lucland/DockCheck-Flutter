@@ -19,7 +19,7 @@ class EmployeeRepository {
   }
 
   Future<Employee> getEmployeeById(String id) async {
-    final data = await apiService.get('employees/$id');
+    final data = await apiService.get('employees/byid/$id');
     return Employee.fromJson(data);
   }
 
@@ -35,7 +35,7 @@ class EmployeeRepository {
 
   Future<Employee?> getEmployee(String id) async {
     try {
-      final data = await apiService.get('employees/$id');
+      final data = await apiService.get('employees/byid/$id');
       SimpleLogger.info('Employee fetched successfully');
       return Employee.fromJson(data);
     } catch (error) {
@@ -44,7 +44,7 @@ class EmployeeRepository {
     }
   }
 
-    //get all employees by employee.user_id
+  //get all employees by employee.user_id
   Future<List<Employee>> getEmployeesByUserId(String userId) async {
     try {
       print("userId: $userId");
@@ -59,7 +59,7 @@ class EmployeeRepository {
   }
 
   Future<List<Employee>> getAllEmployees() async {
-    final data = await apiService.get('employees');
+    final data = await apiService.get('employees/all');
     if (data != null && data is List) {
       print("Data fetched: $data");
       var list = (data).map((item) => Employee.fromJson(item)).toList();
