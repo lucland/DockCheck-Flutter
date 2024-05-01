@@ -40,26 +40,28 @@ class _PesquisarState extends State<Pesquisar> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        body: Container(
-          color: Colors.white,
-          child: Column(
-            children: [
-              _buildSearchBar(context),
-              TabBar(
-                tabs: [
-                  Tab(text: 'Todos'),
-                  Tab(text: 'À bordo'),
-                ],
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _buildTodosTab(context),
-                    _buildOnboardTab(context),
+        body: SafeArea(
+          child: Container(
+            color: Colors.white,
+            child: Column(
+              children: [
+                _buildSearchBar(context),
+                TabBar(
+                  tabs: [
+                    Tab(text: 'Todos'),
+                    Tab(text: 'À bordo'),
                   ],
                 ),
-              ),
-            ],
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildTodosTab(context),
+                      _buildOnboardTab(context),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -107,23 +109,26 @@ class _PesquisarState extends State<Pesquisar> {
           );
         } else if (state is PesquisarLoaded) {
           List<Employee> onboardEmployees = state.employees
-          //alterar depois
-              .where((employee) => employee.lastAreaFound == "P1")
+              //alterar depois
+              .where((employee) =>
+                  employee.lastAreaFound == 'Convés' ||
+                  employee.lastAreaFound == 'Acesso Interno' ||
+                  employee.lastAreaFound == 'Passadiço' ||
+                  employee.lastAreaFound == 'CCM')
               .toList();
-              onboardEmployees.sort((a, b) => a.number.compareTo(b.number));
+          onboardEmployees.sort((a, b) => a.number.compareTo(b.number));
           return _buildEmployeeList(context, onboardEmployees);
         } else {
           return const Center(child: Text('Erro ao carregar dados'));
         }
       },
     );
-}
-
+  }
 
   Widget _buildEmployeeList(BuildContext context, List<Employee> employees) {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 64.0),
         child: Column(
           children: [
             _buildEmployeeListView(context, employees),
@@ -138,31 +143,31 @@ class _PesquisarState extends State<Pesquisar> {
       padding: const EdgeInsets.all(8.0),
       child: TextField(
         decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 11.5),
-                      hintText: CQStrings.pesquisar,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: CQColors.slate100,
-                          width: 1,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: CQColors.slate100,
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                          color: CQColors.slate100,
-                          width: 1,
-                        ),
-                      ),
-                      ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 11.5),
+          hintText: CQStrings.pesquisar,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+              color: CQColors.slate100,
+              width: 1,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+              color: CQColors.slate100,
+              width: 1,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: const BorderSide(
+              color: CQColors.slate100,
+              width: 1,
+            ),
+          ),
+        ),
         onChanged: (value) {
           context.read<PesquisarCubit>().searchEmployee(value);
         },
@@ -170,20 +175,20 @@ class _PesquisarState extends State<Pesquisar> {
     );
   }
 
-  Widget _buildEmployeeListView(BuildContext context, List<Employee> employees) {
-    return SizedBox(
-      height: MediaQuery.of(context).size.height - 200,
-      child: ListView.builder(
-        itemCount: employees.length,
-        itemBuilder: (context, index) {
-          Employee employee = employees[index];
-          return _buildUserListTile(context, employee);
-        },
-      ),
+  Widget _buildEmployeeListView(
+      BuildContext context, List<Employee> employees) {
+    return ListView.builder(
+      itemCount: employees.length,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemBuilder: (context, index) {
+        Employee employee = employees[index];
+        return _buildUserListTile(context, employee);
+      },
     );
   }
 
-Widget _buildUserListTile(BuildContext context, Employee employee) {
+  Widget _buildUserListTile(BuildContext context, Employee employee) {
     return Container(
       decoration: const BoxDecoration(
         border: Border(
@@ -206,7 +211,10 @@ Widget _buildUserListTile(BuildContext context, Employee employee) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailsView(employee: employee, employeeId: employee.id,),
+              builder: (context) => DetailsView(
+                employee: employee,
+                employeeId: employee.id,
+              ),
             ),
           );
         },
@@ -267,7 +275,7 @@ Widget _buildUserListTile(BuildContext context, Employee employee) {
       barrierDismissible: false,
       builder: (context) {
         return CadastrarModal(
-           title: '',
+          title: '',
         );
       },
     );
