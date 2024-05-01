@@ -31,12 +31,14 @@ import '../../utils/enums/action_enum.dart';
 import '../../utils/theme.dart';
 import 'cubit/details_cubit.dart';
 import 'cubit/details_state.dart';
+
 class DetailsView extends StatelessWidget {
   final String employeeId;
 
   DetailsView({
     super.key,
-    required this.employeeId, required Employee employee,
+    required this.employeeId,
+    required Employee employee,
   });
 
   @override
@@ -45,9 +47,14 @@ class DetailsView extends StatelessWidget {
     return BlocBuilder<DetailsCubit, DetailsState>(
       builder: (context, state) {
         if (state is DetailsLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return Scaffold(
+              body: const Center(child: CircularProgressIndicator()));
         } else if (state is DetailsError) {
-          return Center(child: Text('Error: ${state.message}'));
+          return Scaffold(
+              appBar: AppBar(
+                title: const Text('Detalhes'),
+              ),
+              body: Center(child: Text('Error: ${state.message}')));
         } else if (state is DetailsLoaded) {
           final documents = state.documents;
           final employee = state.employee;
@@ -56,173 +63,159 @@ class DetailsView extends StatelessWidget {
             body: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(8.0),
                     width: double.infinity,
                     color: CQColors.white,
                     child: Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(employee.name,
-                                  style: CQTheme.h1.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600),
-                                  overflow: TextOverflow.ellipsis),
-                            ),
-                            Text('|   N° ${employee.number.toString()}',
-                                style: CQTheme.h1.copyWith(color: Colors.white),
-                                overflow: TextOverflow.ellipsis),
-                          ],
-                        ),
                         Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16),
-                            color: CQColors.iron100,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(state.employee.name,
-                                      style: CQTheme.h1.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w600),
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 16),
+                              color: CQColors.iron100,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  //icon
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(8.0, 8, 16, 8),
+                                      child: Icon(
+                                        Icons.arrow_back_ios_rounded,
+                                        color: CQColors.white,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(state.employee.name,
+                                        style: CQTheme.h1.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600),
+                                        overflow: TextOverflow.ellipsis),
+                                  ),
+                                  Text('|   N° ${employee.number.toString()}',
+                                      style: CQTheme.h1
+                                          .copyWith(color: Colors.white),
                                       overflow: TextOverflow.ellipsis),
-                                ),
-                                Text('|   N° ${employee.number.toString()}',
-                                    style:
-                                        CQTheme.h1.copyWith(color: Colors.white),
-                                    overflow: TextOverflow.ellipsis),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          // à bordo
-                          employee.lastAreaFound == 'P1'
-                              ? Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 16),
-                                  color: CQColors.success20,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.check_circle_rounded,
-                                        color: CQColors.success120,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(CQStrings.aBordo,
-                                          style: CQTheme.h1.copyWith(
-                                              color: CQColors.success120,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16),
-                                          overflow: TextOverflow.ellipsis),
-                                    ],
+                            // à bordo
+                            employee.lastAreaFound != ''
+                                ? Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0, horizontal: 16),
+                                    color: CQColors.success20,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.check_circle_rounded,
+                                          color: CQColors.success120,
+                                          size: 16,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(CQStrings.aBordo + ":",
+                                            style: CQTheme.h1.copyWith(
+                                                color: CQColors.success120,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
+                                            overflow: TextOverflow.ellipsis),
+                                        const SizedBox(width: 8),
+                                        Text(employee.lastAreaFound,
+                                            style: CQTheme.h1.copyWith(
+                                                color: CQColors.success120,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16),
+                                            overflow: TextOverflow.ellipsis),
+                                      ],
+                                    ),
+                                  )
+                                : Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0, horizontal: 16),
+                                    color: Color.fromARGB(255, 240, 228, 228),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.cancel,
+                                          color: CQColors.danger110,
+                                          size: 16,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(CQStrings.naoaBordo,
+                                            style: CQTheme.h1.copyWith(
+                                                color: CQColors.danger110,
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 16),
+                                            overflow: TextOverflow.ellipsis),
+                                      ],
+                                    ),
                                   ),
-                                )
-                              : Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 16),
-                                  color: Color.fromARGB(255, 240, 228, 228),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Icon(
-                                        Icons.cancel,
-                                        color: CQColors.danger110,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(CQStrings.naoaBordo,
-                                          style: CQTheme.h1.copyWith(
-                                              color: CQColors.danger110,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 16),
-                                          overflow: TextOverflow.ellipsis),
-                                    ],
-                                  ),
-                                ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                TitleValueWidget(
-                                  title: 'horário de entrada:',
-                                  value: (() {
-                                    for (int i = state.employee.lastAreaFound.length - 1;
-                                        i >= 0;
-                                        i--) {
-                                      if (employee.lastAreaFound != 'P1' && employee.lastAreaFound != '0') {
-                                        return '${DateFormat('dd/MM/yyyy - HH:mm').format(
-                                          state.employee.lastTimeFound
-                                              .subtract(Duration(hours: 3)),
-                                        )}';
-                                      }
-                                    }
-                                    return 'não possui horário de entrada';
-                                  })(),
-                                ),
-                                // primeira entrada do dia, é quando a primeira vez avistado é diferente de p1;
-                                TitleValueWidget(
-                                  title: 'horário de saída:',
-                                  value: (() {
-                                    if (employee.lastAreaFound == 'P1') {
-                                      return '${DateFormat('dd/MM/yyyy - HH:mm').format(
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0, horizontal: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TitleValueWidget(
+                                      title: 'Ultima vez avistado:',
+                                      value:
+                                          '${DateFormat('dd/MM/yyyy - HH:mm').format(
                                         state.employee.lastTimeFound
                                             .subtract(Duration(hours: 3)),
-                                      )}';
-                                    } else {
-                                      return 'não possui horário de saída';
-                                    }
-                                  })(),
-                                ),
-                                // horário de saída do dia, é quando a última vez avistado for no p1;
-                                TitleValueWidget(
-                                  title: CQStrings.cpf,
-                                  value: employee.cpf,
-                                  color: CQColors.iron100,
-                                ),
-                                TitleValueWidget(
-                                    title: CQStrings.itag, value: employee.id),
-                                TitleValueWidget(
-                                  title: CQStrings.blood,
-                                  value: employee.bloodType, // tipo sanguineo
-                                  color: CQColors.iron100,
-                                ),
-                                TitleValueWidget(
-                                  title: CQStrings.funcao,
-                                  value: employee.role,
-                                  color: CQColors.iron100,
-                                ),
-                                TitleValueWidget(
-                                  title: CQStrings.empresa,
-                                  value: employee.thirdCompanyId,
-                                  color: CQColors.iron100,
-                                ),
-                                if (employee.email != '') ...[
+                                      )}h'),
+
+                                  // horário de saída do dia, é quando a última vez avistado for no p1;
                                   TitleValueWidget(
-                                    title: CQStrings.email,
-                                    value: employee.email,
+                                    title: CQStrings.cpf,
+                                    value: employee.cpf,
+                                    color: CQColors.iron100,
+                                  ),
+                                  TitleValueWidget(
+                                    title: CQStrings.blood,
+                                    value: employee.bloodType, // tipo sanguineo
+                                    color: CQColors.iron100,
+                                  ),
+                                  TitleValueWidget(
+                                    title: CQStrings.funcao,
+                                    value: employee.role,
+                                    color: CQColors.iron100,
+                                  ),
+                                  TitleValueWidget(
+                                    title: CQStrings.empresa,
+                                    value: employee.thirdCompanyId,
+                                    color: CQColors.iron100,
+                                  ),
+                                  if (employee.email != '') ...[
+                                    TitleValueWidget(
+                                      title: CQStrings.email,
+                                      value: employee.email,
+                                      color: CQColors.iron100,
+                                    ),
+                                  ],
+                                  TitleValueWidget(
+                                    title: "Beacon ID",
+                                    value: employee.area,
                                     color: CQColors.iron100,
                                   ),
                                 ],
-                                TitleValueWidget(
-                                  title: CQStrings.area,
-                                  value: employee.area,
-                                  color: CQColors.iron100,
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                          /*Padding(
+                            /*Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
                               color: CQColors.white,
@@ -453,7 +446,7 @@ class DetailsView extends StatelessWidget {
                               ),
                             ),
                           ),*/
-                          /*Padding(
+                            /*Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
                               color: CQColors.white,
@@ -553,9 +546,9 @@ class DetailsView extends StatelessWidget {
                               ),
                             ),
                           ),*/
-                          if (state.employee.lastAreaFound != 'P1' &&
-                              state.employee.lastAreaFound != 'P2') ...[
-                            /*Padding(
+                            if (state.employee.lastAreaFound != 'P1' &&
+                                state.employee.lastAreaFound != 'P2') ...[
+                              /*Padding(
                               padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 16),
                               child: Card(
                                 color: CQColors.white,
@@ -588,16 +581,14 @@ class DetailsView extends StatelessWidget {
                                 ),
                               ),
                             ),*/
+                            ],
                           ],
-                        ],
-                      ),
+                        ),
                       ],
                     ),
                   ),
-                 
+
                   // Additional Widgets for displaying user details
-            
-                  
                 ],
               ),
             ),
