@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:dockcheck/models/employee.dart';
 import 'package:dockcheck/pages/home/cubit/home_state.dart';
+import 'package:dockcheck/repositories/employee_repository.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
@@ -10,10 +12,14 @@ import '../../../services/local_storage_service.dart';
 
 class HomeCubit extends Cubit<HomeState> {
   final ProjectRepository projectRepository;
+  final EmployeeRepository employeeRepository;
   final LocalStorageService localStorageService;
 
-  HomeCubit(this.projectRepository, this.localStorageService,)
-      : super(HomeState());
+  HomeCubit(
+    this.projectRepository,
+    this.employeeRepository,
+    this.localStorageService,
+  ) : super(HomeState());
   //retrieve the logged in userId from the local storage.getUserId Future method and set it into a variable
   Future<String?> get loggedInUser => localStorageService.getUserId();
   String loggedUserId = '';
@@ -42,9 +48,24 @@ class HomeCubit extends Cubit<HomeState> {
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
+
+    fetchEmployees();
   }
 
-  
+  void fetchEmployees() async {
+    emit(state.copyWith(isLoading: true, employees: []));
+    try {
+      final employees = await employeeRepository.getAllEmployees();
+      final employeesFound = employees
+          .where((employee) =>
+              employee.lastAreaFound != null &&
+              employee.lastAreaFound!.isNotEmpty)
+          .toList();
+      emit(state.copyWith(isLoading: false, employees: employeesFound));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
 
   void updateName(String name) => emit(state.copyWith(name: name));
 
@@ -70,9 +91,7 @@ class HomeCubit extends Cubit<HomeState> {
     //turn file to base64
     getLoggedUserId();
 
-    try {
-      
-    } catch (e) {
+    try {} catch (e) {
       print(e.toString());
 
       if (!isClosed) {
@@ -148,6 +167,7 @@ class HomeCubit extends Cubit<HomeState> {
   //reset function
   void reset() {
     emit(HomeState());
+    print('reset');
     fetchProjects();
   }
 }
