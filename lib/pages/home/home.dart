@@ -1,12 +1,9 @@
 import 'dart:async';
 
 import 'package:dockcheck/models/project.dart';
-import 'package:dockcheck/models/employee.dart'; // Importe o modelo de Employee
+import 'package:dockcheck/models/employee.dart';
 import 'package:dockcheck/pages/home/cubit/home_cubit.dart';
 import 'package:dockcheck/pages/home/cubit/home_state.dart';
-import 'package:dockcheck/pages/pesquisar/cubit/pesquisar_cubit.dart';
-import 'package:dockcheck/repositories/employee_repository.dart';
-import 'package:dockcheck/repositories/sensor_repository.dart'; // Importe o repositório do sensor
 import 'package:dockcheck/utils/ui/colors.dart';
 import 'package:dockcheck/widgets/semi_circle_painter.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +76,7 @@ class _HomeState extends State<Home> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: allHome.length,
                         itemBuilder: (context, index) {
@@ -123,19 +120,19 @@ class _HomeState extends State<Home> {
           child: Row(
             children: [
               Text(
-                '${project.name}',
+                project.name,
                 style: CQTheme.h3.copyWith(
                   color: CQColors.iron100,
                   fontSize: 24,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               GestureDetector(
                 onTap: () {
                   context.read<HomeCubit>().fetchProjects();
                 },
                 child: Container(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: CQColors.iron100,
@@ -143,11 +140,11 @@ class _HomeState extends State<Home> {
                   ),
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.sync,
                         color: Colors.white,
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         'Atualizar',
                         style: CQTheme.h3.copyWith(color: Colors.white),
@@ -159,9 +156,9 @@ class _HomeState extends State<Home> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 14.0),
-          child: const Divider(
+        const Padding(
+          padding: EdgeInsets.only(bottom: 14.0),
+          child: Divider(
             color: CQColors.slate100,
           ),
         ),
@@ -176,7 +173,7 @@ class _HomeState extends State<Home> {
                     child: _buildFirstDecoratedContainer(
                         _buildFirstContainer(employeesInSensor)),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: _buildSecondDecoratedContainer(
                         _buildSecondContainer(employeesInSensor)),
@@ -251,7 +248,29 @@ class _HomeState extends State<Home> {
         child,
         Positioned(
           top: 50,
+          left: -10,
+          child: CustomPaint(
+            size: const Size(20, 10),
+            painter: CirclePainter(
+              color: CQColors.background,
+              direction: Direction.left,
+            ),
+          ),
+        ),
+        Positioned(
+          top: 50,
           right: -10,
+          child: CustomPaint(
+            size: const Size(20, 10),
+            painter: CirclePainter(
+              color: CQColors.background,
+              direction: Direction.right,
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 54,
+          left: -10,
           child: CustomPaint(
             size: const Size(20, 10),
             painter: CirclePainter(
@@ -335,7 +354,7 @@ class _HomeState extends State<Home> {
       decoration: BoxDecoration(
         color: CQColors.white,
         borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4.0,
@@ -348,9 +367,9 @@ class _HomeState extends State<Home> {
         children: [
           Container(
             padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: CQColors.success100,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10.0),
                 topRight: Radius.circular(10.0),
               ),
@@ -389,10 +408,7 @@ class _HomeState extends State<Home> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Atualizado às: ' +
-                            DateFormat('HH:mm')
-                                .format(DateTime.now())
-                                .toString(),
+                        'Atualizado às: ${DateFormat('HH:mm').format(DateTime.now())}',
                         style: CQTheme.body.copyWith(
                           color: CQColors.slate100,
                           fontSize: 14,
@@ -418,11 +434,10 @@ class _HomeState extends State<Home> {
             employee.lastAreaFound == 'CCM')
         .toList();
     return Container(
-      margin: const EdgeInsets.only(left: 8.0),
       decoration: BoxDecoration(
         color: CQColors.white,
         borderRadius: BorderRadius.circular(8.0),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4.0,
@@ -435,9 +450,9 @@ class _HomeState extends State<Home> {
         children: [
           Container(
             padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: CQColors.forange110,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10.0),
                 topRight: Radius.circular(10.0),
               ),
@@ -476,10 +491,7 @@ class _HomeState extends State<Home> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Atualizado às: ' +
-                            DateFormat('HH:mm')
-                                .format(DateTime.now())
-                                .toString(),
+                        'Atualizado às: ${DateFormat('HH:mm').format(DateTime.now())}',
                         style: CQTheme.body.copyWith(
                           color: CQColors.slate100,
                           fontSize: 14,
@@ -502,7 +514,7 @@ class _HomeState extends State<Home> {
       decoration: BoxDecoration(
         color: CQColors.white,
         borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 4.0,
@@ -515,9 +527,9 @@ class _HomeState extends State<Home> {
         children: [
           Container(
             padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: CQColors.iron100,
-              borderRadius: const BorderRadius.only(
+              borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(10.0),
                 topRight: Radius.circular(10.0),
               ),
@@ -547,7 +559,7 @@ class _HomeState extends State<Home> {
                 ),
                 const Divider(),*/
                 ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: employees.length,
                   itemBuilder: (context, index) {
@@ -568,14 +580,14 @@ class _HomeState extends State<Home> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${employees[index].name}',
+                              employees[index].name,
                               style: CQTheme.h3.copyWith(
                                 color: CQColors.iron100,
                                 fontSize: 14,
                               ),
                             ),
                             Text(
-                              '${employees[index].role}',
+                              employees[index].role,
                               style: CQTheme.body.copyWith(
                                 color: CQColors.iron60,
                                 fontSize: 13,
@@ -584,7 +596,7 @@ class _HomeState extends State<Home> {
                           ],
                         ),
                         trailing: Text(
-                          '${employees[index].thirdCompanyId}',
+                          employees[index].thirdCompanyId,
                           style: CQTheme.h1.copyWith(
                             fontSize: 14,
                             color: Colors.black,
@@ -607,10 +619,7 @@ class _HomeState extends State<Home> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Atualizado às: ' +
-                            DateFormat('HH:mm')
-                                .format(DateTime.now())
-                                .toString(),
+                        'Atualizado às: ${DateFormat('HH:mm').format(DateTime.now())}',
                         style: CQTheme.body.copyWith(
                           color: CQColors.slate100,
                           fontSize: 14,
