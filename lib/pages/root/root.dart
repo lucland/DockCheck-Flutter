@@ -107,15 +107,15 @@ class _RootState extends State<Root> {
     final LoginRepository loginRepository = context.read<LoginRepository>();
 
     _widgetOptions = [
-       const Home(),
-       const Pesquisar(),
+      const Home(),
+      const Pesquisar(),
       const CadastrarModal(
-         title: '',
+        title: '',
         //userRepository: userRepository,
         //eventRepository: eventRepository,
         //localStorageService: localStorageService,
         //onCadastrar: () {
-          //_pageController.jumpToPage(0);
+        //_pageController.jumpToPage(0);
         //},
       ),
       //dashboard(),
