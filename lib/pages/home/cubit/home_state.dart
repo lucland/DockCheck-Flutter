@@ -16,6 +16,8 @@ class HomeState {
   final String address;
   final String status;
   final bool isLoading;
+  final bool isFetching;
+  final int currentPage;
   final bool projectCreated;
   final String errorMessage;
   final List<String> fileNames;
@@ -36,6 +38,8 @@ class HomeState {
     this.address = '',
     this.status = '',
     this.isLoading = false,
+    this.isFetching = false,
+    this.currentPage = 1,
     this.projectCreated = false,
     this.errorMessage = '',
     this.fileNames = const [],
@@ -57,6 +61,8 @@ class HomeState {
     String? address,
     String? status,
     bool? isLoading,
+    bool? isFetching,
+    int? currentPage,
     bool? projectCreated,
     String? errorMessage,
     List<String>? fileNames,
@@ -77,6 +83,8 @@ class HomeState {
       address: address ?? this.address,
       status: status ?? this.status,
       isLoading: isLoading ?? this.isLoading,
+      isFetching: isFetching ?? this.isFetching,
+      currentPage: currentPage ?? this.currentPage,
       projectCreated: projectCreated ?? this.projectCreated,
       errorMessage: errorMessage ?? this.errorMessage,
       fileNames: fileNames ?? this.fileNames,
