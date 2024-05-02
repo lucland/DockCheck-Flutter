@@ -49,7 +49,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
 
-    fetchEmployees();
+    loadMoreData();
   }
 
   void fetchEmployees() async {
@@ -127,6 +127,21 @@ class HomeCubit extends Cubit<HomeState> {
 
   //update the address
   void updateAddress(String address) => emit(state.copyWith(address: address));
+
+  //load more data function
+  Future<void> loadMoreData() async {
+    print('loadMoreData');
+    if (state.isFetching) return;
+    emit(state.copyWith(isFetching: true));
+    List<Employee> newEmployees =
+        await employeeRepository.getEmployeesOnboarded(page: state.currentPage);
+    emit(state.copyWith(
+      employees: [...state.employees, ...newEmployees],
+      isFetching: false,
+      currentPage:
+          newEmployees.isNotEmpty ? state.currentPage + 1 : state.currentPage,
+    ));
+  }
 
   // Implement other update methods following the pattern above
 
