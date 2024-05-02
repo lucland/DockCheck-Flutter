@@ -8,14 +8,9 @@ class PesquisarLoading extends PesquisarState {}
 
 class PesquisarLoaded extends PesquisarState {
   final List<Employee> employees;
-  final bool isAdmin;
-  PesquisarLoaded(this.employees, this.isAdmin);
-}
-
-//add state for employee loaded
-class EmployeeLoaded extends PesquisarState {
-  final List<Employee> employees;
-  EmployeeLoaded(this.employees);
+  final List<Employee> employeesOnboarded;
+  final bool hasReachedMax;
+  PesquisarLoaded(this.employees, this.employeesOnboarded, this.hasReachedMax);
 }
 
 class PesquisarError extends PesquisarState {
