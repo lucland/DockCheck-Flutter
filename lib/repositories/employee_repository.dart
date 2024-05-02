@@ -58,15 +58,59 @@ class EmployeeRepository {
     }
   }
 
-  Future<List<Employee>> getAllEmployees() async {
-    final data = await apiService.get('employees/all');
-    if (data != null && data is List) {
+  Future<List<Employee>> getEmployeesOnboarded(
+      {int page = 1, int limit = 10000}) async {
+    try {
+      final data =
+          await apiService.get('employees/lastarea?page=$page&limit=$limit');
+      if (data != null && data is Map<String, dynamic>) {
+        final employees = data['employees'];
+        final totalPages = data['totalPages'];
+        final currentPage = data['currentPage'];
+        print("Employees fetched successfully");
+        return (employees as List)
+            .map((item) => Employee.fromJson(item))
+            .toList();
+      } else {
+        print("Data fetched is null");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching employees: $error");
+      return [];
+    }
+  }
+
+  //search employee swith earch endpoint
+  Future<List<Employee>> searchEmployees(String query) async {
+    try {
+      final data = await apiService.get('employees/search?$query');
       print("Data fetched: $data");
-      var list = (data).map((item) => Employee.fromJson(item)).toList();
-      print("First employee name: ${list.first.name}"); // More detailed log
-      return list;
-    } else {
-      print("Data fetched is null");
+      return (data as List).map((item) => Employee.fromJson(item)).toList();
+    } catch (e) {
+      SimpleLogger.severe('Failed to search employees: ${e.toString()}');
+      return [];
+    }
+  }
+
+  Future<List<Employee>> getAllEmployees({int page = 1, int limit = 20}) async {
+    try {
+      final data = await apiService
+          .get('employees/allpaginated?page=$page&limit=$limit');
+      if (data != null && data is Map<String, dynamic>) {
+        final employees = data['employees'];
+        final totalPages = data['totalPages'];
+        final currentPage = data['currentPage'];
+        print("Employees fetched successfully");
+        return (employees as List)
+            .map((item) => Employee.fromJson(item))
+            .toList();
+      } else {
+        print("Data fetched is null");
+        return [];
+      }
+    } catch (error) {
+      print("Error fetching employees: $error");
       return [];
     }
   }
