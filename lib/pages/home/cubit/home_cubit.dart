@@ -44,12 +44,11 @@ class HomeCubit extends Cubit<HomeState> {
       final projects = await projectRepository.getAllProjectsByUserId(userId!);
       //reorder the projects to show the most recent first
       projects.sort((a, b) => b.dateStart.compareTo(a.dateStart));
-      emit(state.copyWith(isLoading: false, projects: projects));
+      emit(state.copyWith(projects: projects));
+      loadMoreData();
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
-
-    loadMoreData();
   }
 
   void fetchEmployees() async {
@@ -135,9 +134,11 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(isFetching: true));
     List<Employee> newEmployees =
         await employeeRepository.getEmployeesOnboarded(page: state.currentPage);
+    print('newEmployees: $newEmployees');
     emit(state.copyWith(
       employees: [...state.employees, ...newEmployees],
       isFetching: false,
+      isLoading: false,
       currentPage:
           newEmployees.isNotEmpty ? state.currentPage + 1 : state.currentPage,
     ));
