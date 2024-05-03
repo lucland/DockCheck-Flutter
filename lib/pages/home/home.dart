@@ -32,7 +32,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    timer = Timer.periodic(const Duration(seconds: 100000000000), (Timer t) {
+    timer = Timer.periodic(const Duration(seconds: 10), (Timer t) {
       _refresh();
     });
 
@@ -72,9 +72,7 @@ class _HomeState extends State<Home> {
               child: CircularProgressIndicator(),
             ),
           );
-        } else if (!state.isLoading &&
-            state.projects.isNotEmpty &&
-            state.employees.isNotEmpty) {
+        } else if (!state.isLoading && state.projects.isNotEmpty) {
           List<Project> allHome = state.projects;
 
           return Container(
