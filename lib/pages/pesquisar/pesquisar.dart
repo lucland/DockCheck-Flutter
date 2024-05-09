@@ -1,9 +1,12 @@
+import 'package:dockcheck/utils/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dockcheck/pages/details/details.dart';
 import 'package:dockcheck/models/employee.dart';
 import 'package:dockcheck/pages/pesquisar/cubit/pesquisar_cubit.dart';
 import 'package:dockcheck/pages/pesquisar/cubit/pesquisar_state.dart';
+
+import '../../utils/ui/colors.dart';
 
 class Pesquisar extends StatefulWidget {
   const Pesquisar({Key? key}) : super(key: key);
@@ -121,7 +124,7 @@ class _PesquisarState extends State<Pesquisar> {
                 state.hasReachedMax ? employees.length : employees.length + 1,
             itemBuilder: (context, index) {
               return index >= employees.length
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center()
                   : _buildUserListTile(context, employees[index]);
             },
           );
@@ -135,8 +138,25 @@ class _PesquisarState extends State<Pesquisar> {
 
   Widget _buildUserListTile(BuildContext context, Employee employee) {
     return ListTile(
-      title: Text('${employee.name} (${employee.number})'),
-      subtitle: Text(employee.cpf),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '${employee.number} - ${employee.name}',
+            style: CQTheme.h3.copyWith(
+              color: CQColors.iron100,
+              fontSize: 14,
+            ),
+          ),
+          Text(
+            '${employee.thirdCompanyId} - ${employee.role}',
+            style: CQTheme.body.copyWith(
+              color: CQColors.iron60,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
       trailing: const Icon(Icons.arrow_forward_ios),
       onTap: () {
         Navigator.push(
