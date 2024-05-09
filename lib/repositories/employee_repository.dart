@@ -63,14 +63,10 @@ class EmployeeRepository {
     try {
       final data =
           await apiService.get('employees/lastarea?page=$page&limit=$limit');
-      if (data != null && data is Map<String, dynamic>) {
-        final employees = data['employees'];
-        final totalPages = data['totalPages'];
-        final currentPage = data['currentPage'];
+      print("Data fetched: $data");
+      if (data != null) {
         print("Employees fetched successfully");
-        return (employees as List)
-            .map((item) => Employee.fromJson(item))
-            .toList();
+        return (data as List).map((item) => Employee.fromJson(item)).toList();
       } else {
         print("Data fetched is null");
         return [];
@@ -81,12 +77,17 @@ class EmployeeRepository {
     }
   }
 
-  //search employee swith earch endpoint
+  //search employees with search endpoint
   Future<List<Employee>> searchEmployees(String query) async {
     try {
-      final data = await apiService.get('employees/search?$query');
+      final data = await apiService.get('employees/search?search=$query');
       print("Data fetched: $data");
-      return (data as List).map((item) => Employee.fromJson(item)).toList();
+      if (data != null && data is List) {
+        return data.map((item) => Employee.fromJson(item)).toList();
+      } else {
+        print("Invalid data format");
+        return [];
+      }
     } catch (e) {
       SimpleLogger.severe('Failed to search employees: ${e.toString()}');
       return [];
