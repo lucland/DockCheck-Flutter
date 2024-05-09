@@ -10,7 +10,9 @@ class PesquisarLoaded extends PesquisarState {
   final List<Employee> employees;
   final List<Employee> employeesOnboarded;
   final bool hasReachedMax;
-  PesquisarLoaded(this.employees, this.employeesOnboarded, this.hasReachedMax);
+  final int currentPage;
+  PesquisarLoaded(this.employees, this.employeesOnboarded, this.hasReachedMax,
+      this.currentPage);
 }
 
 class PesquisarError extends PesquisarState {
