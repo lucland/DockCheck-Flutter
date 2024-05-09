@@ -6,7 +6,6 @@ import 'pesquisar_state.dart';
 
 class PesquisarCubit extends Cubit<PesquisarState> {
   final EmployeeRepository employeeRepository;
-  int currentPage = 1;
   bool hasReachedMax = false;
 
   PesquisarCubit(this.employeeRepository) : super(PesquisarInitial());
@@ -14,14 +13,19 @@ class PesquisarCubit extends Cubit<PesquisarState> {
   Future<void> fetchEmployees() async {
     try {
       emit(PesquisarLoading());
+      final currentState = state;
+      int currentPage = 1;
+      if (currentState is PesquisarLoaded) {
+        currentPage = currentState.currentPage;
+      }
       List<Employee> employees =
           await employeeRepository.getAllEmployees(page: currentPage);
       List<Employee> employeesOnboarded =
           await employeeRepository.getEmployeesOnboarded();
-      currentPage++;
       hasReachedMax =
           employees.isEmpty; // Assume empty result means no more data
-      emit(PesquisarLoaded(employees, employeesOnboarded, hasReachedMax));
+      emit(PesquisarLoaded(
+          employees, employeesOnboarded, hasReachedMax, currentPage++));
     } catch (e) {
       emit(PesquisarError("Failed to fetch employees: $e"));
     }
@@ -30,16 +34,23 @@ class PesquisarCubit extends Cubit<PesquisarState> {
   Future<void> fetchMoreEmployees() async {
     if (hasReachedMax) return;
     try {
+      int currentPage = 1;
+      if (state is PesquisarLoaded) {
+        final currentState = state as PesquisarLoaded;
+        currentPage = currentState.currentPage + 1;
+      }
       List<Employee> moreEmployees =
           await employeeRepository.getAllEmployees(page: currentPage);
       List<Employee> employeesOnboarded =
           await employeeRepository.getEmployeesOnboarded();
-      currentPage++;
       hasReachedMax = moreEmployees.isEmpty;
       final currentState = state;
       if (currentState is PesquisarLoaded) {
-        emit(PesquisarLoaded(currentState.employees + moreEmployees,
-            employeesOnboarded, hasReachedMax));
+        emit(PesquisarLoaded(
+            currentState.employees + moreEmployees,
+            employeesOnboarded,
+            hasReachedMax,
+            moreEmployees.isNotEmpty ? currentPage : currentPage - 1));
       }
     } catch (e) {
       emit(PesquisarError("Failed to load more employees: $e"));
@@ -50,11 +61,22 @@ class PesquisarCubit extends Cubit<PesquisarState> {
   Future<void> searchEmployees(String query) async {
     try {
       emit(PesquisarLoading());
+      if (query.isEmpty) {
+        emit(PesquisarInitial());
+        return;
+      }
+
+      if (state is PesquisarLoaded) {
+        final currentState = state as PesquisarLoaded;
+        hasReachedMax = false;
+      }
       List<Employee> employeesOnboarded =
           await employeeRepository.getEmployeesOnboarded();
+      query = query.replaceAll(' ', '+');
       List<Employee> employees =
           await employeeRepository.searchEmployees(query);
-      emit(PesquisarLoaded(employees, employeesOnboarded, hasReachedMax));
+      print(query);
+      emit(PesquisarLoaded(employees, employeesOnboarded, hasReachedMax, 1));
     } catch (e) {
       emit(PesquisarError("Failed to search employees: $e"));
     }
