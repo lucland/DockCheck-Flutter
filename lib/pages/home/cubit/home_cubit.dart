@@ -58,7 +58,7 @@ class HomeCubit extends Cubit<HomeState> {
       final employeesFound = employees
           .where((employee) =>
               employee.lastAreaFound != null &&
-              employee.lastAreaFound!.isNotEmpty)
+              employee.lastAreaFound.isNotEmpty)
           .toList();
       emit(state.copyWith(isLoading: false, employees: employeesFound));
     } catch (e) {
