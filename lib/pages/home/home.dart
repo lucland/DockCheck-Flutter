@@ -506,12 +506,10 @@ class _HomeState extends State<Home> {
   }
 
   Widget _buildSecondContainer(List<Employee> employeesInVessel) {
+    //filter employees in vessel where lastAreaFound is not null or empty
     List<Employee> employees = employeesInVessel
         .where((employee) =>
-            employee.lastAreaFound == 'Convés' ||
-            employee.lastAreaFound == 'Acesso Interno' ||
-            employee.lastAreaFound == 'Passadiço' ||
-            employee.lastAreaFound == 'CCM')
+            employee.lastAreaFound != null && employee.lastAreaFound.isNotEmpty)
         .toList();
     return Container(
       decoration: BoxDecoration(
